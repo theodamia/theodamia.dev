@@ -50,10 +50,10 @@ export function About() {
 
           <div className='flex flex-col items-start gap-8 md:flex-row' style={{ opacity: 0 }}>
             <div className='relative shrink-0'>
-              <div className='bg-muted border-border relative h-48 w-48 overflow-hidden rounded-2xl border-2'>
+              <div className='bg-muted border-border relative h-48 w-48 overflow-hidden rounded-xl border'>
                 <Image
                   fill
-                  src='/professional-developer-portrait-in-modern-office-w.jpg'
+                  src='/images/profile.jpeg'
                   alt='Theodore Damianidis'
                   className='object-cover'
                 />
@@ -101,7 +101,7 @@ export function About() {
             <p>
               Outside of work, I stay curious by exploring emerging web technologies, maintain
               balance through regular gym sessions, and recharge with hiking adventures. Based in
-              Thessaloniki, Greece, I'm always excited to connect with fellow developers and explore
+              Thessaloniki, Greece, I'm always excited to connect with fellow professionals and explore
               new opportunities.
             </p>
           </div>
