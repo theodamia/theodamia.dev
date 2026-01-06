@@ -53,7 +53,7 @@ export function Hero() {
     <section className='relative flex min-h-screen w-full items-center justify-center overflow-hidden'>
       <AnimatedGrid />
 
-      <div className='relative z-10 mx-auto max-w-4xl px-4 py-20 text-center'>
+      <div className='relative z-10 mx-auto max-w-6xl px-4 py-20 text-center'>
         <h1
           ref={titleRef}
           className='mb-6 text-5xl font-bold text-balance md:text-7xl'
@@ -66,8 +66,7 @@ export function Hero() {
           className='text-muted-foreground mb-8 text-xl text-balance md:text-2xl'
           style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.08)', opacity: 0 }}
         >
-          Frontend Engineer crafting scalable web experiences with React, TypeScript and modern
-          tools
+          Lead Frontend Engineer building frontends that scale with the product.
         </p>
         <div
           ref={buttonsRef}
