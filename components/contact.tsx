@@ -74,7 +74,7 @@ export function Contact() {
           <Card className='p-8'>
             <p className='text-muted-foreground mb-8 text-lg leading-relaxed text-balance'>
               I'm always open to conversations—whether it's about new opportunities, interesting
-              challenges or simply swapping ideas. Feel free to drop me a message.
+              challenges or simply exchanging ideas. Feel free to drop me a message.
             </p>
             <div className='flex flex-col gap-4 sm:flex-row'>
               <Button asChild size='lg' className='w-full sm:flex-1'>
