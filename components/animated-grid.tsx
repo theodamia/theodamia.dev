@@ -2,6 +2,17 @@
 
 import { useEffect, useRef } from 'react';
 
+const GRID_SPACING = 65;
+const DOT_RADIUS = 2;
+const CONNECTION_DISTANCE = 160;
+const DRAG_STRENGTH = 0.015;
+const MAX_DISPLACEMENT = 20;
+const MOUSE_RESET_POSITION = -1000;
+const GRAVITY_FALLOFF_MULTIPLIER = 0.005;
+const RETURN_FORCE = 0.04;
+const VELOCITY_DAMPING = 0.94;
+const COLLISION_DAMPING = 0.7;
+
 export function AnimatedGrid() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -23,15 +34,9 @@ export function AnimatedGrid() {
     updateSize();
     window.addEventListener('resize', updateSize);
 
-    const gridSpacing = 65;
-    const dotRadius = 2;
-    const connectionDistance = 160;
-    const dragStrength = 0.015;
-    const maxDisplacement = 20;
-
     const recalculatePoints = () => {
-      const cols = Math.ceil(canvas.width / gridSpacing) + 2;
-      const rows = Math.ceil(canvas.height / gridSpacing) + 2;
+      const cols = Math.ceil(canvas.width / GRID_SPACING) + 2;
+      const rows = Math.ceil(canvas.height / GRID_SPACING) + 2;
 
       const newPoints: Array<{
         x: number;
@@ -44,8 +49,8 @@ export function AnimatedGrid() {
 
       for (let i = 0; i < cols; i++) {
         for (let j = 0; j < rows; j++) {
-          const x = i * gridSpacing;
-          const y = j * gridSpacing;
+          const x = i * GRID_SPACING;
+          const y = j * GRID_SPACING;
           newPoints.push({
             x,
             y,
@@ -61,7 +66,7 @@ export function AnimatedGrid() {
 
     let points = recalculatePoints();
 
-    const mouse = { x: -1000, y: -1000 };
+    const mouse = { x: MOUSE_RESET_POSITION, y: MOUSE_RESET_POSITION };
 
     const handleMouseMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
@@ -69,8 +74,8 @@ export function AnimatedGrid() {
       mouse.y = e.clientY - rect.top;
     };
     const handleMouseLeave = () => {
-      mouse.x = -1000;
-      mouse.y = -1000;
+      mouse.x = MOUSE_RESET_POSITION;
+      mouse.y = MOUSE_RESET_POSITION;
     };
     const parentSection = canvas.parentElement;
     if (parentSection) {
@@ -97,19 +102,19 @@ export function AnimatedGrid() {
         const dy = mouse.y - point.y;
         const distFromMouse = Math.hypot(dx, dy);
 
-        const gravityFalloff = 1 / (1 + distFromMouse * 0.005);
-        const dragFactor = gravityFalloff * dragStrength;
+        const gravityFalloff = 1 / (1 + distFromMouse * GRAVITY_FALLOFF_MULTIPLIER);
+        const dragFactor = gravityFalloff * DRAG_STRENGTH;
 
         point.vx += dx * dragFactor;
         point.vy += dy * dragFactor;
 
         const returnDx = point.baseX - point.x;
         const returnDy = point.baseY - point.y;
-        point.vx += returnDx * 0.04;
-        point.vy += returnDy * 0.04;
+        point.vx += returnDx * RETURN_FORCE;
+        point.vy += returnDy * RETURN_FORCE;
 
-        point.vx *= 0.94;
-        point.vy *= 0.94;
+        point.vx *= VELOCITY_DAMPING;
+        point.vy *= VELOCITY_DAMPING;
 
         point.x += point.vx;
         point.y += point.vy;
@@ -118,20 +123,20 @@ export function AnimatedGrid() {
         const currentDisplacementY = point.y - point.baseY;
         const currentDisplacement = Math.hypot(currentDisplacementX, currentDisplacementY);
 
-        if (currentDisplacement > maxDisplacement) {
-          const scale = maxDisplacement / currentDisplacement;
+        if (currentDisplacement > MAX_DISPLACEMENT) {
+          const scale = MAX_DISPLACEMENT / currentDisplacement;
           point.x = point.baseX + currentDisplacementX * scale;
           point.y = point.baseY + currentDisplacementY * scale;
-          point.vx *= 0.7;
-          point.vy *= 0.7;
+          point.vx *= COLLISION_DAMPING;
+          point.vy *= COLLISION_DAMPING;
         }
       });
 
       points.forEach((point, i) => {
         points.slice(i + 1).forEach(otherPoint => {
           const distance = Math.hypot(point.x - otherPoint.x, point.y - otherPoint.y);
-          if (distance < connectionDistance) {
-            const opacity = 1 - distance / connectionDistance;
+          if (distance < CONNECTION_DISTANCE) {
+            const opacity = 1 - distance / CONNECTION_DISTANCE;
 
             ctx.strokeStyle = colors.line.replace(/[\d.]+\)$/, `${opacity})`);
             ctx.lineWidth = 1;
@@ -145,7 +150,7 @@ export function AnimatedGrid() {
 
         ctx.beginPath();
         ctx.fillStyle = colors.dot;
-        ctx.arc(point.x, point.y, dotRadius, 0, Math.PI * 2);
+        ctx.arc(point.x, point.y, DOT_RADIUS, 0, Math.PI * 2);
         ctx.fill();
       });
 
@@ -169,11 +174,5 @@ export function AnimatedGrid() {
     };
   }, []);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className='absolute inset-0 h-full w-full'
-      style={{ opacity: 0.4, zIndex: 1 }}
-    />
-  );
+  return <canvas ref={canvasRef} className='absolute inset-0 z-10 h-full w-full opacity-40' />;
 }
