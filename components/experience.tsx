@@ -13,8 +13,8 @@ const EXPERIENCES = [
     period: 'Mar 2022 - Present',
     duration: '3 years',
     description: [
-      'Drive technical strategy and architecture decisions for the Dashboard web application, delivering measurable improvements in performance, scalability, and maintainability',
-      'Architected and maintain @geekbot/gui, a custom UI component library published to npm, enabling consistent design patterns across the organization',
+      'Drive technical strategy and architecture decisions across the entire frontend, delivering measurable improvements in performance, scalability, and maintainability',
+      'Serve as a bridge between frontend engineering and stakeholders, translating technical concepts into business value and communicating technical constraints and opportunities to product and business teams',
       'Lead and mentor a team of engineers, fostering professional growth and ensuring high-quality technical delivery',
       'Plan and distribute project work across the team, balancing individual strengths, workload, and project priorities to ensure timely and successful delivery',
       'Collaborate closely with UX and Design teams on product ideation, user experience improvements, and design system implementation, translating design concepts into functional, accessible interfaces',
@@ -30,6 +30,8 @@ const EXPERIENCES = [
     description: [
       'Developed and optimized the company web application, focusing on performance improvements and user experience enhancements',
       'Implemented modern front-end architecture and development workflows, establishing patterns that improved team efficiency',
+      'Delivered complete features from start to finish, including A/B testing and data-driven iterations to optimize user experience and business outcomes',
+      'Architected and maintain @geekbot/gui, a custom UI component library published to npm, enabling consistent design patterns across the organization',
       'Collaborated closely with Product, Design, UX and QA teams to deliver features that met user needs and quality standards',
       'Maintained high code quality through systematic debugging, thorough code reviews, and adherence to best practices',
     ],
