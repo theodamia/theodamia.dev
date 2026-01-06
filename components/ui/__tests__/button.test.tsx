@@ -52,4 +52,3 @@ describe('Button', () => {
     expect(screen.getByRole('link')).toHaveAttribute('href', '/test');
   });
 });
-

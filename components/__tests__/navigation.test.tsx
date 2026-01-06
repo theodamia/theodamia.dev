@@ -92,10 +92,9 @@ describe('Navigation', () => {
     await user.click(menuButton);
     // Menu button should still be present after click
     expect(menuButton).toBeInTheDocument();
-    
+
     // Click again to close
     await user.click(menuButton);
     expect(menuButton).toBeInTheDocument();
   });
 });
-

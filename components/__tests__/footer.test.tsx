@@ -18,4 +18,3 @@ describe('Footer', () => {
     expect(container.querySelector('footer')).toBeInTheDocument();
   });
 });
-
