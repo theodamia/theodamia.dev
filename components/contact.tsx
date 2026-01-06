@@ -66,16 +66,15 @@ export function Contact() {
 
   return (
     <section ref={sectionRef} id='contact' className='flex items-center px-4 py-20'>
-      <div className='mx-auto w-full max-w-4xl'>
+      <div className='mx-auto w-full max-w-6xl'>
         <h2 ref={titleRef} className='mb-12 text-4xl font-bold md:text-5xl' style={{ opacity: 0 }}>
           Get In Touch
         </h2>
         <div ref={cardRef} style={{ opacity: 0 }}>
           <Card className='p-8'>
             <p className='text-muted-foreground mb-8 text-lg leading-relaxed text-balance'>
-              I'm always interested in hearing about new opportunities, collaborations, or just
-              connecting with fellow professionals. Feel free to reach out through any of the
-              platforms below.
+              I'm always open to conversations—whether it's about new opportunities, interesting
+              challenges or simply swapping ideas. Feel free to drop me a message.
             </p>
             <div className='flex flex-col gap-4 sm:flex-row'>
               <Button asChild size='lg' className='w-full sm:flex-1'>
@@ -89,7 +88,12 @@ export function Contact() {
                   LinkedIn
                 </a>
               </Button>
-              <Button asChild variant='outline' size='lg' className='w-full bg-transparent sm:flex-1'>
+              <Button
+                asChild
+                variant='outline'
+                size='lg'
+                className='w-full bg-transparent sm:flex-1'
+              >
                 <a
                   href='https://github.com/theodamia'
                   target='_blank'
@@ -100,7 +104,12 @@ export function Contact() {
                   GitHub
                 </a>
               </Button>
-              <Button asChild variant='outline' size='lg' className='w-full bg-transparent sm:flex-1'>
+              <Button
+                asChild
+                variant='outline'
+                size='lg'
+                className='w-full bg-transparent sm:flex-1'
+              >
                 <a href='mailto:theodamia@gmail.com' className='gap-2'>
                   <Mail className='h-5 w-5' />
                   Email
