@@ -16,6 +16,8 @@ const EXPERIENCES = [
       'Drive technical strategy and architecture decisions for the Dashboard web application, delivering measurable improvements in performance, scalability, and maintainability',
       'Architected and maintain @geekbot/gui, a custom UI component library published to npm, enabling consistent design patterns across the organization',
       'Lead and mentor a team of engineers, fostering professional growth and ensuring high-quality technical delivery',
+      'Plan and distribute project work across the team, balancing individual strengths, workload, and project priorities to ensure timely and successful delivery',
+      'Collaborate closely with UX and Design teams on product ideation, user experience improvements, and design system implementation, translating design concepts into functional, accessible interfaces',
       'Established front-end best practices and standardized development workflows, creating scalable design systems that improve team productivity',
     ],
   },
@@ -34,7 +36,7 @@ const EXPERIENCES = [
   },
   {
     id: 3,
-    title: 'Junior Front-end Developer',
+    title: 'Junior Front-end Engineer',
     company: 'Ordereze',
     period: 'Jan 2016 - Jan 2017',
     duration: '1 year',
@@ -52,7 +54,7 @@ const EXPERIENCES = [
     duration: '6 months',
     description: [
       'Built and customized client websites, implementing custom functionality and content management solutions',
-      'Collaborated with senior developers to implement dynamic features and learn industry best practices',
+      'Collaborated with senior engineers to implement dynamic features and learn industry best practices',
       'Optimized website performance and responsiveness, improving load times and user experience across devices',
     ],
   },
