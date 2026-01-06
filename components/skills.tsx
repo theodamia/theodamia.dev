@@ -4,7 +4,7 @@ import anime from 'animejs';
 import { Badge } from '@/components/ui/badge';
 import { Code2, Palette, Database, Wrench, Users } from 'lucide-react';
 
-const skillCategories = [
+const SKILLS = [
   {
     name: 'Core Frontend',
     icon: Code2,
@@ -36,13 +36,20 @@ const skillCategories = [
   {
     name: 'Tools & Workflow',
     icon: Wrench,
-    skills: ['Git', 'Webpack', 'Vite', 'Docker', 'Testing', 'CI/CD', 'Zeplin'],
+    skills: ['Git', 'Webpack', 'Vite', 'Docker', 'Testing', 'CI/CD', 'Semantic Versioning', 'Cursor', 'Zeplin'],
     animationType: 'tools',
   },
   {
     name: 'Leadership',
     icon: Users,
-    skills: ['Team Leadership', 'Mentoring', 'Code Reviews', 'Architecture', 'Project Management'],
+    skills: [
+      'Team Leadership',
+      'Mentoring',
+      'Code Reviews',
+      'Architecture',
+      'Project Management',
+      'Feedback',
+    ],
     animationType: 'leadership',
   },
 ];
@@ -86,7 +93,7 @@ export function Skills() {
     const icon = iconsRef.current[index];
     if (!icon) return;
 
-    const category = skillCategories[index];
+    const category = SKILLS[index];
     let animation: anime.AnimeInstance;
 
     if (category.animationType === 'code') {
@@ -165,7 +172,7 @@ export function Skills() {
         <h2 className='mb-12 text-4xl font-bold md:text-5xl'>Skills & Expertise</h2>
 
         <div className='flex flex-wrap justify-center gap-6'>
-          {skillCategories.map((category, index) => {
+          {SKILLS.map((category, index) => {
             const Icon = category.icon;
             return (
               <div
