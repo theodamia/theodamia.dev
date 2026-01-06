@@ -1,40 +1,22 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Menu, X, Moon, Sun } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Menu, X } from 'lucide-react';
+import { ThemeToggle } from './theme-toggle';
+import { SCROLL_THRESHOLD } from '@/lib/constants';
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    if (typeof window === 'undefined') return 'light';
-    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light';
-    return savedTheme || systemTheme;
-  });
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setIsScrolled(window.scrollY > SCROLL_THRESHOLD.NAVBAR_VISIBLE);
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-  }, [theme]);
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    document.documentElement.classList.toggle('dark', newTheme === 'dark');
-  };
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -53,11 +35,12 @@ export function Navigation() {
 
   return (
     <nav
-      className={`fixed top-0 right-0 left-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 right-0 left-0 transition-all duration-300 ${
         isScrolled
           ? 'bg-background/80 border-border border-b shadow-sm backdrop-blur-md'
           : 'bg-transparent'
       }`}
+      style={{ zIndex: 50 }}
     >
       <div className='container mx-auto px-6'>
         <div className='flex h-16 items-center justify-between'>
@@ -81,28 +64,12 @@ export function Navigation() {
                 <span className='bg-primary absolute bottom-0 left-0 h-0.5 w-0 transition-all duration-300 group-hover:w-full' />
               </button>
             ))}
-            <Button
-              variant='outline'
-              size='icon'
-              onClick={toggleTheme}
-              className='rounded-full bg-transparent'
-              aria-label='Toggle theme'
-            >
-              {theme === 'light' ? <Moon className='h-4 w-4' /> : <Sun className='h-4 w-4' />}
-            </Button>
+            <ThemeToggle />
           </div>
 
           {/* Mobile Menu Button */}
           <div className='flex items-center gap-3 md:hidden'>
-            <Button
-              variant='outline'
-              size='icon'
-              onClick={toggleTheme}
-              className='rounded-full bg-transparent'
-              aria-label='Toggle theme'
-            >
-              {theme === 'light' ? <Moon className='h-4 w-4' /> : <Sun className='h-4 w-4' />}
-            </Button>
+            <ThemeToggle />
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className='text-foreground hover:text-primary transition-colors'
