@@ -65,7 +65,7 @@ export function Contact() {
   }, [hasAnimated]);
 
   return (
-    <section ref={sectionRef} id='contact' className='flex min-h-screen items-center px-4 py-20'>
+    <section ref={sectionRef} id='contact' className='flex items-center px-4 py-20'>
       <div className='mx-auto w-full max-w-4xl'>
         <h2 ref={titleRef} className='mb-12 text-4xl font-bold md:text-5xl' style={{ opacity: 0 }}>
           Get In Touch
