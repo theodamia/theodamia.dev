@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import anime from 'animejs';
 
+const SKILLS = ['React', 'TypeScript', 'GraphQL', 'TailwindCSS'];
+
 export function About() {
   const sectionRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -41,8 +43,8 @@ export function About() {
   }, [hasAnimated]);
 
   return (
-    <section ref={sectionRef} id='about' className='flex min-h-screen items-center px-4 py-20'>
-      <div className='mx-auto w-full max-w-4xl'>
+    <section ref={sectionRef} id='about' className='flex items-center px-4 py-20'>
+      <div className='mx-auto w-full max-w-6xl'>
         <div ref={contentRef} className='space-y-8'>
           <h2 className='mb-12 text-4xl font-bold md:text-5xl' style={{ opacity: 0 }}>
             About Me
@@ -62,23 +64,29 @@ export function About() {
 
             <div className='text-muted-foreground flex-1 space-y-4 text-lg leading-relaxed'>
               <p>
-                I'm a <span className='text-foreground font-semibold'>frontend engineer</span> with
-                over 7 years of production experience crafting scalable, user-focused web
-                applications. I specialize in React, TypeScript, GraphQL and Tailwind CSS, with deep
-                expertise in building modern, performant web experiences.
+                I'm a Lead Frontend Engineer with over 7 years of experience building and evolving
+                production web applications.
               </p>
               <p>
-                My approach centers on writing maintainable, performant code that stands the test of
-                time. I believe in deep understanding over surface-level solutions—taking the time
-                to comprehend the full system architecture, identifying existing patterns and
-                building on solid foundations rather than quick fixes.
+                I've learned that the trickiest part of the job is often navigating
+                ambiguity—figuring out what to build, not just how to build it and making decisions
+                that hold up as a product grows.
               </p>
               <p>
-                Mentoring is at the heart of what I do. I find joy in helping engineers level up
-                their skills, teaching them to think critically about code architecture and
-                fostering a culture where asking questions is encouraged and knowledge sharing is
-                the norm.
+                Mentoring is at the heart of what I do. I enjoy helping engineers level up by
+                reviewing designs and code, encouraging thoughtful architectural decisions and
+                fostering a culture where questions are welcome and knowledge sharing is the norm.
               </p>
+              <div className='flex flex-wrap gap-2 pt-2'>
+                {SKILLS.map(skill => (
+                  <span
+                    key={skill}
+                    className='bg-primary/10 text-primary border-primary/20 rounded-md border px-2.5 py-1 text-sm font-medium'
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -88,21 +96,9 @@ export function About() {
           >
             <div className='text-primary text-sm font-medium'>Currently</div>
             <p className='text-foreground text-base leading-relaxed'>
-              At Geekbot, I lead frontend architecture decisions, maintain our custom UI library,
-              and mentor engineers to build products that users love. I'm passionate about clean
-              code, modern design patterns and creating experiences that feel effortless.
-            </p>
-          </div>
-
-          <div
-            className='text-muted-foreground space-y-4 text-base leading-relaxed'
-            style={{ opacity: 0 }}
-          >
-            <p>
-              Outside of work, I stay curious by exploring emerging web technologies, maintain
-              balance through regular gym sessions and recharge with hiking adventures. Based in
-              Thessaloniki, Greece, I'm always excited to connect with fellow professionals and
-              explore new opportunities.
+              At Geekbot for 7 years, currently leading the frontend team and building most of the
+              frontend from the ground up. Beyond code, I've helped shape how the team
+              works—prioritizing clarity, honest feedback and steady progress when things get messy.
             </p>
           </div>
         </div>
