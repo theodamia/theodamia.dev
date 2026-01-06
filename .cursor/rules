@@ -1,0 +1,217 @@
+# Next.js Best Practices
+
+## App Router
+- Use the App Router (app directory) for all new routes
+- Server Components are the default - use 'use client' only when necessary
+- Use Server Actions for mutations, Server Components for data fetching
+- Prefer async Server Components over useEffect for data fetching
+- Use route.ts for API routes, not pages/api
+- Leverage loading.tsx, error.tsx, and not-found.tsx for better UX
+- Use generateStaticParams for static generation when possible
+
+## File Structure
+- Keep components in `/components` directory
+- Use `/lib` for utilities and shared logic
+- Use `/hooks` for custom React hooks
+- Use `/app` for routes and layouts
+- Use `/public` for static assets
+
+## Performance
+- Use next/image for all images with proper width/height or fill
+- Implement proper loading states and Suspense boundaries
+- Use dynamic imports for code splitting: `dynamic(() => import('./Component'))`
+- Optimize fonts with next/font
+- Use generateMetadata for SEO
+
+# TypeScript Best Practices
+
+## Type Safety
+- Always use explicit types for function parameters and return types
+- Prefer `interface` for object shapes, `type` for unions/intersections
+- Use `as const` for literal types when needed
+- Avoid `any` - use `unknown` if type is truly unknown
+- Use type guards for runtime type checking
+- Leverage TypeScript's utility types (Pick, Omit, Partial, etc.)
+
+## Component Props
+- Define props with interfaces, not inline types
+- Use `React.ComponentProps<'element'>` for extending HTML element props
+- Use `Readonly<>` for props that shouldn't be mutated
+- Export prop types for reusability: `export type ComponentProps = {...}`
+
+## Code Quality
+- Enable strict mode in tsconfig.json
+- Use path aliases (@/*) for cleaner imports
+- Avoid type assertions unless absolutely necessary
+- Use satisfies operator when you need type checking without widening
+
+# React Best Practices
+
+## Components
+- Use functional components exclusively
+- Keep components small and focused (single responsibility)
+- Extract reusable logic into custom hooks
+- Use composition over inheritance
+- Prefer explicit prop passing over context when possible
+- Use React.memo() sparingly - only when profiling shows it's needed
+
+## Component Structure
+- Export components as named exports: `export function Component() {}`
+- Use default exports only for pages/layouts
+- Keep component files focused - one component per file (except related components)
+- Use PascalCase for component names
+- Use kebab-case for file names
+
+## Props and State
+- Use TypeScript interfaces for props
+- Destructure props at the function signature
+- Use descriptive prop names
+- Avoid prop drilling - use context or composition when needed
+- Keep state as local as possible
+
+## Rendering
+- Use keys properly in lists (stable, unique identifiers)
+- Avoid inline object/function creation in render
+- Use conditional rendering: `{condition && <Component />}` or ternary
+- Avoid nested ternary operations - extract to variables, early returns, or separate components
+- Extract complex JSX into separate components or variables
+
+# React Hooks Best Practices
+
+## useState
+- Use lazy initialization for expensive initial state: `useState(() => computeInitialState())`
+- Avoid calling setState synchronously in useEffect - use lazy initializers instead
+- Group related state into objects when they change together
+- Use functional updates when new state depends on previous: `setCount(c => c + 1)`
+
+## useEffect
+- Always include all dependencies in the dependency array
+- Use exhaustive-deps ESLint rule to catch missing dependencies
+- Clean up side effects (subscriptions, timers, event listeners)
+- Avoid using useEffect for derived state - compute during render instead
+- Use useEffect for synchronization with external systems (APIs, DOM, etc.)
+
+## useCallback & useMemo
+- Only use when profiling shows performance issues
+- Include all dependencies in dependency arrays
+- Don't memoize everything - React is fast by default
+- Use useCallback for functions passed to memoized children
+- Use useMemo for expensive computations
+
+## Custom Hooks
+- Extract reusable stateful logic into custom hooks
+- Name hooks starting with 'use'
+- Return objects or arrays for multiple values
+- Keep hooks focused on a single concern
+- Document hook behavior with JSDoc comments
+
+## Rules of Hooks
+- Only call hooks at the top level (not in loops, conditions, or nested functions)
+- Only call hooks from React functions or custom hooks
+- Keep hook calls in the same order on every render
+
+# Tailwind CSS Best Practices
+
+## Class Organization
+- Use Tailwind's utility classes, not custom CSS when possible
+- Use `cn()` utility (from lib/utils.ts) for conditional classes
+- Group related classes logically (layout, spacing, colors, etc.)
+- Use arbitrary values sparingly: `w-[200px]` only when needed
+- Prefer responsive variants: `md:`, `lg:`, `xl:` over fixed sizes
+
+## Component Styling
+- Use component variants with class-variance-authority (cva) for reusable components
+- Extract repeated class combinations into component variants
+- Use Tailwind's design tokens (colors, spacing, typography)
+- Leverage Tailwind plugins (tailwindcss-animate) for animations
+
+## Performance
+- Use JIT mode (default in Tailwind v4)
+- Purge unused styles in production automatically
+- Avoid inline styles - use Tailwind utilities
+- Use @apply sparingly and only in CSS files for repeated patterns
+
+## Responsive Design
+- Mobile-first approach: base styles for mobile, then add breakpoints
+- Use responsive utilities: `flex-col md:flex-row`
+- Test on multiple screen sizes
+- Use container queries when appropriate
+
+## Dark Mode
+- Use `dark:` variant for dark mode styles
+- Leverage CSS variables for theme colors
+- Test both light and dark modes
+
+# Code Style
+
+## Formatting
+- Use Prettier for consistent formatting
+- Single quotes for strings (configured in .prettierrc)
+- Semicolons required
+- 2 spaces for indentation
+- 100 character line width
+
+## Naming Conventions
+- Components: PascalCase (`UserProfile`)
+- Files: kebab-case (`user-profile.tsx`)
+- Functions/variables: camelCase (`getUserData`)
+- Constants: UPPER_SNAKE_CASE (`API_BASE_URL`)
+- Types/interfaces: PascalCase (`UserData`)
+
+## Imports
+- Group imports: external, internal, relative
+- Use path aliases (@/*) for cleaner imports
+- Sort imports alphabetically within groups
+- Remove unused imports
+
+## Conditional Logic
+- Avoid nested ternary operations - use if/else statements, early returns, or extract to functions
+- Prefer explicit conditionals over complex ternary chains
+- Extract complex conditional logic into helper functions or variables
+
+## Comments
+- Write self-documenting code - comments should explain "why", not "what"
+- Use JSDoc for function/component documentation
+- Remove commented-out code
+- Keep comments up-to-date with code changes
+
+# Animation Best Practices
+
+## Anime.js
+- Use anime.js for complex animations
+- Clean up animations in useEffect cleanup
+- Use IntersectionObserver for scroll-triggered animations
+- Avoid animating on every render - use refs and state flags
+- Prefer CSS animations for simple transitions (via Tailwind)
+
+# Accessibility
+
+## ARIA and Semantics
+- Use semantic HTML elements
+- Add aria-labels for icon-only buttons
+- Ensure proper heading hierarchy (h1 → h2 → h3)
+- Use proper form labels and associations
+- Test with keyboard navigation
+
+## Performance
+- Optimize images with next/image
+- Use proper loading states
+- Implement error boundaries
+- Lazy load below-the-fold content
+
+# Error Handling
+
+- Use error.tsx for route-level error handling
+- Implement proper error boundaries
+- Provide meaningful error messages
+- Log errors appropriately (don't expose sensitive info)
+- Handle loading and error states in data fetching
+
+# Security
+
+- Never expose API keys or secrets in client code
+- Validate and sanitize user input
+- Use Next.js built-in CSRF protection
+- Implement proper authentication/authorization
+- Use environment variables for sensitive config
+
