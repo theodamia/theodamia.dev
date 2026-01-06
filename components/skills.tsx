@@ -36,7 +36,17 @@ const SKILLS = [
   {
     name: 'Tools & Workflow',
     icon: Wrench,
-    skills: ['Git', 'Webpack', 'Vite', 'Docker', 'Testing', 'CI/CD', 'Semantic Versioning', 'Cursor', 'Zeplin'],
+    skills: [
+      'Git',
+      'Webpack',
+      'Vite',
+      'Docker',
+      'Testing',
+      'CI/CD',
+      'Semantic Versioning',
+      'Cursor',
+      'Zeplin',
+    ],
     animationType: 'tools',
   },
   {
