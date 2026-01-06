@@ -12,7 +12,7 @@ const EXPERIENCES = [
     period: 'Mar 2022 - Present',
     duration: '3 years',
     description:
-      'Built and maintained most of the frontend throughout my time here. Created our internal UI library, introduced Tailwind and Atomic Design patterns and kept the codebase sustainable as the product evolved. I mentor engineers and help shape both the technical direction and team processes that keep work moving forward.',
+      "Built and maintained the majority of the frontend over the years. Created the company's internal UI library, introduced Tailwind and Atomic Design patterns, and kept the codebase sustainable as the product evolved. Mentor engineers and help shape both technical direction and team processes that keep work moving forward.",
   },
   {
     title: 'Frontend Engineer',
@@ -20,10 +20,10 @@ const EXPERIENCES = [
     period: 'Sep 2018 - Feb 2022',
     duration: '3 years 5 months',
     description:
-      "Developed and optimized the company's web application using modern front-end architecture and workflows. Collaborated closely with Product, Design and UX teams to deliver user-focused features while ensuring code quality through comprehensive debugging and code reviews.",
+      "Developed and optimized the company's web application using modern frontend architecture and workflows. Collaborated closely with Product, Design and UX teams to deliver user-focused features while ensuring code quality through comprehensive debugging and code reviews.",
   },
   {
-    title: 'Junior Front-end Engineer',
+    title: 'Junior Frontend Engineer',
     company: 'Ordereze',
     period: 'Jan 2016 - Jan 2017',
     duration: '1 year',

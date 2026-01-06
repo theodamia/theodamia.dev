@@ -96,8 +96,8 @@ export function About() {
           >
             <div className='text-primary text-sm font-medium'>Currently</div>
             <p className='text-foreground text-base leading-relaxed'>
-              At Geekbot for 7 years, currently leading the frontend team and building most of the
-              frontend from the ground up. Beyond code, I've helped shape how the team
+              At Geekbot for 7 years, currently leading the frontend team and building the majority
+              of the frontend from the ground up. Beyond code, I've helped shape how the team
               works—prioritizing clarity, honest feedback and steady progress when things get messy.
             </p>
           </div>
