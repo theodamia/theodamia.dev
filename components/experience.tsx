@@ -7,58 +7,36 @@ import anime from 'animejs';
 
 const EXPERIENCES = [
   {
-    id: 1,
     title: 'Frontend Lead',
     company: 'Geekbot',
     period: 'Mar 2022 - Present',
     duration: '3 years',
-    description: [
-      'Drive technical strategy and architecture decisions across the entire frontend, delivering measurable improvements in performance, scalability and maintainability',
-      'Serve as a bridge between frontend engineering and stakeholders, translating technical concepts into business value and communicating technical constraints and opportunities to product and business teams',
-      'Lead and mentor a team of engineers, fostering professional growth and ensuring high-quality technical delivery',
-      'Plan and distribute project work across the team, balancing individual strengths, workload and project priorities to ensure timely and successful delivery',
-      'Collaborate closely with UX and Design teams on product ideation, user experience improvements and design system implementation, translating design concepts into functional, accessible interfaces',
-      'Established front-end best practices and standardized development workflows, creating scalable design systems that improve team productivity',
-    ],
+    description:
+      'Built and maintained most of the frontend throughout my time here. Created our internal UI library, introduced Tailwind and Atomic Design patterns and kept the codebase sustainable as the product evolved. I mentor engineers and help shape both the technical direction and team processes that keep work moving forward.',
   },
   {
-    id: 2,
     title: 'Frontend Engineer',
     company: 'Geekbot',
     period: 'Sep 2018 - Feb 2022',
     duration: '3 years 5 months',
-    description: [
-      'Developed and optimized the company web application, focusing on performance improvements and user experience enhancements',
-      'Implemented modern front-end architecture and development workflows, establishing patterns that improved team efficiency',
-      'Delivered complete features from start to finish, including A/B testing and data-driven iterations to optimize user experience and business outcomes',
-      'Architected and maintain @geekbot/gui, a custom UI component library published to npm, enabling consistent design patterns across the organization',
-      'Collaborated closely with Product, Design, UX and QA teams to deliver features that met user needs and quality standards',
-      'Maintained high code quality through systematic debugging, thorough code reviews and adherence to best practices',
-    ],
+    description:
+      "Developed and optimized the company's web application using modern front-end architecture and workflows. Collaborated closely with Product, Design and UX teams to deliver user-focused features while ensuring code quality through comprehensive debugging and code reviews.",
   },
   {
-    id: 3,
     title: 'Junior Front-end Engineer',
     company: 'Ordereze',
     period: 'Jan 2016 - Jan 2017',
     duration: '1 year',
-    description: [
-      'Developed and maintained user interfaces, implementing responsive designs and interactive features',
-      'Refactored legacy code to improve maintainability and performance, reducing technical debt',
-      'Collaborated with QA teams to identify, debug and resolve issues, ensuring high-quality releases',
-    ],
+    description:
+      'Built and updated user interfaces using React and PostCSS, focusing on creating maintainable and performant code. Worked closely with QA teams to identify and resolve bugs, conducting regular code cleanup to improve overall project quality.',
   },
   {
-    id: 4,
     title: 'Web Developer Internship',
     company: 'Fedenet',
     period: 'Jul 2015 - Dec 2015',
     duration: '6 months',
-    description: [
-      'Built and customized client websites, implementing custom functionality and content management solutions',
-      'Collaborated with senior engineers to implement dynamic features and learn industry best practices',
-      'Optimized website performance and responsiveness, improving load times and user experience across devices',
-    ],
+    description:
+      'Built and customized websites using JavaScript, PHP and a proprietary CMS. Collaborated with senior engineers to implement dynamic features while optimizing website performance and responsiveness across different devices.',
   },
 ];
 
@@ -116,23 +94,11 @@ export function Experience() {
       duration: 400,
       easing: 'easeOutCubic',
     });
-
-    // Animate border color
-    const cardElement = card.querySelector('.experience-card');
-    if (cardElement) {
-      if (isHovering) {
-        cardElement.classList.add('border-primary');
-        cardElement.classList.remove('border-border');
-      } else {
-        cardElement.classList.remove('border-primary');
-        cardElement.classList.add('border-border');
-      }
-    }
   };
 
   return (
     <section ref={sectionRef} id='experience' className='px-4 py-20'>
-      <div className='mx-auto max-w-4xl'>
+      <div className='mx-auto max-w-6xl'>
         <h2 className='mb-12 text-4xl font-bold md:text-5xl'>Experience</h2>
         <div className='relative'>
           {/* Vertical timeline line */}
@@ -140,7 +106,7 @@ export function Experience() {
 
           <div className='space-y-12'>
             {EXPERIENCES.map((exp, index) => (
-              <div key={exp.id} className='relative'>
+              <div key={index} className='relative'>
                 <div
                   ref={el => {
                     dotsRef.current[index] = el;
@@ -153,15 +119,15 @@ export function Experience() {
                   ref={el => {
                     cardsRef.current[index] = el;
                   }}
-                  className={`ml-8 md:ml-0 md:w-[calc(50%-2rem)] ${
+                  className={`group ml-8 md:ml-0 md:w-[calc(54%-2rem)] ${
                     index % 2 === 0 ? 'md:mr-auto md:pr-8' : 'md:ml-auto md:pl-8'
                   }`}
                   style={{ opacity: 0 }}
                   onMouseEnter={() => handleCardHover(index, true)}
                   onMouseLeave={() => handleCardHover(index, false)}
                 >
-                  <Card className='experience-card border-border cursor-pointer p-6 transition-all hover:shadow-lg'>
-                    <div className='mb-4 flex flex-col gap-2'>
+                  <Card className='experience-card border-border group-hover:border-primary cursor-pointer p-6 transition-all hover:shadow-lg'>
+                    <div className='flex flex-col gap-2'>
                       <div className='flex items-start justify-between gap-2'>
                         <div>
                           <h3 className='text-foreground text-xl font-semibold'>{exp.title}</h3>
@@ -173,14 +139,7 @@ export function Experience() {
                       </div>
                       <p className='text-muted-foreground text-sm'>{exp.period}</p>
                     </div>
-                    <ul className='text-muted-foreground space-y-2'>
-                      {exp.description.map((item, i) => (
-                        <li key={i} className='flex items-start gap-2 leading-relaxed'>
-                          <span className='text-2xl leading-none'>•</span>
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    <p className='text-muted-foreground leading-relaxed'>{exp.description}</p>
                   </Card>
                 </div>
               </div>
