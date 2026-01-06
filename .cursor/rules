@@ -215,3 +215,61 @@
 - Implement proper authentication/authorization
 - Use environment variables for sensitive config
 
+# Testing Best Practices
+
+## Testing Framework
+- Use Vitest + React Testing Library (configured in vitest.config.ts)
+- Tests should be in `__tests__` directories or `.test.ts`/`.test.tsx` files
+- Place test files next to the code they test or in dedicated `__tests__` directories
+- Use `test/setup.ts` for global test configuration and mocks
+
+## Writing Tests
+- Test user behavior, not implementation details
+- Use semantic queries: `getByRole`, `getByLabelText`, `getByText` (prefer role-based queries)
+- Avoid `getByTestId` unless necessary - prefer accessible queries
+- Use `userEvent` for user interactions, not `fireEvent` when possible
+- Keep tests focused - one concept per test
+- Use descriptive test names that explain what is being tested
+
+## Component Testing
+- Test that components render correctly
+- Test user interactions (clicks, form submissions, etc.)
+- Test conditional rendering and state changes
+- Test accessibility (ARIA labels, keyboard navigation)
+- Mock external dependencies (APIs, animations, Next.js router)
+- Use `screen` queries instead of destructuring from render when possible
+
+## Utility Function Testing
+- Test all code paths (happy path, edge cases, error cases)
+- Test with various input types and edge cases
+- Test return values and side effects
+- Keep utility tests simple and focused
+
+## Mocking
+- Mock Next.js router (`next/navigation`) in test/setup.ts
+- Mock browser APIs (`window.matchMedia`, `IntersectionObserver`, `localStorage`)
+- Mock external libraries (anime.js, etc.) when testing components
+- Use `vi.mock()` for module mocks
+- Reset mocks between tests using `beforeEach` or `afterEach`
+
+## Test Organization
+- Group related tests with `describe` blocks
+- Use descriptive `describe` and `it`/`test` names
+- Follow AAA pattern: Arrange, Act, Assert
+- Clean up after tests (handled automatically via setup.ts)
+
+## Coverage
+- Aim for meaningful coverage, not 100%
+- Focus on critical user flows and complex logic
+- Test edge cases and error handling
+- Don't test third-party library code
+- Use `npm run test:coverage` to check coverage
+
+## Best Practices
+- Tests should be fast and independent
+- Avoid testing implementation details (internal state, refs, etc.)
+- Test accessibility - use `getByRole` to ensure proper semantics
+- Test error states and loading states
+- Use `waitFor` for async operations
+- Use `findBy*` queries for elements that appear asynchronously
+

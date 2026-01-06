@@ -92,6 +92,10 @@ pnpm dev
 - `npm run format` - Format code with Prettier
 - `npm run format:check` - Check code formatting
 - `npm run check` - Run both ESLint and Prettier checks
+- `npm run test` - Run tests in watch mode
+- `npm run test:run` - Run tests once
+- `npm run test:ui` - Run tests with UI
+- `npm run test:coverage` - Run tests with coverage report
 
 ## 🎨 Styling
 
@@ -108,6 +112,7 @@ This project uses Tailwind CSS with the following configuration:
 - **Prettier**: Code formatting with Tailwind plugin
 - **TypeScript**: Strict mode enabled
 - **Path Aliases**: `@/*` for cleaner imports
+- **Testing**: Vitest + React Testing Library for component and utility tests
 
 ## 📦 Key Dependencies
 
