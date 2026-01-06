@@ -169,6 +169,13 @@
 - Prefer explicit conditionals over complex ternary chains
 - Extract complex conditional logic into helper functions or variables
 
+## Magic Numbers
+- Avoid magic numbers - extract numeric literals into named constants with descriptive names
+- Use constants for breakpoints, timeouts, sizes, and other configuration values
+- Examples: `const MOBILE_BREAKPOINT = 768` instead of `window.innerWidth < 768`
+- Use enums or const objects for related numeric values
+- Document the meaning and units of numeric constants
+
 ## Comments
 - Write self-documenting code - comments should explain "why", not "what"
 - Use JSDoc for function/component documentation
