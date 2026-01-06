@@ -6,7 +6,7 @@
 - Use Server Actions for mutations, Server Components for data fetching
 - Prefer async Server Components over useEffect for data fetching
 - Use route.ts for API routes, not pages/api
-- Leverage loading.tsx, error.tsx, and not-found.tsx for better UX
+- Leverage loading.tsx, error.tsx and not-found.tsx for better UX
 - Use generateStaticParams for static generation when possible
 
 ## File Structure
@@ -171,7 +171,7 @@
 
 ## Magic Numbers
 - Avoid magic numbers - extract numeric literals into named constants with descriptive names
-- Use constants for breakpoints, timeouts, sizes, and other configuration values
+- Use constants for breakpoints, timeouts, sizes and other configuration values
 - Examples: `const MOBILE_BREAKPOINT = 768` instead of `window.innerWidth < 768`
 - Use enums or const objects for related numeric values
 - Document the meaning and units of numeric constants

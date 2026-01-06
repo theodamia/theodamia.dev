@@ -6,7 +6,7 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Theodore Damianidis | Frontend Engineer',
   description:
-    'Frontend Engineer with 7+ years of production experience specializing in React, TypeScript, and modern web development. Currently Frontend Lead at Geekbot.',
+    'Frontend Engineer with 7+ years of production experience specializing in React, TypeScript and modern web development. Currently Frontend Lead at Geekbot.',
   generator: 'theodamia.dev',
   keywords: [
     'Frontend Engineer',

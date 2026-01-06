@@ -1,6 +1,6 @@
 # theodamia.dev
 
-Personal portfolio website for Theodore Damianidis - Frontend Engineer showcasing experience, skills, and projects.
+Personal portfolio website for Theodore Damianidis - Frontend Engineer showcasing experience, skills and projects.
 
 ## 🚀 Tech Stack
 
@@ -127,6 +127,7 @@ This project uses [Vitest](https://vitest.dev/) and [React Testing Library](http
 ### Test Structure
 
 Tests are located in:
+
 - `__tests__/` directories next to components
 - `.test.ts` or `.test.tsx` files
 - `test/setup.ts` for global test configuration and mocks
@@ -134,6 +135,7 @@ Tests are located in:
 ### Writing Tests
 
 Tests follow React Testing Library best practices:
+
 - Test user behavior, not implementation details
 - Use semantic queries (`getByRole`, `getByLabelText`, `getByText`)
 - Use `userEvent` for user interactions
@@ -151,6 +153,7 @@ npm run test:coverage # Generate coverage report
 ### Test Coverage
 
 Focus on meaningful coverage:
+
 - Critical user flows
 - Complex logic and edge cases
 - Component interactions
@@ -161,6 +164,7 @@ See `test/README.md` for detailed testing guidelines.
 ## 📦 Key Dependencies
 
 ### Core
+
 - `next` - React framework
 - `react` & `react-dom` - UI library
 - `tailwindcss` - Utility-first CSS
@@ -171,6 +175,7 @@ See `test/README.md` for detailed testing guidelines.
 - `clsx` & `tailwind-merge` - Class name utilities
 
 ### Testing
+
 - `vitest` - Unit test framework
 - `@testing-library/react` - React component testing
 - `@testing-library/jest-dom` - DOM matchers

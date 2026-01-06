@@ -13,11 +13,11 @@ const EXPERIENCES = [
     period: 'Mar 2022 - Present',
     duration: '3 years',
     description: [
-      'Drive technical strategy and architecture decisions across the entire frontend, delivering measurable improvements in performance, scalability, and maintainability',
+      'Drive technical strategy and architecture decisions across the entire frontend, delivering measurable improvements in performance, scalability and maintainability',
       'Serve as a bridge between frontend engineering and stakeholders, translating technical concepts into business value and communicating technical constraints and opportunities to product and business teams',
       'Lead and mentor a team of engineers, fostering professional growth and ensuring high-quality technical delivery',
-      'Plan and distribute project work across the team, balancing individual strengths, workload, and project priorities to ensure timely and successful delivery',
-      'Collaborate closely with UX and Design teams on product ideation, user experience improvements, and design system implementation, translating design concepts into functional, accessible interfaces',
+      'Plan and distribute project work across the team, balancing individual strengths, workload and project priorities to ensure timely and successful delivery',
+      'Collaborate closely with UX and Design teams on product ideation, user experience improvements and design system implementation, translating design concepts into functional, accessible interfaces',
       'Established front-end best practices and standardized development workflows, creating scalable design systems that improve team productivity',
     ],
   },
@@ -33,7 +33,7 @@ const EXPERIENCES = [
       'Delivered complete features from start to finish, including A/B testing and data-driven iterations to optimize user experience and business outcomes',
       'Architected and maintain @geekbot/gui, a custom UI component library published to npm, enabling consistent design patterns across the organization',
       'Collaborated closely with Product, Design, UX and QA teams to deliver features that met user needs and quality standards',
-      'Maintained high code quality through systematic debugging, thorough code reviews, and adherence to best practices',
+      'Maintained high code quality through systematic debugging, thorough code reviews and adherence to best practices',
     ],
   },
   {
@@ -45,7 +45,7 @@ const EXPERIENCES = [
     description: [
       'Developed and maintained user interfaces, implementing responsive designs and interactive features',
       'Refactored legacy code to improve maintainability and performance, reducing technical debt',
-      'Collaborated with QA teams to identify, debug, and resolve issues, ensuring high-quality releases',
+      'Collaborated with QA teams to identify, debug and resolve issues, ensuring high-quality releases',
     ],
   },
   {
