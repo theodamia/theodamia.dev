@@ -40,7 +40,6 @@ theodamia.dev/
 │   ├── hero.tsx           # Hero section
 │   ├── navigation.tsx     # Navigation bar
 │   └── skills.tsx         # Skills showcase
-├── hooks/                 # Custom React hooks
 ├── lib/                   # Utility functions
 └── public/                # Static assets
 ```
@@ -112,10 +111,56 @@ This project uses Tailwind CSS with the following configuration:
 - **Prettier**: Code formatting with Tailwind plugin
 - **TypeScript**: Strict mode enabled
 - **Path Aliases**: `@/*` for cleaner imports
-- **Testing**: Vitest + React Testing Library for component and utility tests
+
+## 🧪 Testing
+
+This project uses [Vitest](https://vitest.dev/) and [React Testing Library](https://testing-library.com/react) for testing.
+
+### Testing Framework
+
+- **Vitest**: Fast unit test framework with Vite integration
+- **React Testing Library**: Component testing utilities
+- **@testing-library/jest-dom**: Custom Jest matchers for DOM elements
+- **@testing-library/user-event**: User interaction simulation
+- **jsdom**: DOM environment for tests
+
+### Test Structure
+
+Tests are located in:
+- `__tests__/` directories next to components
+- `.test.ts` or `.test.tsx` files
+- `test/setup.ts` for global test configuration and mocks
+
+### Writing Tests
+
+Tests follow React Testing Library best practices:
+- Test user behavior, not implementation details
+- Use semantic queries (`getByRole`, `getByLabelText`, `getByText`)
+- Use `userEvent` for user interactions
+- Mock external dependencies (Next.js router, browser APIs)
+
+### Running Tests
+
+```bash
+npm run test          # Run tests in watch mode
+npm run test:run      # Run tests once
+npm run test:ui       # Run tests with UI
+npm run test:coverage # Generate coverage report
+```
+
+### Test Coverage
+
+Focus on meaningful coverage:
+- Critical user flows
+- Complex logic and edge cases
+- Component interactions
+- Utility functions
+
+See `test/README.md` for detailed testing guidelines.
 
 ## 📦 Key Dependencies
 
+### Core
 - `next` - React framework
 - `react` & `react-dom` - UI library
 - `tailwindcss` - Utility-first CSS
@@ -124,6 +169,13 @@ This project uses Tailwind CSS with the following configuration:
 - `@radix-ui/*` - Accessible UI primitives
 - `class-variance-authority` - Component variants
 - `clsx` & `tailwind-merge` - Class name utilities
+
+### Testing
+- `vitest` - Unit test framework
+- `@testing-library/react` - React component testing
+- `@testing-library/jest-dom` - DOM matchers
+- `@testing-library/user-event` - User interaction simulation
+- `jsdom` - DOM environment for tests
 
 ## 🚢 Deployment
 
@@ -145,5 +197,3 @@ This project is licensed under the MIT License.
 - GitHub: [@theodamia](https://github.com/theodamia)
 
 ---
-
-Built with ❤️ using Next.js and TypeScript
