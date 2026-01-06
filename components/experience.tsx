@@ -21,7 +21,7 @@ const EXPERIENCES = [
   },
   {
     id: 2,
-    title: 'Frontend Developer',
+    title: 'Frontend Engineer',
     company: 'Geekbot',
     period: 'Sep 2018 - Feb 2022',
     duration: '3 years 5 months',
