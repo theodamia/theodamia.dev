@@ -78,7 +78,7 @@ export function Contact() {
               platforms below.
             </p>
             <div className='flex flex-col gap-4 sm:flex-row'>
-              <Button asChild size='lg' className='flex-1'>
+              <Button asChild size='lg' className='w-full sm:flex-1'>
                 <a
                   href='https://www.linkedin.com/in/theodore-damianidis-19369714a/'
                   target='_blank'
@@ -89,7 +89,7 @@ export function Contact() {
                   LinkedIn
                 </a>
               </Button>
-              <Button asChild variant='outline' size='lg' className='flex-1 bg-transparent'>
+              <Button asChild variant='outline' size='lg' className='w-full bg-transparent sm:flex-1'>
                 <a
                   href='https://github.com/theodamia'
                   target='_blank'
@@ -100,7 +100,7 @@ export function Contact() {
                   GitHub
                 </a>
               </Button>
-              <Button asChild variant='outline' size='lg' className='flex-1 bg-transparent'>
+              <Button asChild variant='outline' size='lg' className='w-full bg-transparent sm:flex-1'>
                 <a href='mailto:theodamia@gmail.com' className='gap-2'>
                   <Mail className='h-5 w-5' />
                   Email
