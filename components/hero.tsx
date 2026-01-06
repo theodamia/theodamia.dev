@@ -66,7 +66,7 @@ export function Hero() {
           className='text-muted-foreground mb-8 text-xl text-balance md:text-2xl'
           style={{ textShadow: '0 1px 4px rgba(0, 0, 0, 0.08)', opacity: 0 }}
         >
-          Frontend Engineer crafting scalable web experiences with React, TypeScript, and modern
+          Frontend Engineer crafting scalable web experiences with React, TypeScript and modern
           tools
         </p>
         <div
