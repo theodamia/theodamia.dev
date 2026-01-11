@@ -2,35 +2,41 @@
 import { useEffect, useRef, useState } from 'react';
 import anime from 'animejs';
 import { Badge } from '@/components/ui/badge';
-import { Code2, Palette, Database, Wrench, Users } from 'lucide-react';
+import { Code2, Palette, Database, Wrench, Users, Cpu } from 'lucide-react';
 
 const SKILLS = [
   {
     name: 'Core Frontend',
     icon: Code2,
     skills: [
-      'React',
-      'Next.js',
+      'JavaScript',
       'TypeScript',
+      'React',
       'Redux',
       'React Router',
-      'Mantine UI',
-      'Shadcn UI',
-      'Apollo Client',
-      'Storybook',
+      'Next.js',
+      'TanStack Query',
     ],
     animationType: 'code',
   },
   {
-    name: 'Styling & Design',
+    name: 'Styling & UI',
     icon: Palette,
-    skills: ['Tailwind CSS', 'PostCSS', 'UI/UX', 'Atomic Design', 'BEM'],
+    skills: [
+      'Tailwind CSS',
+      'PostCSS',
+      'Shadcn UI',
+      'Mantine UI',
+      'Storybook',
+      'BEM',
+      'Atomic Design',
+    ],
     animationType: 'style',
   },
   {
-    name: 'Backend & APIs',
+    name: 'Data & APIs',
     icon: Database,
-    skills: ['GraphQL', 'REST APIs', 'Node.js', 'WebSockets', 'Prisma'],
+    skills: ['REST APIs', 'GraphQL', 'Apollo Client', 'WebSockets', 'Node.js', 'Prisma'],
     animationType: 'data',
   },
   {
@@ -38,19 +44,25 @@ const SKILLS = [
     icon: Wrench,
     skills: [
       'Git',
-      'Webpack',
       'Vite',
+      'Webpack',
+      'Jest',
+      'React Testing Library',
       'Docker',
-      'Testing',
-      'CI/CD',
-      'Semantic Versioning',
-      'Cursor',
+      'Sentry',
+      'Asana',
       'Zeplin',
     ],
     animationType: 'tools',
   },
   {
-    name: 'Leadership',
+    name: 'AI Tooling',
+    icon: Cpu,
+    skills: ['Cursor', 'Claude', 'ChatGPT', 'v0'],
+    animationType: 'ai',
+  },
+  {
+    name: 'Leadership & Process',
     icon: Users,
     skills: [
       'Team Leadership',
@@ -58,7 +70,7 @@ const SKILLS = [
       'Code Reviews',
       'Architecture',
       'Project Management',
-      'Feedback',
+      'Scrum',
     ],
     animationType: 'leadership',
   },
@@ -149,6 +161,15 @@ export function Skills() {
         duration: 800,
         loop: true,
         direction: 'alternate',
+        easing: 'easeInOutQuad',
+      });
+    } else if (category.animationType === 'ai') {
+      animation = anime({
+        targets: icon,
+        scale: [1, 1.1, 1],
+        opacity: [1, 0.8, 1],
+        duration: 1000,
+        loop: true,
         easing: 'easeInOutQuad',
       });
     }
