@@ -86,9 +86,9 @@ export function AnimatedGrid() {
     const getThemeColor = () => {
       const isDark = document.documentElement.classList.contains('dark');
       return {
-        dot: isDark ? 'rgba(148, 163, 184, 0.25)' : 'rgba(71, 85, 105, 0.2)',
-        line: isDark ? 'rgba(148, 163, 184, 0.12)' : 'rgba(71, 85, 105, 0.1)',
-        primaryLine: isDark ? 'rgba(203, 213, 225, 0.6)' : 'rgba(148, 163, 184, 0.5)',
+        dot: isDark ? 'rgba(120, 140, 130, 0.3)' : 'rgba(60, 80, 70, 0.18)',
+        line: isDark ? 'rgba(120, 140, 130, 0.14)' : 'rgba(60, 80, 70, 0.09)',
+        primaryLine: isDark ? 'rgba(160, 190, 175, 0.55)' : 'rgba(80, 120, 100, 0.4)',
       };
     };
 
