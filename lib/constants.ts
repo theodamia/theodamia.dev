@@ -46,6 +46,17 @@ export const LANDMARK_DOT = {
 
 export const PIE_INNER_RADIUS = 0.45;
 
+/** chart.xkcd writes its arc class with a stray leading dot, so match the literal value. */
+export const ARC_SELECTOR = '[class=".xkcd-chart-arc"]';
+
+export const SLICE_TOOLTIP = {
+  WIDTH: 220,
+  /** Gap between the cursor and the tooltip; flips to the other side near the right edge. */
+  OFFSET: 16,
+  /** Used until the card has been measured — it is centred on the cursor, so this clamps it. */
+  FALLBACK_HALF_HEIGHT: 52,
+} as const;
+
 /** Phones swap Fig. 1 for the step ladder; the chart must not mount below this width. */
 export const PHONE_QUERY = '(max-width: 640px)';
 

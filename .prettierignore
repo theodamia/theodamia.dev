@@ -35,3 +35,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+
+# Lockfiles are generated — leave their formatting to the package manager
+package-lock.json
+pnpm-lock.yaml

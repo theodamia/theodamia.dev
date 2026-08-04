@@ -67,6 +67,70 @@ export function fitViewBoxToContent(svg: SVGSVGElement, padding = 8) {
   svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
 }
 
+/**
+ * chart.xkcd positions its title at `x="50%"`, which resolves against the viewport rather
+ * than the viewBox. Introducing a viewBox would move the title out from under whatever we
+ * just measured, so resolve the percentage to user units first.
+ */
+function pinPercentageText(svg: SVGSVGElement) {
+  const width = Number(svg.getAttribute('width')) || svg.getBoundingClientRect().width;
+  if (!width) return;
+
+  svg.querySelectorAll('text').forEach(text => {
+    const x = text.getAttribute('x');
+    if (!x?.endsWith('%')) return;
+
+    const ratio = Number.parseFloat(x) / 100;
+    if (!Number.isFinite(ratio)) return;
+    text.setAttribute('x', String(ratio * width));
+  });
+}
+
+/**
+ * Scaling the whole drawing scales the title with it, so restore the title to the size it
+ * was authored at. That keeps every figure's title the same on screen no matter how much
+ * its chart was scaled.
+ */
+function keepTitleAtAuthoredSize(svg: SVGSVGElement, scale: number) {
+  if (!Number.isFinite(scale) || scale <= 0) return;
+
+  const title = Array.from(svg.children).find(
+    (child): child is SVGTextElement => child.tagName === 'text'
+  );
+  const authored = Number.parseFloat(title?.style.fontSize ?? '');
+  if (!title || !Number.isFinite(authored)) return;
+
+  title.style.fontSize = `${authored / scale}px`;
+}
+
+/**
+ * Scales the drawn content to fill the box the CSS gives the svg.
+ *
+ * chart.xkcd sizes a chart at two thirds of its parent's width and then reserves generous
+ * margins inside that, so in a narrow column the drawing ends up much smaller than the space
+ * available. Refitting the viewBox around the content spends the whole box on the drawing;
+ * the caller's CSS height decides how large that ends up being.
+ */
+export function fitToBox(svg: SVGSVGElement, padding = 4) {
+  pinPercentageText(svg);
+
+  const box = safeBBox(svg);
+  if (!box?.width || !box.height) return;
+
+  fitViewBoxToContent(svg, padding);
+  svg.removeAttribute('width');
+  svg.removeAttribute('height');
+  svg.style.width = '100%';
+
+  // `meet` scales to fit, so the effective scale is whichever axis runs out first.
+  const rendered = svg.getBoundingClientRect();
+  const scale = Math.min(
+    rendered.width / (box.width + padding * 2),
+    rendered.height / (box.height + padding * 2)
+  );
+  keepTitleAtAuthoredSize(svg, scale);
+}
+
 /** chart.xkcd forces its own height attribute; mirror it so overlays line up. */
 export function syncHeightToAttribute(svg: SVGSVGElement) {
   const height = Number(svg.getAttribute('height'));
