@@ -1,127 +1,152 @@
 @import 'tailwindcss';
-@import 'tw-animate-css';
 
-@custom-variant dark (&:is(.dark *));
+/*
+ * "A career, badly graphed" — light mode only. The two views ship without a dark
+ * variant, so tokens live directly in @theme rather than behind a :root/.dark pair.
+ */
+@theme {
+  /* Surfaces */
+  --color-background: oklch(0.965 0.014 85);
+  --color-card: oklch(0.99 0.008 85);
+  --color-card-alt: oklch(0.97 0.008 85);
+  --color-rail: oklch(0.945 0.016 85);
+  --color-drawer: oklch(0.985 0.01 85);
+  --color-tooltip: oklch(0.995 0.004 85);
+  --color-certificate: oklch(0.975 0.014 85);
+  --color-pill: oklch(0.9 0.02 85);
+  --color-dot-hollow: oklch(0.97 0.01 85);
+  --color-on-ink: oklch(0.97 0.012 85);
 
-:root {
-  --background: oklch(0.99 0.003 240);
-  --foreground: oklch(0.25 0.015 240);
-  --card: oklch(0.99 0.003 240);
-  --card-foreground: oklch(0.25 0.015 240);
-  --popover: oklch(0.99 0.003 240);
-  --popover-foreground: oklch(0.25 0.015 240);
-  --primary: oklch(0.5 0.08 240);
-  --primary-foreground: oklch(0.99 0.003 240);
-  --secondary: oklch(0.96 0.005 240);
-  --secondary-foreground: oklch(0.25 0.015 240);
-  --muted: oklch(0.96 0.005 240);
-  --muted-foreground: oklch(0.55 0.01 240);
-  --accent: oklch(0.6 0.1 240);
-  --accent-foreground: oklch(0.99 0.003 240);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.99 0.003 240);
-  --border: oklch(0.9 0.005 240);
-  --input: oklch(0.9 0.005 240);
-  --ring: oklch(0.5 0.08 240);
-  --chart-1: oklch(0.55 0.12 240);
-  --chart-2: oklch(0.6 0.1 220);
-  --chart-3: oklch(0.45 0.08 250);
-  --chart-4: oklch(0.65 0.11 230);
-  --chart-5: oklch(0.58 0.09 245);
-  --radius: 0.5rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
+  /*
+   * Ink scale. The prototype uses ~19 greys separated by 2% lightness; they are snapped
+   * to six steps here so the hierarchy is expressible in tokens instead of one-offs.
+   */
+  --color-ink: oklch(0.24 0.02 60);
+  --color-ink-strong: oklch(0.3 0.02 60);
+  --color-ink-body: oklch(0.34 0.02 60);
+  --color-ink-muted: oklch(0.44 0.02 60);
+  --color-ink-faint: oklch(0.52 0.02 60);
+  --color-ink-ghost: oklch(0.6 0.015 60);
+  --color-foreground: oklch(0.24 0.02 60);
 
-.dark {
-  --background: oklch(0.16 0.01 240);
-  --foreground: oklch(0.94 0.005 240);
-  --card: oklch(0.2 0.012 240);
-  --card-foreground: oklch(0.94 0.005 240);
-  --popover: oklch(0.16 0.01 240);
-  --popover-foreground: oklch(0.94 0.005 240);
-  --primary: oklch(0.65 0.1 240);
-  --primary-foreground: oklch(0.16 0.01 240);
-  --secondary: oklch(0.24 0.012 240);
-  --secondary-foreground: oklch(0.94 0.005 240);
-  --muted: oklch(0.24 0.012 240);
-  --muted-foreground: oklch(0.68 0.008 240);
-  --accent: oklch(0.68 0.12 235);
-  --accent-foreground: oklch(0.16 0.01 240);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.94 0.005 240);
-  --border: oklch(0.26 0.012 240);
-  --input: oklch(0.26 0.012 240);
-  --ring: oklch(0.65 0.1 240);
-  --chart-1: oklch(0.6 0.12 240);
-  --chart-2: oklch(0.65 0.1 220);
-  --chart-3: oklch(0.58 0.11 250);
-  --chart-4: oklch(0.7 0.13 230);
-  --chart-5: oklch(0.63 0.09 245);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
-}
+  /* Accent — links, stat numbers, the summit pennant */
+  --color-accent: oklch(0.55 0.13 45);
+  --color-accent-light: oklch(0.62 0.13 45);
+  --color-accent-strong: oklch(0.5 0.1 45);
+  --color-accent-hover: oklch(0.42 0.12 45);
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+  /* Hand-drawn chart series */
+  --color-chart-1: #b3762f;
+  --color-chart-2: #a8552f;
+  --color-chart-3: #3f7c8c;
+  --color-chart-4: #7a8352;
+  --color-chart-5: #c79a4b;
+  --color-chart-6: #6b5a8e;
+  --color-coffee: #6b4423;
+
+  /* The napkin itself */
+  --color-graph-line: oklch(0.55 0.06 230 / 0.12);
+  --color-snow: oklch(0.99 0.005 200);
+  --color-hill-back: oklch(0.88 0.03 200 / 0.4);
+  --color-hill-mid: oklch(0.88 0.03 90 / 0.5);
+  --color-hill-summit: oklch(0.86 0.025 250 / 0.5);
+
+  /* Type */
+  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
+  --font-serif: var(--font-instrument-serif), serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --font-hand: var(--font-patrick-hand), cursive;
+
+  /* Depth */
+  --shadow-card: 0 20px 44px -34px oklch(0.3 0.04 60);
+  --shadow-drawer: -30px 0 60px -30px oklch(0.24 0.02 60 / 0.5);
+  --shadow-rail: 0 2px 10px -6px oklch(0.24 0.02 60 / 0.6);
+  --shadow-tooltip: 4px 5px 0 oklch(0.24 0.02 60 / 0.16);
+
+  /* Motion */
+  --ease-draw: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-
   html {
     scroll-behavior: smooth;
   }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+/* Scroll reveal — applied by useReveal only to content below the initial viewport. */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.8s var(--ease-draw),
+    transform 0.8s var(--ease-draw);
+}
+
+.reveal-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Squared graph paper behind the climb. */
+.graph-paper {
+  background-image:
+    linear-gradient(var(--color-graph-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-graph-line) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+/* Hatched measuring tracks — 10% steps for skill bars, 20% for the phone ladder. */
+.hatch-track {
+  background: repeating-linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--color-ink) 12%, transparent) 0 1px,
+    transparent 1px 10%
+  );
+}
+
+.hatch-track-wide {
+  background: repeating-linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--color-ink) 12%, transparent) 0 1px,
+    transparent 1px 20%
+  );
+}
+
+/* The dashed scale behind each opinion marker. */
+.dashed-scale {
+  background: repeating-linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--color-ink) 50%, transparent) 0 7px,
+    transparent 7px 11px
+  );
+}
+
+/* Dashed vertical connector between steps in the all-steps drawer. */
+.dashed-connector {
+  background: repeating-linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--color-ink) 35%, transparent) 0 4px,
+    transparent 4px 8px
+  );
+}
+
+/* Diagonally striped fill for the language bars. */
+.striped-fill {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--color-accent) 0 5px,
+    var(--color-accent-light) 5px 10px
+  );
 }

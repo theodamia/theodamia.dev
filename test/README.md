@@ -56,7 +56,7 @@ describe('MyComponent', () => {
   it('handles user interactions', async () => {
     const user = userEvent.setup();
     render(<MyComponent />);
-    
+
     await user.click(screen.getByRole('button'));
     // Assert expected behavior
   });
@@ -74,6 +74,7 @@ describe('MyComponent', () => {
 ## Mocking
 
 Common mocks are set up in `test/setup.ts`:
+
 - Next.js router (`next/navigation`)
 - `window.matchMedia`
 - `IntersectionObserver`
@@ -81,8 +82,8 @@ Common mocks are set up in `test/setup.ts`:
 ## Coverage
 
 Aim for meaningful coverage, not 100%. Focus on:
+
 - Critical user flows
 - Complex logic
 - Edge cases
 - Utility functions
-

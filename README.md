@@ -1,6 +1,6 @@
 # theodamia.dev
 
-Personal portfolio website for Theodore Damianidis - Frontend Engineer showcasing experience, skills and projects.
+Personal portfolio website for Theodore Damianidis - Frontend Engineer. "A career, badly graphed": the CV rendered as hand-drawn napkin figures, with a second view that says the same thing in prose.
 
 ## 🚀 Tech Stack
 
@@ -10,15 +10,17 @@ Personal portfolio website for Theodore Damianidis - Frontend Engineer showcasin
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
 - **UI Components**: [shadcn/ui](https://ui.shadcn.com/) (Radix UI primitives)
 - **Icons**: [Lucide React](https://lucide.dev/)
-- **Animations**: [Anime.js](https://animejs.com/)
+- **Charts**: [chart.xkcd](https://timqian.com/chart.xkcd/)
+- **Type**: Instrument Serif, DM Sans, JetBrains Mono, Patrick Hand via `next/font`
 - **Analytics**: [Vercel Analytics](https://vercel.com/analytics)
 - **Code Quality**: ESLint + Prettier
 
 ## ✨ Features
 
-- 🎨 Modern, responsive design with dark mode support
+- 📈 The CV as seven hand-drawn figures on graph paper, with clickable career landmarks
+- 📖 A second "The words" view: the same CV as prose, four panels, no scrolling
 - ⚡ Optimized performance with Next.js App Router
-- 🎭 Smooth scroll-triggered animations
+- 🎭 Smooth scroll-triggered reveals
 - 📱 Fully responsive mobile-first design
 - ♿ Accessible components and semantic HTML
 - 🎯 Type-safe with TypeScript
@@ -34,13 +36,19 @@ theodamia.dev/
 │   └── globals.css        # Global styles
 ├── components/             # React components
 │   ├── ui/                # shadcn/ui components
-│   ├── about.tsx          # About section
-│   ├── contact.tsx        # Contact section
-│   ├── experience.tsx     # Experience timeline
-│   ├── hero.tsx           # Hero section
-│   ├── navigation.tsx     # Navigation bar
-│   └── skills.tsx         # Skills showcase
-├── lib/                   # Utility functions
+│   ├── portfolio.tsx      # View switcher
+│   ├── site-header.tsx    # Fixed header + view toggle
+│   ├── climb-view.tsx     # "The climb" — Figs. 1-7
+│   ├── climb-chart.tsx    # Fig. 1, with measured overlays
+│   ├── climb-ladder.tsx   # Fig. 1 on phones
+│   ├── role-drawer.tsx    # Career detail drawer
+│   └── words-view.tsx     # "The words" — the prose kiosk
+├── lib/                   # Content, geometry and hooks
+│   ├── milestones.ts      # Career timeline (source of truth)
+│   ├── skill-groups.ts    # Skills, self-rated
+│   ├── panels.ts          # "The words" copy
+│   └── figures.ts         # Everything else the figures plot
+├── types/                 # Hand-written module declarations
 └── public/                # Static assets
 ```
 
@@ -168,7 +176,7 @@ See `test/README.md` for detailed testing guidelines.
 - `next` - React framework
 - `react` & `react-dom` - UI library
 - `tailwindcss` - Utility-first CSS
-- `animejs` - Animation library
+- `chart.xkcd` - Hand-drawn chart rendering
 - `lucide-react` - Icon library
 - `@radix-ui/*` - Accessible UI primitives
 - `class-variance-authority` - Component variants

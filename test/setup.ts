@@ -7,6 +7,28 @@ afterEach(() => {
   cleanup();
 });
 
+// Mock localStorage
+const localStorageMock = (() => {
+  let store: Record<string, string> = {};
+  return {
+    getItem: (key: string) => store[key] ?? null,
+    setItem: (key: string, value: string) => {
+      store[key] = value;
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    },
+    get length() {
+      return Object.keys(store).length;
+    },
+    key: (index: number) => Object.keys(store)[index] ?? null,
+  };
+})();
+Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+
 // Mock Next.js router
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
@@ -33,6 +55,13 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: vi.fn(),
   })),
 });
+
+// Mock ResizeObserver — the Fig. 1 overlays re-measure through one
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+} as unknown as typeof ResizeObserver;
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
