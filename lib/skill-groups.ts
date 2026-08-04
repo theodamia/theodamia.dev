@@ -27,7 +27,7 @@ export const SKILL_GROUPS: SkillGroup[] = [
       'PostCSS',
       'Shadcn UI',
       'Mantine UI',
-      'Material UI (MUI)',
+      'MUIs',
       'Storybook',
       'BEM',
       'Atomic Design',

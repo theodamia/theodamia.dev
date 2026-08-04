@@ -15,8 +15,8 @@ export const PANELS: Record<PanelKey, Panel> = {
     title: 'About',
     body: [
       'Lead Frontend Engineer with 7+ years building and evolving production web applications — the kind used every day, that cannot be rewritten on a whim.',
-      'The trickiest part was never the how. It is the ambiguity: figuring out what to build, and making decisions that still hold up as the product grows.',
-      'Mentoring is at the heart of what I do — reviewing designs and code, encouraging thoughtful architecture, and keeping a culture where questions are welcome.',
+      'The trickiest part was never the how. It is the ambiguity: figuring out what to build and making decisions that still hold up as the product grows.',
+      'Mentoring is at the heart of what I do — reviewing designs and code, encouraging thoughtful architecture and keeping a culture where questions are welcome.',
     ],
     chips: ['React', 'TypeScript', 'GraphQL', 'Tailwind', 'Thessaloniki, Greece'],
   },
@@ -26,7 +26,7 @@ export const PANELS: Record<PanelKey, Panel> = {
     body: [
       'DeepSea.ai — Senior Frontend Engineer, 2026 to present. Back to building with the lead years in the toolbox.',
       'Geekbot — Frontend Lead, Mar 2022 to 2026. Most of the frontend, the internal UI library, Tailwind and Atomic Design, plus technical direction and team process.',
-      'Geekbot — Frontend Engineer, Sep 2018 to Feb 2022. Modern frontend architecture, close work with Product, Design and UX, and quality held through review.',
+      'Geekbot — Frontend Engineer, Sep 2018 to Feb 2022. Modern frontend architecture, close work with Product, Design and UX and quality held through review.',
       'Ordereze — Junior Frontend Engineer, 2016. React and PostCSS interfaces, QA partnership, steady cleanup.',
       'Fedenet — Web Developer intern, 2015. JavaScript, PHP and a proprietary CMS.',
     ],

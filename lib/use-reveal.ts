@@ -9,7 +9,7 @@ import { REDUCED_MOTION_QUERY, REVEAL } from '@/lib/constants';
  *
  * The motion is a CSS transition rather than a JS-driven one: a frame-driven animation
  * that never gets its frames (background tab, throttled renderer) leaves the content
- * stuck at opacity 0, and an unreadable page is a worse outcome than a missing fade.
+ * stuck at opacity 0 and an unreadable page is a worse outcome than a missing fade.
  */
 export function useReveal<T extends HTMLElement>() {
   const ref = useRef<T>(null);

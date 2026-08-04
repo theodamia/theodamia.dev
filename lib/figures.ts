@@ -77,7 +77,7 @@ export const WEEK_SPLIT: Slice[] = [
 /** Fig. 7 — the margin notes. */
 export const LANGUAGES: Language[] = [
   { name: 'Greek', level: 1, note: 'native — the language at home' },
-  { name: 'English', level: 0.9, note: 'fluent — work, docs, and arguing in PRs' },
+  { name: 'English', level: 0.9, note: 'fluent — work, docs and arguing in PRs' },
 ];
 
 export const EDUCATION = {

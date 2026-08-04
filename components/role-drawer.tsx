@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { ALL_STEPS_HEADER, MILESTONES, type Milestone } from '@/lib/milestones';
 import { cn } from '@/lib/utils';
 
-/** Newest first, and without the student step — it has no employer to link to. */
+/** Newest first and without the student step — it has no employer to link to. */
 const ALL_STEPS = MILESTONES.slice(1).reverse();
 
 const WIDTH = { single: 440, all: 520 };

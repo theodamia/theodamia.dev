@@ -1,7 +1,7 @@
 import { FigureCard, FigureLabel } from '@/components/figure-card';
 import { EDUCATION, LANGUAGES, TRIVIA } from '@/lib/figures';
 
-/** Fig. 7 — the margin notes: languages, degree, and the things every CV insists on. */
+/** Fig. 7 — the margin notes: languages, degree and the things every CV insists on. */
 export function MarginNotes() {
   return (
     <div className='border-ink/28 mt-[30px] grid [grid-template-columns:repeat(auto-fit,minmax(280px,1fr))] gap-[26px] border-t-2 border-dashed pt-[30px]'>
