@@ -5,18 +5,22 @@ export type SkillGroup = {
   items: string[];
 };
 
+export const MAX_SKILL_SCORE = 10;
+
 export const SKILL_GROUPS: SkillGroup[] = [
   {
     name: 'Core Frontend',
-    score: 8,
+    score: 9,
     items: [
-      'JavaScript',
       'TypeScript',
       'React',
       'Redux',
       'React Router',
       'Next.js',
       'TanStack Query',
+      'Web Vitals',
+      'Performance Optimization',
+      'Accessibility',
     ],
   },
   {
@@ -27,39 +31,48 @@ export const SKILL_GROUPS: SkillGroup[] = [
       'PostCSS',
       'Shadcn UI',
       'Mantine UI',
-      'MUIs',
+      'MUI',
       'Storybook',
       'BEM',
       'Atomic Design',
+      'Responsive Design',
     ],
   },
   {
     name: 'Data & APIs',
     score: 7,
-    items: ['REST APIs', 'GraphQL', 'Apollo Client', 'WebSockets', 'Node.js', 'Prisma'],
+    items: ['REST APIs', 'GraphQL', 'Apollo Client', 'WebSockets', 'JWT', 'Node.js', 'Prisma'],
   },
   {
     name: 'Tools & Workflow',
     score: 8,
-    items: ['Git', 'Vite', 'Webpack', 'Vitest', 'Docker', 'Sentry', 'Asana', 'Zeplin'],
+    items: [
+      'ESLint/Prettier',
+      'Git',
+      'Vite',
+      'Turborepo',
+      'Figma',
+      'Vitest',
+      'Webpack',
+      'Docker',
+      'Sentry',
+      'Asana',
+    ],
   },
   {
     name: 'AI Tooling',
-    score: 5,
-    items: ['Cursor', 'Claude', 'ChatGPT', 'v0'],
+    score: 8,
+    items: ['Claude Code', 'Cursor', 'ChatGPT', 'v0', 'MCP'],
   },
   {
     name: 'Leadership & Process',
-    score: 7,
+    score: 8,
     items: [
-      'Team Leadership',
+      'System Design',
+      'Stakeholder Management',
+      'Component Architecture',
+      'Cross-team Delivery',
       'Mentoring',
-      'Code Reviews',
-      'Architecture',
-      'Project Management',
-      'Scrum',
     ],
   },
 ];
-
-export const MAX_SKILL_SCORE = 10;

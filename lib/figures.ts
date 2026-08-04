@@ -3,8 +3,10 @@
 export type Slice = {
   label: string;
   value: number;
-  /** How the slice reads in the hand-written legend. */
-  legend: string;
+  /** The quantity in words — reads after the label in the legend, and alone in the tooltip. */
+  detail: string;
+  /** One line on what the slice actually means, shown only in the tooltip. */
+  note: string;
 };
 
 export type Opinion = {
@@ -37,10 +39,30 @@ export type Stat = {
 
 /** Fig. 2 — years per employer. */
 export const TENURE: Slice[] = [
-  { label: 'Geekbot', value: 7.9, legend: 'Geekbot — 7.9 yrs' },
-  { label: 'Ordereze', value: 1, legend: 'Ordereze — 1 yr' },
-  { label: 'Fedenet', value: 0.5, legend: 'Fedenet — 6 mos' },
-  { label: 'DeepSea.ai', value: 0.4, legend: 'DeepSea.ai — just started' },
+  {
+    label: 'Geekbot',
+    value: 7.9,
+    detail: '7.9 yrs',
+    note: 'Two roles, one codebase, most of a decade.',
+  },
+  {
+    label: 'Ordereze',
+    value: 1,
+    detail: '1 yr',
+    note: 'A year of React, PostCSS and cleanup passes.',
+  },
+  {
+    label: 'Fedenet',
+    value: 0.5,
+    detail: '6 mos',
+    note: 'The internship that turned localhost into production.',
+  },
+  {
+    label: 'DeepSea.ai',
+    value: 0.4,
+    detail: 'just started',
+    note: 'New team, taller mountain, same boots.',
+  },
 ];
 
 /** Fig. 3 — stances, ordered as drawn. */
@@ -67,11 +89,36 @@ export const MAX_COFFEE_CUPS = 4;
 
 /** Fig. 5 — where the week goes. */
 export const WEEK_SPLIT: Slice[] = [
-  { label: 'Writing code', value: 35, legend: 'Writing code — 35%' },
-  { label: 'Code review', value: 20, legend: 'Code review — 20%' },
-  { label: 'Mentoring', value: 20, legend: 'Mentoring — 20%' },
-  { label: 'Deciding what to build', value: 15, legend: 'Deciding what to build — 15%' },
-  { label: 'Meetings', value: 10, legend: 'Meetings — 10%' },
+  {
+    label: 'Writing code',
+    value: 35,
+    detail: '35%',
+    note: 'The part everyone pictures when they hear the job title.',
+  },
+  {
+    label: 'Code review',
+    value: 20,
+    detail: '20%',
+    note: 'The cheapest place to catch a bad idea.',
+  },
+  {
+    label: 'Mentoring',
+    value: 20,
+    detail: '20%',
+    note: 'Compounds better than anything else on this chart.',
+  },
+  {
+    label: 'Deciding what to build',
+    value: 15,
+    detail: '15%',
+    note: 'The hardest fifteen percent of every week.',
+  },
+  {
+    label: 'Meetings',
+    value: 10,
+    detail: '10%',
+    note: 'Lower than you would think. Guarded carefully.',
+  },
 ];
 
 /** Fig. 7 — the margin notes. */
@@ -92,13 +139,13 @@ export const EDUCATION = {
 export const TRIVIA: Trivium[] = [
   { label: 'Based in Thessaloniki, Greece', note: 'remote since before it was mandatory' },
   { label: 'Available for a conversation', note: 'replies within a day, usually less' },
-  { label: 'References on request', note: 'the phrase every CV ends with' },
+  { label: 'References upon request', note: 'the phrase every CV ends with' },
 ];
 
 export const STATS: Stat[] = [
   { value: '10', label: 'years building software professionally' },
   { value: '5', label: 'roles, from intern to lead and back to building' },
-  { value: '2026', label: 'new chapter, new company — DeepSea.ai' },
+  { value: '2026', label: 'new chapter, new challenge — DeepSea.ai' },
   { value: '∞', label: 'opinions about state management' },
 ];
 
