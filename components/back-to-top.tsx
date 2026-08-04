@@ -1,56 +1,41 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { ArrowUp } from 'lucide-react';
-import anime from 'animejs';
+import { useEffect, useState } from 'react';
+import { REDUCED_MOTION_QUERY, SCROLL_THRESHOLD } from '@/lib/constants';
+import { cn } from '@/lib/utils';
 
-const SCROLL_THRESHOLD = 300;
-
+/** Climbs back to the masthead. Only the climb view scrolls, so only it needs this. */
 export function BackToTop() {
-  const [isVisible, setIsVisible] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const toggleVisibility = () => {
-      if (window.scrollY > SCROLL_THRESHOLD) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
-    };
+    const onScroll = () => setVisible(window.scrollY > SCROLL_THRESHOLD.BACK_TO_TOP_VISIBLE);
 
-    window.addEventListener('scroll', toggleVisibility);
-
-    return () => window.removeEventListener('scroll', toggleVisibility);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
+    const reducedMotion = window.matchMedia(REDUCED_MOTION_QUERY).matches;
+    window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
   };
-
-  useEffect(() => {
-    if (isVisible) {
-      anime({
-        targets: '.back-to-top-button',
-        scale: [0, 1],
-        opacity: [0, 1],
-        duration: 400,
-        easing: 'easeOutElastic(1, .6)',
-      });
-    }
-  }, [isVisible]);
-
-  if (!isVisible) return null;
 
   return (
     <button
+      type='button'
       onClick={scrollToTop}
-      className='back-to-top-button bg-primary text-primary-foreground focus:ring-primary fixed right-8 bottom-8 z-50 rounded-full p-3 shadow-lg transition-all hover:scale-110 hover:shadow-xl focus:ring-2 focus:ring-offset-2 focus:outline-none'
       aria-label='Back to top'
+      aria-hidden={!visible}
+      tabIndex={visible ? 0 : -1}
+      className={cn(
+        'border-ink bg-card shadow-card ease-draw fixed right-6 bottom-6 z-[100] flex size-11 cursor-pointer items-center justify-center rounded-[4px] border-2 transition-[opacity,transform] duration-300',
+        visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0'
+      )}
     >
-      <ArrowUp className='h-5 w-5' />
+      <span aria-hidden='true' className='text-ink-strong font-mono text-[17px] leading-none'>
+        ↑
+      </span>
     </button>
   );
 }
