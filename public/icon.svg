@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Three indented code lines climbing to the right, with a cursor">
+  <rect width="32" height="32" rx="7" fill="#f6f1e7"></rect>
+  <path d="M3.4 5V27" stroke="#5b7e93" stroke-opacity="0.22" stroke-width="1"></path>
+  <g stroke="#332b25" stroke-width="3.4" stroke-linecap="round">
+    <path d="M5.6 24.4H15M10.4 17.4H19.8M15.2 10.4H22.4"></path>
+  </g>
+  <rect x="24.6" y="8.4" width="3.4" height="4" rx="1" fill="#ab5530"></rect>
+</svg>
