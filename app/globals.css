@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 /*
- * "A career, badly graphed" — light mode only. The two views ship without a dark
+ * "A career, hand-graphed" — light mode only. The two views ship without a dark
  * variant, so tokens live directly in @theme rather than behind a :root/.dark pair.
  */
 @theme {
@@ -139,6 +139,15 @@
     180deg,
     color-mix(in oklab, var(--color-ink) 35%, transparent) 0 4px,
     transparent 4px 8px
+  );
+}
+
+/* The dashed spine behind Fig. 1's phone timeline. */
+.ladder-track {
+  background: repeating-linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--color-ink) 40%, transparent) 0 5px,
+    transparent 5px 10px
   );
 }
 

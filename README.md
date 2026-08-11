@@ -1,6 +1,6 @@
 # theodamia.dev
 
-Personal portfolio website for Theodore Damianidis - Frontend Engineer. "A career, badly graphed": the CV rendered as hand-drawn napkin figures, with a second view that says the same thing in prose.
+Personal portfolio website for Theodore Damianidis - Frontend Engineer. "A career, hand-graphed": the CV rendered as hand-drawn napkin figures, with a second view that says the same thing in prose.
 
 ## 🚀 Tech Stack
 
