@@ -60,6 +60,9 @@ export const SLICE_TOOLTIP = {
 /** Phones swap Fig. 1 for the step ladder; the chart must not mount below this width. */
 export const PHONE_QUERY = '(max-width: 640px)';
 
+/** Below this width the kiosk rail becomes a burger menu and a few figures reflow. */
+export const NARROW_QUERY = '(max-width: 900px)';
+
 export const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 
 export const SCROLL_THRESHOLD = {

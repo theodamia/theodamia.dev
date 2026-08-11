@@ -48,14 +48,14 @@ export function ClimbView() {
         <div className='border-ink flex flex-wrap items-end justify-between gap-5 border-b-2 pb-[26px]'>
           <div>
             <h1 className='font-hand text-[clamp(40px,7vw,78px)] leading-[0.98]'>
-              A career, badly graphed
+              A career, hand-graphed
             </h1>
             <p className='text-ink-muted mt-3.5 max-w-[560px] text-[16.5px] leading-[1.6]'>
-              Same CV, plotted. Hover anything for the numbers — the wobbly lines are on purpose,
-              the data isn&rsquo;t.
+              The same CV, drawn instead of listed. Hover or tap anything to see what&rsquo;s behind
+              it. The lines are sketchy; the numbers are real.
             </p>
           </div>
-          <div className='flex flex-col gap-[3px] text-right font-mono text-[12px]'>
+          <div className='border-ink/25 flex flex-col gap-[3px] text-right font-mono text-[12px] max-[900px]:w-full max-[900px]:items-center max-[900px]:gap-2 max-[900px]:border-t max-[900px]:border-dashed max-[900px]:pt-4 max-[900px]:text-center'>
             {CONTACT_LINKS.map(link => (
               <a
                 key={link.href}
@@ -83,17 +83,26 @@ export function ClimbView() {
               </button>
             </FigureLabel>
 
+            {isPhone && (
+              <FigureCaption className='mt-2 leading-[1.35]'>
+                Ten years, summit first. Scroll down to walk back through it — tap a step for the
+                full story.
+              </FigureCaption>
+            )}
+
             {isPhone ? (
               <ClimbLadder onSelect={selectMilestone} />
             ) : (
               <ClimbChart onSelect={selectMilestone} />
             )}
 
-            <FigureCaption className='mt-2.5 text-[16px]'>
-              {isPhone
-                ? 'Ten years from student to Frontend Lead, summit first. Tap a step for the full story.'
-                : 'Ten years from student to Frontend Lead — a UI library, a design-system rewrite and the architecture calls behind them. Still climbing. Hover a landmark for the short version, click for the full one.'}
-            </FigureCaption>
+            {!isPhone && (
+              <FigureCaption className='mt-2.5 text-[16px]'>
+                Ten years from student to Frontend Lead — a UI library, a design-system rewrite and
+                the architecture calls behind them. Still climbing. Hover a landmark for the short
+                version, click for the full one.
+              </FigureCaption>
+            )}
           </FigureCard>
 
           <div className='col-span-full grid [grid-template-columns:repeat(auto-fit,minmax(255px,1fr))] items-stretch gap-[26px]'>

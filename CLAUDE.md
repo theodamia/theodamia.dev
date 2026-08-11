@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Personal portfolio website for Theodore Damianidis (theodamia.dev). Single-page Next.js app, "A career, badly graphed": the CV rendered as hand-drawn napkin figures. A fixed header toggles between two views — **The climb** (`climb-view.tsx`, seven figures on graph paper plus a role drawer) and **The words** (`words-view.tsx`, the same CV as prose in a four-panel kiosk). Light mode only; there is no dark variant.
+Personal portfolio website for Theodore Damianidis (theodamia.dev). Single-page Next.js app, "A career, hand-graphed": the CV rendered as hand-drawn napkin figures. A fixed header toggles between two views — **The climb** (`climb-view.tsx`, seven figures on graph paper plus a role drawer) and **The words** (`words-view.tsx`, the same CV as prose in a four-panel kiosk). Light mode only; there is no dark variant.
 
 ## Commands
 

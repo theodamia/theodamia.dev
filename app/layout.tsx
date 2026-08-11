@@ -33,7 +33,7 @@ const patrickHand = Patrick_Hand({
 export const metadata: Metadata = {
   title: 'Theodore Damianidis | Frontend Engineer',
   description:
-    'A career, badly graphed — ten years of frontend engineering plotted on graph paper. Senior Frontend Engineer at DeepSea.ai, previously Frontend Lead at Geekbot.',
+    'A career, hand-graphed — ten years of frontend engineering plotted on graph paper. Senior Frontend Engineer at DeepSea.ai, previously Frontend Lead at Geekbot.',
   generator: 'theodamia.dev',
   keywords: [
     'Frontend Engineer',
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   authors: [{ name: 'Theodore Damianidis' }],
   openGraph: {
     title: 'Theodore Damianidis | Frontend Engineer',
-    description: 'A career, badly graphed — ten years of frontend engineering, plotted',
+    description: 'A career, hand-graphed — ten years of frontend engineering, plotted',
     type: 'website',
   },
   icons: {

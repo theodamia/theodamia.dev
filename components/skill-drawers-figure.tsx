@@ -17,7 +17,7 @@ export function SkillDrawersFigure() {
         {SKILL_GROUPS.map((group, index) => (
           <div
             key={group.name}
-            className='grid [grid-template-columns:170px_minmax(0,1fr)] items-center gap-x-[18px] gap-y-2'
+            className='grid [grid-template-columns:170px_minmax(0,1fr)] items-center gap-x-[18px] gap-y-2 max-[900px]:[grid-template-columns:minmax(0,1fr)] max-[900px]:gap-[9px]'
           >
             <span className='font-hand text-ink-strong text-[20px]'>{group.name}</span>
             <div className='flex items-center gap-2.5'>
@@ -32,7 +32,7 @@ export function SkillDrawersFigure() {
               </div>
               <span className='font-hand text-ink-muted w-[22px] text-[20px]'>{group.score}</span>
             </div>
-            <span />
+            <span className='max-[900px]:hidden' />
             <div className='flex flex-wrap gap-1.5'>
               {group.items.map(item => (
                 <span
