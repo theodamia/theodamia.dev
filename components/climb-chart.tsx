@@ -7,8 +7,8 @@ import {
   CLIMB,
   TOOLTIP_ABOVE_LEVEL,
   TOOLTIP_FLIP_RATIO,
-} from '@/lib/constants';
-import { CLIMB_LEVELS, CLIMB_YEARS, MILESTONES, ROLE_BANDS } from '@/lib/milestones';
+} from '@/constants';
+import { useXkcdChart } from '@/hooks/use-xkcd-chart';
 import {
   buildHills,
   landmarkBorder,
@@ -20,9 +20,9 @@ import {
   samePlot,
   type PlotBox,
 } from '@/lib/climb-geometry';
-import { useXkcdChart } from '@/lib/use-xkcd-chart';
+import { CLIMB_LEVELS, CLIMB_YEARS, MILESTONES, ROLE_BANDS } from '@/lib/milestones';
 import { stripNestedLegend, syncHeightToAttribute, trimTicksLeftOf, unclip } from '@/lib/xkcd-dom';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 
 type ClimbChartProps = {
   onSelect: (index: number) => void;

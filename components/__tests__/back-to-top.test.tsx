@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BackToTop } from '@/components/back-to-top';
-import { SCROLL_THRESHOLD } from '@/lib/constants';
+import { SCROLL_THRESHOLD } from '@/constants';
 
 function scrollTo(y: number) {
   window.scrollY = y;

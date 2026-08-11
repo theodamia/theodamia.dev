@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { LADDER_COLORS, REDUCED_MOTION_QUERY } from '@/lib/constants';
+import { LADDER_COLORS, REDUCED_MOTION_QUERY } from '@/constants';
 import { bandForLevel, MILESTONES } from '@/lib/milestones';
 
 type ClimbLadderProps = {
@@ -28,8 +28,11 @@ export function ClimbLadder({ onSelect }: ClimbLadderProps) {
     if (!container) return;
 
     const reduceMotion = window.matchMedia(REDUCED_MOTION_QUERY).matches;
+    let frame: number | undefined;
 
     const update = () => {
+      frame = undefined;
+
       const rect = container.getBoundingClientRect();
       const span = rect.height - TRACK_INSET * 2;
       if (span <= 0) return;
@@ -43,12 +46,18 @@ export function ClimbLadder({ onSelect }: ClimbLadderProps) {
       setFillHeight(Math.min(Math.max(progress, 0), 1) * span);
     };
 
+    // Scroll fires far more often than a frame renders, so update at most once per frame.
+    const scheduleUpdate = () => {
+      if (frame === undefined) frame = requestAnimationFrame(update);
+    };
+
     update();
-    window.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
+    window.addEventListener('scroll', scheduleUpdate, { passive: true });
+    window.addEventListener('resize', scheduleUpdate);
     return () => {
-      window.removeEventListener('scroll', update);
-      window.removeEventListener('resize', update);
+      if (frame !== undefined) cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', scheduleUpdate);
+      window.removeEventListener('resize', scheduleUpdate);
     };
   }, []);
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { SliceTooltip } from '@/components/slice-tooltip';
-import { SLICE_TOOLTIP } from '@/lib/constants';
+import { SLICE_TOOLTIP } from '@/constants';
 import type { Slice } from '@/lib/figures';
 
 const SLICE: Slice = {

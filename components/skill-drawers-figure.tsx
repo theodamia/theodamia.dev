@@ -1,5 +1,5 @@
 import { FigureCard, FigureLabel } from '@/components/figure-card';
-import { CHART_COLORS } from '@/lib/constants';
+import { CHART_COLORS } from '@/constants';
 import { MAX_SKILL_SCORE, SKILL_GROUPS } from '@/lib/skill-groups';
 
 /** Fig. 6 — what's in each drawer. */

@@ -4,10 +4,10 @@ import { useRef } from 'react';
 import { FigureCard, FigureLabel } from '@/components/figure-card';
 import { SliceLegend } from '@/components/slice-legend';
 import { SliceTooltip } from '@/components/slice-tooltip';
-import { CHART_COLORS, CHART_FONT, PIE_INNER_RADIUS } from '@/lib/constants';
+import { CHART_COLORS, CHART_FONT, PIE_INNER_RADIUS } from '@/constants';
+import { useSliceHover } from '@/hooks/use-slice-hover';
+import { useXkcdChart } from '@/hooks/use-xkcd-chart';
 import { TENURE } from '@/lib/figures';
-import { useSliceHover } from '@/lib/use-slice-hover';
-import { useXkcdChart } from '@/lib/use-xkcd-chart';
 import { fitToBox, recenterArcs, stripNestedLegend, unclip } from '@/lib/xkcd-dom';
 
 /**

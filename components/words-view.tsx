@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { NARROW_QUERY } from '@/lib/constants';
+import { NARROW_QUERY } from '@/constants';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { PANEL_KEYS, PANELS, type PanelKey } from '@/lib/panels';
-import { useMediaQuery } from '@/lib/use-media-query';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 
 const BURGER_MENU_HEIGHT = 260;
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { SLICE_TOOLTIP } from '@/lib/constants';
+import { SLICE_TOOLTIP } from '@/constants';
 import type { Slice } from '@/lib/figures';
 
 type SliceTooltipProps = {

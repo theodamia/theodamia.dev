@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { CLIMB, LANDMARK_DOT } from '@/lib/constants';
+import { CLIMB, LANDMARK_DOT } from '@/constants';
 
 /** The plotted line's bounding box, measured relative to the Fig. 1 wrapper. */
 export type PlotBox = { x: number; y: number; w: number; h: number };
