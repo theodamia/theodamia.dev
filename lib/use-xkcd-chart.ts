@@ -59,7 +59,13 @@ export function useXkcdChart({
       const { default: chart } = await import('chart.xkcd');
       if (cancelled || !svgRef.current) return;
 
+      // `innerHTML = ''` clears the drawn content but not attributes on the svg itself —
+      // a viewBox fitted to the previous size would otherwise carry over and corrupt the
+      // next draw's measurements (recenterArcs, fitToBox, fitViewBoxToContent all read
+      // getBoundingClientRect, which a stale viewBox skews).
       svg.innerHTML = '';
+      svg.removeAttribute('viewBox');
+      svg.removeAttribute('preserveAspectRatio');
       callbacks.current.draw(chart, svg);
 
       frame = requestAnimationFrame(() => {
