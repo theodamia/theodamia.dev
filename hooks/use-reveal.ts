@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { REDUCED_MOTION_QUERY, REVEAL } from '@/lib/constants';
+import { REDUCED_MOTION_QUERY, REVEAL } from '@/constants';
 
 /**
  * Fades an element up into place the first time it scrolls into view.

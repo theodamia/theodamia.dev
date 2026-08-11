@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { REDUCED_MOTION_QUERY, SCROLL_THRESHOLD } from '@/lib/constants';
-import { cn } from '@/lib/utils';
+import { REDUCED_MOTION_QUERY, SCROLL_THRESHOLD } from '@/constants';
+import { cn } from '@/utils/cn';
 
 /** Climbs back to the masthead. Only the climb view scrolls, so only it needs this. */
 export function BackToTop() {

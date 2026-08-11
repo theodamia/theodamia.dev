@@ -2,7 +2,7 @@
 
 import { type RefObject, useEffect, useRef } from 'react';
 import type { ChartXkcd } from 'chart.xkcd';
-import { TIMING } from '@/lib/constants';
+import { TIMING } from '@/constants';
 
 export type UseXkcdChartOptions = {
   svgRef: RefObject<SVGSVGElement | null>;

@@ -1,7 +1,7 @@
 'use client';
 
 import { type RefObject, useCallback, useState } from 'react';
-import { ARC_SELECTOR } from '@/lib/constants';
+import { ARC_SELECTOR } from '@/constants';
 
 export type SliceHover = {
   index: number;

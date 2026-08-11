@@ -22,8 +22,8 @@ Personal portfolio website for Theodore Damianidis (theodamia.dev). Single-page 
 - **Framework**: Next.js 16 App Router, React 19, TypeScript (strict mode)
 - **Styling**: Tailwind CSS 4 with shadcn/ui (New York style, Radix UI primitives). All design tokens live in `@theme` in `app/globals.css` — colours, the four font families, shadows, easing. No `:root`/`.dark` pair; the design is light-only.
 - **Type**: Instrument Serif (display), DM Sans (UI/body), JetBrains Mono (labels/meta), Patrick Hand (hand-drawn labels and captions), all via `next/font/google` in `app/layout.tsx`
-- **Charts**: `chart.xkcd`, loaded client-side through `lib/use-xkcd-chart.ts`. The library forces its own aspect ratio and renders its legend as a nested `<svg>`, so every chart runs a tidy-up pass from `lib/xkcd-dom.ts`
-- **Animations**: CSS transitions. `lib/use-reveal.ts` adds the reveal class on intersection; content already on screen is never hidden
+- **Charts**: `chart.xkcd`, loaded client-side through `hooks/use-xkcd-chart.ts`. The library forces its own aspect ratio and renders its legend as a nested `<svg>`, so every chart runs a tidy-up pass from `lib/xkcd-dom.ts`
+- **Animations**: CSS transitions. `hooks/use-reveal.ts` adds the reveal class on intersection; content already on screen is never hidden
 - **Testing**: Vitest + React Testing Library + jsdom
 - **Pre-commit**: Husky runs lint-staged (ESLint fix + Prettier on TS/TSX/JS/JSX, Prettier on JSON/MD/CSS)
 
@@ -33,8 +33,10 @@ Personal portfolio website for Theodore Damianidis (theodamia.dev). Single-page 
 - `components/` - Views (`portfolio.tsx`, `climb-view.tsx`, `words-view.tsx`) and one file per figure (`tenure-figure.tsx`, `opinions-figure.tsx`, …). `figure-card.tsx` holds the shared card shell, label and caption
 - `components/ui/` - shadcn/ui primitives (button, badge, card). Add new ones via `npx shadcn@latest add <component>`
 - `components/__tests__/` - Component tests colocated in `__tests__` directories
-- `lib/utils.ts` - `cn()` helper (clsx + tailwind-merge)
-- `lib/constants.ts` - Palette, climb geometry, timings, breakpoints
+- `hooks/` - Custom React hooks (`use-media-query.ts`, `use-reveal.ts`, `use-slice-hover.ts`, `use-xkcd-chart.ts`)
+- `constants/index.ts` - Palette, climb geometry, timings, breakpoints
+- `utils/cn.ts` - `cn()` helper (clsx + tailwind-merge). One utility per file, named for what it does — don't add a catch-all `utils.ts`
+- `lib/xkcd-dom.ts` - The only third-party adapter in `lib/`: post-processes `chart.xkcd`'s DOM output
 - `lib/milestones.ts`, `lib/skill-groups.ts`, `lib/panels.ts`, `lib/figures.ts` - All page content. Nothing is fetched; edit the CV here, not in JSX
 - `lib/climb-geometry.ts` - Maps year/level to the measured plot box and builds the mountains behind Fig. 1
 - `types/chart-xkcd.d.ts` - Hand-written types for `chart.xkcd`, which ships none
@@ -42,7 +44,7 @@ Personal portfolio website for Theodore Damianidis (theodamia.dev). Single-page 
 
 ### Key Conventions
 
-- Path alias: `@/*` maps to project root (e.g., `@/components/climb-view`, `@/lib/utils`)
+- Path alias: `@/*` maps to project root (e.g., `@/components/climb-view`, `@/utils/cn`)
 - Components use named exports (`export function Component()`), pages use default exports
 - Server Components by default; use `'use client'` only when necessary
 - File names: kebab-case. Component names: PascalCase
@@ -53,4 +55,4 @@ Personal portfolio website for Theodore Damianidis (theodamia.dev). Single-page 
 - Extract magic numbers into named constants
 - Add a token in `@theme` rather than hardcoding an `oklch()` value in JSX
 - Fig. 1's overlays are positioned from the **measured** bounding box of the plotted line, never from assumed percentages — keep the measure/ResizeObserver/retry path intact if you touch `climb-chart.tsx`
-- Below 640px Fig. 1 swaps to `climb-ladder.tsx`. The chart must not mount on phones, so the split is a JS media query (`lib/use-media-query.ts`), not `display: none`
+- Below 640px Fig. 1 swaps to `climb-ladder.tsx`. The chart must not mount on phones, so the split is a JS media query (`hooks/use-media-query.ts`), not `display: none`

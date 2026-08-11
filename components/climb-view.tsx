@@ -13,10 +13,10 @@ import { SkillDrawersFigure } from '@/components/skill-drawers-figure';
 import { StatRow } from '@/components/stat-row';
 import { TenureFigure } from '@/components/tenure-figure';
 import { WeekFigure } from '@/components/week-figure';
-import { PHONE_QUERY } from '@/lib/constants';
+import { PHONE_QUERY } from '@/constants';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { CONTACT_LINKS } from '@/lib/figures';
 import { MILESTONES } from '@/lib/milestones';
-import { useMediaQuery } from '@/lib/use-media-query';
 
 /** View 1 — the CV as seven hand-drawn figures on graph paper. */
 export function ClimbView() {

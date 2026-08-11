@@ -1,8 +1,8 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { cn } from '@/lib/utils';
-import { useReveal } from '@/lib/use-reveal';
+import { useReveal } from '@/hooks/use-reveal';
+import { cn } from '@/utils/cn';
 
 type FigureProps = {
   children: ReactNode;

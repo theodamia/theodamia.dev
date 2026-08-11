@@ -2,9 +2,9 @@
 
 import { useRef } from 'react';
 import { FigureCard, FigureCaption, FigureLabel } from '@/components/figure-card';
-import { CHART_COLORS, CHART_FONT } from '@/lib/constants';
+import { CHART_COLORS, CHART_FONT } from '@/constants';
+import { useXkcdChart } from '@/hooks/use-xkcd-chart';
 import { COFFEE, CONFIDENCE_LEVELS, CONFIDENCE_PHASES, MAX_COFFEE_CUPS } from '@/lib/figures';
-import { useXkcdChart } from '@/lib/use-xkcd-chart';
 import { fitViewBoxToContent, stripNestedLegend, unclip } from '@/lib/xkcd-dom';
 
 const CHART_HEIGHT = 280;

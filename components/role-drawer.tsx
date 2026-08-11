@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { ALL_STEPS_HEADER, MILESTONES, type Milestone } from '@/lib/milestones';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 
 /** Newest first and without the student step — it has no employer to link to. */
 const ALL_STEPS = MILESTONES.slice(1).reverse();

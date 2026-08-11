@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { CLIMB } from '@/constants';
 import { buildHills, plotX, plotY, samePlot, type PlotBox } from '@/lib/climb-geometry';
-import { CLIMB } from '@/lib/constants';
 import { CLIMB_LEVELS, CLIMB_YEARS, MILESTONES } from '@/lib/milestones';
 
 const PLOT: PlotBox = { x: 100, y: 50, w: 1200, h: 400 };

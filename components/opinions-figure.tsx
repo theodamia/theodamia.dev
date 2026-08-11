@@ -1,5 +1,5 @@
 import { FigureCard, FigureCaption, FigureLabel } from '@/components/figure-card';
-import { CHART_COLORS } from '@/lib/constants';
+import { CHART_COLORS } from '@/constants';
 import { OPINIONS } from '@/lib/figures';
 
 /** Fig. 3 — opinions, held loosely. */

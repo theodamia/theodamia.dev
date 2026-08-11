@@ -1,6 +1,6 @@
-import { CHART_COLORS } from '@/lib/constants';
+import { CHART_COLORS } from '@/constants';
 import type { Slice } from '@/lib/figures';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 
 type SliceLegendProps = {
   slices: Slice[];
