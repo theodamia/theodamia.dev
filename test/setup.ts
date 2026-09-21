@@ -56,7 +56,7 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-// Mock ResizeObserver — the Fig. 1 overlays re-measure through one
+// Mock ResizeObserver — the climb and the dock re-measure through one
 global.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}

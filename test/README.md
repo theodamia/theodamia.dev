@@ -12,16 +12,16 @@ This project uses [Vitest](https://vitest.dev/) and [React Testing Library](http
 
 ```bash
 # Run tests in watch mode (development)
-npm run test
+pnpm test
 
 # Run tests once
-npm run test:run
+pnpm test:run
 
 # Run tests with UI
-npm run test:ui
+pnpm test:ui
 
 # Run tests with coverage
-npm run test:coverage
+pnpm test:coverage
 ```
 
 ## Writing Tests

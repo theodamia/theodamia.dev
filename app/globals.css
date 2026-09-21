@@ -1,161 +1,702 @@
 @import 'tailwindcss';
 
 /*
- * "A career, hand-graphed" — light mode only. The two views ship without a dark
- * variant, so tokens live directly in @theme rather than behind a :root/.dark pair.
+ * "The Ascent" — the Alpine system: a cool, quiet interface sitting on a green, sunny mountain.
+ * Green belongs to the scene; the interface stays slate, white and one orange accent.
+ * The tokens below are the day. The night overrides the same tokens under `:root[data-theme='dark']` (after
+ * @theme), so no component has two sets of colours.
  */
 @theme {
   /* Surfaces */
-  --color-background: oklch(0.965 0.014 85);
-  --color-card: oklch(0.99 0.008 85);
-  --color-card-alt: oklch(0.97 0.008 85);
-  --color-rail: oklch(0.945 0.016 85);
-  --color-drawer: oklch(0.985 0.01 85);
-  --color-tooltip: oklch(0.995 0.004 85);
-  --color-certificate: oklch(0.975 0.014 85);
-  --color-pill: oklch(0.9 0.02 85);
-  --color-dot-hollow: oklch(0.97 0.01 85);
-  --color-on-ink: oklch(0.97 0.012 85);
+  --color-page: #f4f7fa;
+  --color-card: #ffffff;
+  --color-tint: #f5f8fb;
+  --color-ice: #e8eef3;
+  --color-line: #d5dee6;
 
-  /*
-   * Ink scale. The prototype uses ~19 greys separated by 2% lightness; they are snapped
-   * to six steps here so the hierarchy is expressible in tokens instead of one-offs.
-   */
-  --color-ink: oklch(0.24 0.02 60);
-  --color-ink-strong: oklch(0.3 0.02 60);
-  --color-ink-body: oklch(0.34 0.02 60);
-  --color-ink-muted: oklch(0.44 0.02 60);
-  --color-ink-faint: oklch(0.52 0.02 60);
-  --color-ink-ghost: oklch(0.6 0.015 60);
-  --color-foreground: oklch(0.24 0.02 60);
+  /* Ink */
+  --color-ink: #1e2b37;
+  --color-ink-2: #465868;
+  --color-ink-3: #5f7284;
+  /* text on an ink fill (a lit pill, a tooltip, the primary button) */
+  --color-on-ink: #ffffff;
+  /* shadows, holes and doorways: dark by day and by night, where ink turns pale */
+  --color-shade: #1e2b37;
 
-  /* Accent — links, stat numbers, the summit pennant */
-  --color-accent: oklch(0.55 0.13 45);
-  --color-accent-light: oklch(0.62 0.13 45);
-  --color-accent-strong: oklch(0.5 0.1 45);
-  --color-accent-hover: oklch(0.42 0.12 45);
+  /* Signal — the accent is dark enough for white text; accent-text is the variant for text on white */
+  --color-accent: #cf4318;
+  --color-accent-text: #b93e14;
+  --color-accent-wash: rgb(207 67 24 / 0.1);
+  /* the shaded side of a tent */
+  --color-accent-shade: #a5330f;
+  --color-lake: #1d6796;
+  --color-lake-fill: #2474ab;
+  --color-sun: #e2a12b;
+  --color-mist: #a9b7c4;
 
-  /* Hand-drawn chart series */
-  --color-chart-1: #b3762f;
-  --color-chart-2: #a8552f;
-  --color-chart-3: #3f7c8c;
-  --color-chart-4: #7a8352;
-  --color-chart-5: #c79a4b;
-  --color-chart-6: #6b5a8e;
-  --color-coffee: #6b4423;
-
-  /* The napkin itself */
-  --color-graph-line: oklch(0.55 0.06 230 / 0.12);
-  --color-snow: oklch(0.99 0.005 200);
-  --color-hill-back: oklch(0.88 0.03 200 / 0.4);
-  --color-hill-mid: oklch(0.88 0.03 90 / 0.5);
-  --color-hill-summit: oklch(0.86 0.025 250 / 0.5);
+  /* Scene — sky gradients, the sun and the few scenery colours that are not generated ramps */
+  --color-dawn-top: oklch(0.88 0.03 285);
+  --color-dawn-mid: oklch(0.93 0.045 60);
+  --color-dawn-low: oklch(0.955 0.03 80);
+  --color-day-top: oklch(0.84 0.05 240);
+  --color-day-mid: oklch(0.91 0.03 228);
+  --color-day-low: oklch(0.97 0.012 160);
+  --color-sun-disc: oklch(0.98 0.04 85);
+  --color-sun-glow: oklch(0.96 0.05 80 / 0.45);
+  --color-roof: #2e6b57;
+  --color-hut-wall: oklch(0.96 0.015 90);
+  --color-hut-window: oklch(0.86 0.1 90);
+  --color-pine-front: oklch(0.4 0.045 155);
+  --color-cloud: #ffffff;
+  /* the soft white stroke behind the scene's labels */
+  --color-halo: rgb(255 255 255 / 0.8);
+  /* the foreground mist */
+  --color-wisp: oklch(0.985 0.008 85);
+  /* only ever seen at night: the stars, and the moon's dark side */
+  --color-star: oklch(0.97 0.025 95);
+  --color-moon-shadow: oklch(0.3 0.035 258);
 
   /* Type */
-  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
-  --font-serif: var(--font-instrument-serif), serif;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
-  --font-hand: var(--font-patrick-hand), cursive;
+  --font-display: var(--font-bricolage), system-ui, sans-serif;
+  --font-sans: var(--font-instrument-sans), system-ui, sans-serif;
+
+  /* Shape */
+  --radius-chip: 8px;
+  --radius-ctl: 12px;
+  --radius-tile: 14px;
+  --radius-inner: 16px;
+  --radius-dock: 18px;
+  --radius-card: 20px;
+  --radius-section: 28px;
 
   /* Depth */
-  --shadow-card: 0 20px 44px -34px oklch(0.3 0.04 60);
-  --shadow-drawer: -30px 0 60px -30px oklch(0.24 0.02 60 / 0.5);
-  --shadow-rail: 0 2px 10px -6px oklch(0.24 0.02 60 / 0.6);
-  --shadow-tooltip: 4px 5px 0 oklch(0.24 0.02 60 / 0.16);
+  --shadow-card: 0 18px 40px -26px rgb(30 43 55 / 0.5);
+  --shadow-soft: 0 8px 20px -14px rgb(30 43 55 / 0.45);
+  --shadow-dock: 0 16px 36px -18px rgb(30 43 55 / 0.6);
+  /*
+   * a tight edge in the page's card colour, so plain text stays readable wherever it floats over the scene. Kept to
+   * a few pixels: a wider glow reads as a pale cloud behind the text, and washes it out
+   */
+  --text-shadow-halo:
+    0 0 1px var(--color-card), 0 0 2px var(--color-card), 0 0 3px var(--color-card);
 
   /* Motion */
-  --ease-draw: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  /* overshoots a little past the end: things that pop */
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --animate-drift: drift 46s ease-in-out infinite alternate;
+  --animate-drift-slow: drift 62s ease-in-out infinite alternate-reverse;
+  --animate-bob: bob 1.6s ease-in-out infinite;
+
+  @keyframes drift {
+    from {
+      transform: translateX(-40px);
+    }
+    to {
+      transform: translateX(60px);
+    }
+  }
+
+  @keyframes bob {
+    0%,
+    100% {
+      transform: translateY(-2px);
+    }
+    50% {
+      transform: translateY(4px);
+    }
+  }
 }
+
+/*
+ * Night, "Alpine night": the same tokens by moonlight. `data-theme` on <html> is the only switch (set before the
+ * first paint by the script in app/layout.tsx, flipped by lib/theme.ts). `color-scheme` follows it: that is what
+ * the scene's generated `light-dark()` colours read, and it darkens native scrollbars.
+ */
+:root {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-page: #0e1620;
+  --color-card: #16212c;
+  --color-tint: #1a2733;
+  --color-ice: #233343;
+  --color-line: #2d3d4c;
+
+  --color-ink: #e4ebf1;
+  --color-ink-2: #b6c3cf;
+  --color-ink-3: #93a3b3;
+  --color-on-ink: #0e1620;
+  --color-shade: #05090e;
+
+  --color-accent-text: #ff8a5c;
+  --color-accent-wash: rgb(255 138 92 / 0.14);
+  --color-lake: #7cbbe6;
+  --color-lake-fill: #5aa9dc;
+
+  /* dusk at the trailhead, deepening to midnight as you climb: the same two layers as dawn and day */
+  --color-dawn-top: oklch(0.26 0.055 278);
+  --color-dawn-mid: oklch(0.33 0.06 300);
+  --color-dawn-low: oklch(0.42 0.06 35);
+  --color-day-top: oklch(0.17 0.035 262);
+  --color-day-mid: oklch(0.22 0.04 258);
+  --color-day-low: oklch(0.29 0.04 250);
+  /* by night the sun's tokens hold the moon */
+  --color-sun-disc: oklch(0.93 0.02 245);
+  --color-sun-glow: oklch(0.85 0.04 245 / 0.2);
+  --color-roof: #1d4a3d;
+  --color-hut-wall: oklch(0.45 0.02 250);
+  --color-hut-window: oklch(0.86 0.13 82);
+  --color-pine-front: oklch(0.2 0.025 215);
+  --color-cloud: oklch(0.4 0.035 265);
+  --color-halo: rgb(10 16 24 / 0.75);
+  --color-wisp: oklch(0.4 0.03 255);
+
+  --shadow-card: 0 18px 40px -26px rgb(0 0 0 / 0.8);
+  --shadow-soft: 0 8px 20px -14px rgb(0 0 0 / 0.7);
+  --shadow-dock: 0 16px 36px -18px rgb(0 0 0 / 0.85);
+}
+
+/* `dark:` means the night theme, not the system's: it follows `data-theme`. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/*
+ * Screens that cannot hover: the dock spells out its lit item there instead of showing bubbles. Below 400px there
+ * is no room for that label, Home and the day/night switch at once, so Home steps aside (the page's own top is a
+ * scroll away).
+ */
+@custom-variant touch (@media (hover: none));
+@custom-variant touch-xs (@media (max-width: 399px) and (hover: none));
 
 @layer base {
   html {
-    scroll-behavior: smooth;
+    scroll-padding-top: 28px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-page text-ink font-sans text-[18px] leading-[1.65] antialiased;
+    font-variant-numeric: tabular-nums;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-lake-fill);
+    outline-offset: 3px;
   }
 }
 
-/* Scroll reveal — applied by useReveal only to content below the initial viewport. */
-.reveal {
-  opacity: 0;
-  transform: translateY(26px);
-  transition:
-    opacity 0.8s var(--ease-draw),
-    transform 0.8s var(--ease-draw);
+/*
+ * Scene layers. Each layer is as tall as its parallax depth needs (--d), so one number says how far it
+ * travels. The transform below is only the resting pose (before the first frame, and for the still
+ * strip on /about): while scrolling, the stage writes pixel transforms onto whole layers and nothing else.
+ */
+.scene-layer {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+  width: 240vh;
+  width: 240lvh;
+  height: calc(100vh + var(--d) * 500vh);
+  height: calc(100lvh + var(--d) * 500lvh);
+  transform: translate3d(-50%, calc(var(--cam) * (100vh - 100%)), 0);
+  transform: translate3d(-50%, calc(var(--cam) * (100lvh - 100%)), 0);
+  will-change: transform;
 }
 
-.reveal-in {
+/*
+ * On wide screens the altimeter is fixed at the right edge, and its labels reach this far into the page. The job cards on the
+ * right keep clear of it: the list of cards gets as much right padding as the page's own margin (28px padding plus
+ * whatever the 1180px track leaves) does not already give.
+ */
+@media (min-width: 900px) {
+  .clear-of-altimeter {
+    --altimeter-reach: 158px;
+    padding-right: max(0px, calc(var(--altimeter-reach) - 28px - max(0px, (100vw - 1180px) / 2)));
+  }
+}
+
+/*
+ * Camps. A camp stands in full colour at full size from the start. Reaching it (the stage flips `data-reached`)
+ * runs its flag up the pole and brightens its name. Transforms are in the camp's own SVG units, measured from
+ * each shape's own box.
+ */
+.camp-pennant {
+  transform-box: fill-box;
+  transform-origin: 0% 50%;
+  transition:
+    transform 0.8s var(--ease-pop) 0.12s,
+    opacity 0.3s ease-out 0.12s;
+}
+
+.camp-canvas {
+  fill: var(--color-accent);
+}
+
+.camp-shade {
+  fill: var(--color-accent-shade);
+}
+
+.camp-light {
+  fill: var(--color-hut-wall);
+}
+
+.camp-label {
+  transition: opacity 0.45s ease-out;
+}
+
+.camp[data-reached='false'] .camp-pennant {
+  transform: translateY(54px) scale(0.3);
+  opacity: 0.55;
+}
+
+.camp[data-reached='false'] .camp-label {
+  opacity: 0.6;
+}
+
+/*
+ * What comes alive at a camp, and how. Each item (a flame and its core, a lantern's glass, a lit doorway, a spinner's
+ * blades) is a separate picture laid over the artwork, which is saved with its lights out. Only opacity and
+ * transform move, on plain HTML elements, so the compositor does it all and nothing repaints.
+ *
+ * The motion itself never stops or restarts: flames flicker, lights breathe and blades keep their angle the whole
+ * time. Arriving and leaving only fade the item in and out (or, for the spinner, let it run or hold it still), so
+ * hovering around a camp can never make anything jump back to the start of its animation.
+ */
+.camp-light-source {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s ease-out 0.25s;
+}
+
+.camp-light-source[data-reached='true'] {
+  opacity: 1;
+}
+
+.camp-lit,
+.camp-glow {
+  position: absolute;
+}
+
+.camp-lit {
+  inset: 0;
+  background-size: 100% 100%;
+}
+
+.camp-glow {
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgb(255 196 92 / 0.55),
+    rgb(255 170 70 / 0.18) 55%,
+    transparent
+  );
+}
+
+/*
+ * The flag every camp raises: its cloth is a layer of its own, the pole stays in the picture. Waiting, the cloth is
+ * furled small and low on the pole; reaching the camp runs it up to the top (the same pop as before the flag was a
+ * picture), where it ripples in the wind: the free end lifts and falls a little about the hoist. Like the spinner,
+ * the ripple never restarts: leaving the camp holds it, coming back lets it carry on. At night it is dimmed with the
+ * rest of the camp: it gives no light.
+ */
+.camp-light-source[data-kind='flag'] {
+  opacity: 0.55;
+  transform: translateY(140%) scale(0.3);
+  transform-origin: 0% 50%;
+  transition:
+    transform 0.8s var(--ease-pop) 0.12s,
+    opacity 0.3s ease-out 0.12s;
+}
+
+.camp-light-source[data-kind='flag'][data-reached='true'] {
   opacity: 1;
   transform: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .reveal {
-    opacity: 1;
+[data-kind='flag'] .camp-lit {
+  transform-origin: 0% 50%;
+  animation: flag-ripple 2.6s ease-in-out infinite alternate;
+  animation-play-state: paused;
+}
+
+[data-kind='flag'][data-reached='true'] .camp-lit {
+  animation-play-state: running;
+}
+
+:root[data-theme='dark'] .camp-light-source[data-kind='flag'] {
+  filter: brightness(0.68) saturate(0.8);
+}
+
+@keyframes flag-ripple {
+  0% {
     transform: none;
-    transition: none;
+  }
+  40% {
+    transform: skewY(-3deg) scaleX(0.96);
+  }
+  70% {
+    transform: skewY(1deg) scaleX(0.99);
+  }
+  100% {
+    transform: skewY(-2deg) scaleX(0.95);
   }
 }
 
-/* Squared graph paper behind the climb. */
-.graph-paper {
-  background-image:
-    linear-gradient(var(--color-graph-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-graph-line) 1px, transparent 1px);
-  background-size: 26px 26px;
+/*
+ * A house's window in the village: tied to no arrival. Dark glass by day; at night it comes on as the theme reveal's
+ * edge reaches it (it is a `data-wave` target, like the stars) and then stays steady: electric light, not a wick.
+ */
+.camp-light-source[data-kind='window'] {
+  transition: opacity 0.8s ease-out var(--wave-delay, 0ms);
 }
 
-/* Hatched measuring tracks — 10% steps for skill bars, 20% for the phone ladder. */
-.hatch-track {
-  background: repeating-linear-gradient(
-    90deg,
-    color-mix(in oklab, var(--color-ink) 12%, transparent) 0 1px,
-    transparent 1px 10%
+:root[data-theme='dark'] .camp-light-source[data-kind='window'] {
+  opacity: 1;
+}
+
+/* fire: it catches, growing out of the pit; the glow sits a little above the flame */
+.camp-light-source[data-kind='fire'] {
+  transform: scale(0.15);
+  transform-origin: 50% 94%;
+  transition:
+    opacity 0.35s ease-out 0.25s,
+    transform 0.6s var(--ease-pop) 0.25s;
+}
+
+.camp-light-source[data-kind='fire'][data-reached='true'] {
+  transform: none;
+}
+
+[data-kind='fire'] .camp-glow {
+  translate: 0 -18%;
+  animation: flame-glow 1.9s ease-in-out infinite alternate;
+}
+
+[data-kind='fire'] .camp-lit {
+  transform-origin: 50% 94%;
+  animation: flame-sway 1.15s ease-in-out infinite alternate;
+}
+
+[data-kind='fire'] .camp-lit-core {
+  animation: flame-core 0.68s ease-in-out infinite alternate;
+}
+
+/* lantern, window, doorway: no dancing. It fades in, and breathes slowly with one small dip, like a wick */
+[data-kind='lantern'] .camp-lit {
+  animation: lantern-breathe 1.7s ease-in-out infinite;
+}
+
+[data-kind='lantern'] .camp-glow {
+  animation: lantern-glow 1.7s ease-in-out infinite;
+}
+
+/*
+ * Wind spinner: the blades are always there. Reaching the camp lets them run: one slow first turn that ends at
+ * exactly the speed of the steady turn that follows (the easing's end slope, 1.6, times 360deg over 2.4s is the
+ * same 240deg a second as one turn every 1.5s). Leaving holds them where they are; coming back, they carry on.
+ */
+.camp-light-source[data-kind='spinner'] {
+  opacity: 1;
+}
+
+[data-kind='spinner'] .camp-lit {
+  animation:
+    spinner-start 2.4s cubic-bezier(0.5, 0, 0.75, 0.6) 0.3s 1 both,
+    spinner-turn 1.5s linear 2.7s infinite;
+  animation-play-state: paused;
+}
+
+[data-kind='spinner'][data-reached='true'] .camp-lit {
+  animation-play-state: running;
+}
+
+@keyframes spinner-start {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinner-turn {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes flame-sway {
+  0% {
+    transform: scale(1, 1) skewX(-2.5deg);
+  }
+  35% {
+    transform: scale(0.96, 1.07) skewX(1.5deg);
+  }
+  70% {
+    transform: scale(1.04, 0.95) skewX(-1deg);
+  }
+  100% {
+    transform: scale(0.97, 1.1) skewX(3deg);
+  }
+}
+
+@keyframes flame-core {
+  0% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(0.88, 1.14) skewX(2deg);
+  }
+  100% {
+    transform: scale(1.08, 0.92) skewX(-2deg);
+  }
+}
+
+@keyframes flame-glow {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0.7;
+    transform: scale(0.93);
+  }
+}
+
+@keyframes lantern-breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  46% {
+    opacity: 0.84;
+  }
+  58% {
+    opacity: 0.95;
+  }
+  64% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes lantern-glow {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  46% {
+    opacity: 0.78;
+    transform: scale(0.94);
+  }
+  58% {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+  64% {
+    opacity: 0.72;
+    transform: scale(0.93);
+  }
+}
+
+/* At night the painted camps sink into the dark; their lights are separate layers, so they stay bright and glow. */
+:root[data-theme='dark'] .camp-art {
+  filter: brightness(0.68) saturate(0.8);
+}
+
+/* The near slopes' trees are pictures in the mountain layers: by moonlight they sink darker still, into the forest. */
+:root[data-theme='dark'] .scene-tree {
+  filter: brightness(0.55) saturate(0.75);
+}
+
+/*
+ * Switching day and night (lib/theme.ts). A view transition keeps the old page still and shows the new one through
+ * a soft-edged circle that grows from the toggle: `--reveal-r` is animated from script, the rest is set there
+ * before the switch. The browser's own cross-fade is off. Outside a reveal (reduced motion) it is left alone.
+ */
+@property --reveal-r {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+.theme-reveal::view-transition-old(root),
+.theme-reveal::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+.theme-reveal::view-transition-new(root) {
+  mask-image: radial-gradient(
+    circle at var(--reveal-x) var(--reveal-y),
+    #000 calc(var(--reveal-r) - var(--reveal-feather)),
+    transparent var(--reveal-r)
   );
 }
 
-.hatch-track-wide {
-  background: repeating-linear-gradient(
-    90deg,
-    color-mix(in oklab, var(--color-ink) 12%, transparent) 0 1px,
-    transparent 1px 20%
-  );
+/*
+ * The sun, which the night turns into the moon. Everything waits for `--wave-delay`: the moment the reveal's edge
+ * reaches it. Then it cools, shrinks a little, and the earth's shadow slides over it from the lower left, the side
+ * the night comes from, leaving a waxing crescent. The shadow is a dark disc under the bright one (the moon's dark
+ * side, faintly lit by earthshine); `--moon` moves the hole cut into the bright one. Back to day, it all reverses.
+ */
+@property --moon {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
 }
 
-/* The dashed scale behind each opinion marker. */
-.dashed-scale {
-  background: repeating-linear-gradient(
-    90deg,
-    color-mix(in oklab, var(--color-ink) 50%, transparent) 0 7px,
-    transparent 7px 11px
-  );
+.celestial {
+  --disc: 84px;
+  width: var(--disc);
+  height: var(--disc);
+  transition: scale 1.2s var(--ease-soft) var(--wave-delay, 0ms);
 }
 
-/* Dashed vertical connector between steps in the all-steps drawer. */
-.dashed-connector {
-  background: repeating-linear-gradient(
-    180deg,
-    color-mix(in oklab, var(--color-ink) 35%, transparent) 0 4px,
-    transparent 4px 8px
-  );
+@media (max-width: 899px) {
+  .celestial {
+    --disc: 60px;
+  }
 }
 
-/* The dashed spine behind Fig. 1's phone timeline. */
-.ladder-track {
-  background: repeating-linear-gradient(
-    180deg,
-    color-mix(in oklab, var(--color-ink) 40%, transparent) 0 5px,
-    transparent 5px 10px
-  );
+.celestial-glow,
+.celestial-shadow,
+.celestial-disc {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
 }
 
-/* Diagonally striped fill for the language bars. */
-.striped-fill {
-  background: repeating-linear-gradient(
-    135deg,
-    var(--color-accent) 0 5px,
-    var(--color-accent-light) 5px 10px
+.celestial-glow {
+  box-shadow: 0 0 90px 36px var(--color-sun-glow);
+  transition: box-shadow 1.2s ease-in-out var(--wave-delay, 0ms);
+}
+
+/* a hair smaller than the bright disc, so it never rims the sun */
+.celestial-shadow {
+  inset: 1.5px;
+  background: var(--color-moon-shadow);
+}
+
+.celestial-disc {
+  --moon: 0;
+  background-color: var(--color-sun-disc);
+  mask-image: radial-gradient(
+    circle calc(var(--disc) / 2) at calc(-60% + var(--moon) * 86%) calc(80% - var(--moon) * 22%),
+    transparent 97%,
+    #000 100%
   );
+  transition:
+    --moon 1.2s cubic-bezier(0.45, 0, 0.25, 1) var(--wave-delay, 0ms),
+    background-color 1s ease-in-out var(--wave-delay, 0ms);
+}
+
+:root[data-theme='dark'] .celestial {
+  scale: 0.86;
+}
+
+:root[data-theme='dark'] .celestial-glow {
+  box-shadow: 0 0 56px 12px var(--color-sun-glow);
+}
+
+:root[data-theme='dark'] .celestial-disc {
+  --moon: 1;
+}
+
+/*
+ * Stars. Each fades in as the reveal's edge passes it (`--wave-delay`), plus its own lag: the brightest come out
+ * first and the faintest a moment later, like eyes adjusting to the dark. The dot is the ::before, so a twinkle
+ * (opacity only, a few of the brightest, only at night) never fights the fade.
+ */
+.star {
+  position: absolute;
+  width: var(--size);
+  height: var(--size);
+  margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
+  opacity: 0;
+  transition: opacity 0.4s ease-out var(--wave-delay, 0ms);
+}
+
+.star::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--color-star);
+  opacity: var(--alpha);
+}
+
+.star[data-tier='bright']::before {
+  box-shadow: 0 0 5px 1px color-mix(in oklab, var(--color-star) 45%, transparent);
+}
+
+.star[data-twinkle]::before {
+  animation: twinkle var(--twinkle) ease-in-out var(--phase) infinite alternate;
+  animation-play-state: paused;
+}
+
+:root[data-theme='dark'] .star {
+  opacity: 1;
+  transition: opacity 0.9s ease-out calc(var(--wave-delay, 0ms) + var(--star-lag, 0ms));
+}
+
+:root[data-theme='dark'] .star[data-twinkle]::before {
+  animation-play-state: running;
+}
+
+@keyframes twinkle {
+  to {
+    opacity: calc(var(--alpha) * 0.4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .celestial,
+  .celestial-glow,
+  .celestial-disc,
+  .star,
+  :root[data-theme='dark'] .star {
+    transition: none;
+  }
+
+  .star[data-twinkle]::before {
+    animation: none;
+  }
+
+  .camp-pennant,
+  .camp-label,
+  .camp-light-source,
+  .camp-light-source[data-kind='fire'],
+  .camp-light-source[data-kind='window'],
+  .camp-light-source[data-kind='flag'] {
+    transition: none;
+  }
+
+  .camp-lit,
+  .camp-glow,
+  [data-kind='spinner'] .camp-lit,
+  [data-kind='flag'] .camp-lit {
+    animation: none;
+  }
+
+  /* The two fastest layers are the ones that make people queasy. */
+  .scene-layer[data-depth='0.8'],
+  .scene-layer[data-depth='1.35'] {
+    display: none;
+  }
 }

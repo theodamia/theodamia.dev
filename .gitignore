@@ -46,3 +46,7 @@ coverage
 
 # claude code local settings
 .claude/settings.local.json
+
+# camp artwork: full-size originals from the image generator stay local
+/art/camps/raw/*
+!/art/camps/raw/.gitkeep
