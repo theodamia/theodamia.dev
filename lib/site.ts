@@ -1,6 +1,6 @@
 export const SITE = {
   name: 'Theodore Damianidis',
-  title: 'Senior Frontend Engineer',
+  title: 'Senior Frontend Software Engineer',
   location: 'Thessaloniki, Greece',
   email: 'theodamia@gmail.com',
   linkedin: {

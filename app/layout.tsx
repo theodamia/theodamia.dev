@@ -26,10 +26,11 @@ const instrumentSans = Instrument_Sans({
 export const metadata: Metadata = {
   title: `${SITE.name} | ${SITE.title}`,
   description:
-    'The Ascent — ten years of frontend engineering drawn as one long climb. Senior Frontend Engineer at DeepSea.ai, previously Frontend Lead at Geekbot.',
+    'The Ascent — ten years of frontend engineering drawn as one long climb. Senior Frontend Software Engineer at DeepSea.ai, previously Frontend Lead at Geekbot.',
   generator: 'theodamia.dev',
   keywords: [
     'Frontend Engineer',
+    'Frontend Software Engineer',
     'React',
     'TypeScript',
     'Tailwind CSS',

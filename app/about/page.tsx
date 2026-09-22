@@ -5,6 +5,7 @@ import { FactList } from '@/components/fact-list';
 import { OpinionBars } from '@/components/opinion-bars';
 import { SummitStrip } from '@/components/scene/summit-strip';
 import { SectionCard } from '@/components/section-card';
+import { SignalTower } from '@/components/signal-tower';
 import { SkillGrid } from '@/components/skill-grid';
 import { buttonVariants } from '@/components/ui/button';
 import { Eyebrow, Heading } from '@/components/ui/text';
@@ -72,7 +73,14 @@ export default function About() {
             <SkillGrid groups={SKILL_GROUPS} />
           </SectionCard>
 
-          <SectionCard id='contact' eyebrow='Contact' title='Putting a team together?'>
+          {/* isolate: the tower sits behind the card's content, above its background */}
+          <SectionCard
+            id='contact'
+            eyebrow='Contact'
+            title='Putting a team together?'
+            className='relative isolate'
+          >
+            <SignalTower className='absolute top-7 right-[52px] -z-10 w-[190px] max-[1023px]:hidden' />
             <p className='text-ink-2 mt-3.5 max-w-[620px] text-pretty'>
               Always open to a conversation: new opportunities, interesting challenges, or simply
               exchanging ideas. Replies within a day, usually less.

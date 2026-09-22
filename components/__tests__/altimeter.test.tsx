@@ -31,9 +31,9 @@ describe('Altimeter', () => {
       expect(marks[i + 1]).toHaveTextContent(String(job.start));
       expect(marks[i + 1]).toHaveTextContent(job.place);
     });
-    expect(within(rail).getByRole('button', { name: /^2018, Frontend Engineer at Geekbot/ })).toBe(
-      marks[3]
-    );
+    expect(
+      within(rail).getByRole('button', { name: /^2018, Frontend Software Engineer at Geekbot/ })
+    ).toBe(marks[3]);
   });
 
   it('lights the current stop and fills the nodes of the stops reached', () => {

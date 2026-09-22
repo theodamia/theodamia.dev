@@ -9,6 +9,8 @@ const MAX_SUMMARY = 150;
 const MIN_HIGHLIGHTS = 2;
 const MAX_HIGHLIGHTS = 3;
 const MAX_HIGHLIGHT = 72;
+/* a curated pack, not a keyword list */
+const MAX_SKILLS_PER_GROUP = 8;
 
 describe('jobs', () => {
   it('uses each start year once, oldest first', () => {
@@ -48,8 +50,14 @@ describe('about', () => {
   });
 
   it('lists every skill once', () => {
-    const skills = SKILL_GROUPS.flatMap(group => group.items);
+    const skills = SKILL_GROUPS.flatMap(group => group.items.map(skill => skill.name));
     expect(new Set(skills).size).toBe(skills.length);
+  });
+
+  it('keeps every skill group short enough to scan', () => {
+    SKILL_GROUPS.forEach(group =>
+      expect(group.items.length).toBeLessThanOrEqual(MAX_SKILLS_PER_GROUP)
+    );
   });
 });
 

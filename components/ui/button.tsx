@@ -1,8 +1,12 @@
 import { cva } from 'class-variance-authority';
 
-/** Every button on the site is a link, so this is a class recipe rather than a component. */
+/**
+ * Almost every button on the site is a link (the one real button copies the email address), so this is a class
+ * recipe rather than a component. The hover lift is Tailwind's `translate`, a property of its own, so the
+ * transition has to name it: listing only `transform` leaves the lift snapping.
+ */
 export const buttonVariants = cva(
-  'rounded-ctl inline-flex cursor-pointer items-center justify-center gap-2 border-[1.5px] font-semibold no-underline transition-[transform,box-shadow,border-color] duration-[180ms] motion-reduce:transition-none',
+  'rounded-ctl inline-flex cursor-pointer items-center justify-center gap-2 border-[1.5px] font-semibold no-underline ease-soft transition-[transform,translate,box-shadow,border-color] duration-[180ms] motion-reduce:transition-none',
   {
     variants: {
       variant: {

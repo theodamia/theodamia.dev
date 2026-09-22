@@ -527,6 +527,13 @@ stretched a little taller or shorter; the far slopes keep their silhouettes. The
 (its left half is the dark one) while every other picture is lit from the left, so the page always mirrors it,
 and never mirrors anything else: flipping trees at random for variety would put the shade on both sides.
 
+## The radio tower on the Contact card: tried, dropped
+
+Tried on 2026-09-22 for the Contact card on /about: first a detailed lattice mast with a radio hut (it leaned,
+the hut hid a leg, the lamp had a shine spot), then a minimal icon-like tower. Neither read as well as the dock's
+own Lucide radio tower, so the card keeps that, drawn in code (`components/signal-tower.tsx`, waves animated). No
+`raw/tower` is needed.
+
 ## When it goes wrong
 
 Add one of these to the end of the prompt and try again in a new chat:

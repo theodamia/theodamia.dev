@@ -2,8 +2,11 @@ import type React from 'react';
 
 type BrandIconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'>;
 
-/** Brand glyphs from the Simple Icons set (CC0), filled with the current colour. */
-function BrandIcon({ d, ...props }: BrandIconProps & { d: string }) {
+/**
+ * Brand glyphs from the Simple Icons set (CC0), filled with the current colour: the three below, and the Skills
+ * logos, whose paths come from the `simple-icons` package.
+ */
+export function BrandIcon({ d, ...props }: BrandIconProps & { d: string }) {
   return (
     <svg
       viewBox='0 0 24 24'
