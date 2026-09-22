@@ -20,9 +20,11 @@ type ClimbProps = {
 
 /** Camp 0 is the trailhead, which has no card: job `i` stands at camp `i + 1`. */
 const campOf = (job: number) => job + 1;
+
 /** A job's stop is as tall as the leg that leaves its camp is long; the last job has no leg, only some room. */
 const legLvhOf = (job: number) => {
   const weight = LEG_WEIGHTS[campOf(job)];
+
   return weight === undefined ? LAST_CARD_LVH : weight * LEG_SCROLL_LVH;
 };
 

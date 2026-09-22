@@ -20,7 +20,9 @@ function SkillIcon({ skill }: { skill: Skill }) {
       />
     );
   }
+
   const Icon = skill.icon;
+
   return (
     <Icon
       size={SKILL_ICON_SIZE}

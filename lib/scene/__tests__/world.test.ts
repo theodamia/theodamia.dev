@@ -71,6 +71,7 @@ describe('world', () => {
     LEGS.forEach(leg => {
       const steps = leg.points.slice(1).map((p, i) => {
         const [dx, dy] = [p[0] - leg.points[i][0], p[1] - leg.points[i][1]];
+
         return Math.sqrt(dx * dx + dy * dy);
       });
       const mean = steps.reduce((sum, step) => sum + step, 0) / steps.length;

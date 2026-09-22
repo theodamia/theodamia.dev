@@ -22,6 +22,7 @@ function stopTop(job: number): string {
   /* camp 0 is the trailhead, so job `i` stands at camp `i + 1` */
   const camp = job + 1;
   const knot = cameraKnot(camp, campAnchor(camp, CAMP_ANCHORS.WIDE));
+
   return `${Math.min(100, (knot / WORLD.TRAVEL) * 100).toFixed(1)}%`;
 }
 
@@ -122,6 +123,7 @@ export function Altimeter({
         {STOPS.map(stop => {
           const current = stop.job === reached;
           const now = stop.job === NOW;
+
           return (
             <button
               key={stop.year}

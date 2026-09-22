@@ -85,9 +85,11 @@ export function artWidthFor(artKey: string): number {
 /** Where each extra picture of a camp stands: its left edge (relative to the arrival point) and width. */
 export function artExtrasFor(artKey: string): { key: string; left: number; width: number }[] {
   let left = ART_LEFT + artWidthFor(artKey);
+
   return (ART_EXTRAS[artKey] ?? []).map(extra => {
     const placed = { key: extra.key, left: left + extra.gap, width: extra.width };
     left = placed.left + extra.width;
+
     return placed;
   });
 }
@@ -100,5 +102,6 @@ export function campGround(camp: number): { center: number; flat: number } {
     ART_LEFT + artWidthFor(key)
   );
   const right = artRight + GROUND_RIGHT;
+
   return { center: (right - GROUND_LEFT) / 2, flat: (right + GROUND_LEFT) / 2 };
 }

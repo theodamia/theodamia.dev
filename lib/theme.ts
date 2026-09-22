@@ -33,6 +33,7 @@ export function readTheme(): Theme {
 export function storedTheme(): Theme | null {
   try {
     const value = localStorage.getItem(THEME_STORAGE_KEY);
+
     return value === 'light' || value === 'dark' ? value : null;
   } catch {
     return null;
@@ -58,12 +59,14 @@ export function applyTheme(theme: Theme) {
 
 function track(transition: ViewTransition, cleanUp?: () => void) {
   running = transition;
+
   const done = () => {
     /* a newer switch has taken over and cleans up after itself */
     if (running !== transition) return;
     running = null;
     cleanUp?.();
   };
+
   transition.finished.then(done, done);
 }
 
@@ -82,14 +85,17 @@ function track(transition: ViewTransition, cleanUp?: () => void) {
 export function switchTheme(from: HTMLElement): Theme {
   const root = document.documentElement;
   const next: Theme = readTheme() === 'dark' ? 'light' : 'dark';
+
   const flip = () => {
     root.dataset.theme = next;
   };
+
   try {
     localStorage.setItem(THEME_STORAGE_KEY, next);
   } catch {
     /* private mode: the choice lasts until the page is left */
   }
+
   running?.skipTransition();
   const canReveal = typeof document.startViewTransition === 'function';
 
@@ -97,6 +103,7 @@ export function switchTheme(from: HTMLElement): Theme {
     clearWave(root);
     if (canReveal) track(document.startViewTransition(flip));
     else flip();
+
     return next;
   }
 
@@ -122,6 +129,7 @@ export function switchTheme(from: HTMLElement): Theme {
 
   if (!canReveal) {
     flip();
+
     return next;
   }
 
@@ -159,5 +167,6 @@ export function switchTheme(from: HTMLElement): Theme {
     REVEAL_PROPS.forEach(prop => root.style.removeProperty(prop));
     clearWave(root);
   });
+
   return next;
 }

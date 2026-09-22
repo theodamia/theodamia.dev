@@ -69,6 +69,7 @@ describe('Dock', () => {
     document.body.append(climb);
     vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => {
       callback(0);
+
       return 1;
     });
 

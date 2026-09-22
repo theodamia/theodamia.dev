@@ -42,6 +42,7 @@ const between = ([low, high]: [number, number], t: number) => low + (high - low)
 export function starField(): Star[] {
   const { COLUMNS, ROWS, SKY_SHARE, DENSITY, MID_SHARE, BRIGHT_SHARE, LAG_MAX_MS } = STAR_FIELD;
   const stars: Star[] = [];
+
   for (let row = 0; row < ROWS; row++) {
     for (let column = 0; column < COLUMNS; column++) {
       const cell = row * COLUMNS + column;
@@ -68,5 +69,6 @@ export function starField(): Star[] {
       });
     }
   }
+
   return stars;
 }

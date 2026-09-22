@@ -74,6 +74,7 @@ export function useClimbScroll({
       const y = window.scrollY;
       let leg = 0;
       let f = 0;
+
       if (y >= S[LAST_STOP]) {
         leg = LAST_STOP - 1;
         f = 1;
@@ -81,16 +82,20 @@ export function useClimbScroll({
         leg = S.findIndex((_, i) => y < S[i + 1]);
         f = (y - S[leg]) / (S[leg + 1] - S[leg]);
       }
+
       const yTop = K[leg] + (K[leg + 1] - K[leg]) * f;
       scene.current?.applyFrame({ yTop, leg, f });
+
       if (needle.current) {
         const dpr = window.devicePixelRatio || 1;
         const offset = Math.round((yTop / WORLD.TRAVEL) * railHeight.current * dpr) / dpr;
         needle.current.style.transform = `translate3d(0,${offset}px,0)`;
       }
+
       if (walked.current) {
         walked.current.style.transform = `scaleY(${(1 - yTop / WORLD.TRAVEL).toFixed(4)})`;
       }
+
       /* arriving needs most of the leg; leaving needs a real step back (see STOP_LEFT_AT) */
       const holding = reached.current === leg + 1 && f >= STOP_LEFT_AT;
       reached.current = f >= STOP_REACHED_AT || holding ? leg + 1 : leg;
@@ -116,11 +121,13 @@ export function useClimbScroll({
         const top = card.getBoundingClientRect().top + window.scrollY;
         /* `previous + 1` keeps the stops strictly increasing, so the progress within a leg never divides by zero */
         previous = Math.max(previous + 1, top - (anchorFor(i + 1) + lead) * window.innerHeight);
+
         return previous;
       });
       stops.current = [0, ...cardStops];
       railHeight.current = rail.current?.clientHeight ?? 0;
       scene.current?.resize();
+
       /* the dock reads this to send "Experience" to the first job rather than the top of the list */
       if (stops.current.length > FIRST_JOB_STOP) {
         climb.current?.setAttribute(
@@ -128,10 +135,12 @@ export function useClimbScroll({
           String(stops.current[FIRST_JOB_STOP] + STOP_SCROLL_NUDGE_PX)
         );
       }
+
       onScroll();
     };
 
     measure();
+
     /* arriving from the other page's dock: land on the first stop, not on the top of the list */
     if (window.location.hash === '#climb' && stops.current.length > FIRST_JOB_STOP) {
       window.scrollTo({

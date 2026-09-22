@@ -30,6 +30,7 @@ Use **pnpm** (the only lockfile is `pnpm-lock.yaml`).
 - **Type**: Bricolage Grotesque (display; loaded variable with its `opsz` axis, the big headings need the narrow display cut) and Instrument Sans (text), via `next/font/google` in `app/layout.tsx`
 - **Scene**: pure SVG and CSS, no WebGL and no chart or animation library. `lib/scene/` generates the mountain deterministically; `components/scene/ascent-stage.tsx` renders and moves it
 - **Testing**: Vitest + React Testing Library + jsdom
+- **Linting**: `eslint-config-next` (Next, React, React Hooks v7 with the compiler rules) plus the full `jsx-a11y` recommended set as errors and `typescript-eslint`'s type-aware rules on TS/TSX, which is what catches a promise nobody awaits. `eslint.config.mjs` adds rules to the plugins Next already registers, never the plugins' own flat configs
 - **Pre-commit**: Husky runs lint-staged (ESLint fix + Prettier on TS/TSX/JS/JSX, Prettier on JSON/MD/CSS)
 
 ### The scene boundary
@@ -62,6 +63,7 @@ Everything outside `components/scene/` knows the mountain through two things onl
 - Server Components by default; use `'use client'` only when necessary. The two scene components are client components on purpose: the drawing is generated from code on both sides instead of travelling a second time in the RSC payload
 - File names: kebab-case. Component names: PascalCase
 - Prettier: single quotes, JSX single quotes, semicolons, 2-space indent, 100 char line width, trailing commas (es5)
+- Blank lines are the one thing Prettier leaves alone, so ESLint sets them (`@stylistic/padding-line-between-statements`): one before every `return`, one on each side of an `if`/`for`/`while`/`try`/`switch`, and one after the imports and any directive. `eslint --fix` writes them for you
 - Use `cn()` for conditional/merged Tailwind classes
 - Use `cva` (class-variance-authority) for component variants
 - Avoid nested ternaries; extract to variables or early returns

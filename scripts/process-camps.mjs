@@ -175,6 +175,7 @@ const isCore = (r, g, b) => r > 205 && g > 150 && g - b > 40;
 function flameMask(data, width, height, seeds) {
   const fill = new Uint8Array(width * height);
   const queue = seeds.map(([x, y]) => y * width + x);
+
   while (queue.length) {
     const i = queue.pop();
     if (fill[i] || !isWarm(data[i * 3], data[i * 3 + 1], data[i * 3 + 2])) continue;
@@ -185,12 +186,15 @@ function flameMask(data, width, height, seeds) {
     if (y > 0) queue.push(i - width);
     if (y < height - 1) queue.push(i + width);
   }
+
   const reach = Math.round(width * FLAME_OUTLINE);
   const mask = new Uint8Array(width * height);
   let [left, top, right, bottom] = [width, height, -1, -1];
+
   for (let i = 0; i < fill.length; i++) {
     if (!fill[i]) continue;
     const [cx, cy] = [i % width, (i / width) | 0];
+
     for (let dy = -reach; dy <= reach; dy++) {
       for (let dx = -reach; dx <= reach; dx++) {
         if (dx * dx + dy * dy > reach * reach) continue;
@@ -204,7 +208,9 @@ function flameMask(data, width, height, seeds) {
       }
     }
   }
+
   if (right < 0) throw new Error('the light seed is not inside a warm-coloured shape');
+
   return { fill, mask, box: { left, top, width: right - left + 1, height: bottom - top + 1 } };
 }
 
@@ -215,6 +221,7 @@ function flameMask(data, width, height, seeds) {
 function regionMask(data, width, height, [x0, y0, x1, y1]) {
   const mask = new Uint8Array(width * height);
   let [left, top, right, bottom] = [width, height, -1, -1];
+
   for (let y = Math.max(0, y0); y <= Math.min(height - 1, y1); y++) {
     for (let x = Math.max(0, x0); x <= Math.min(width - 1, x1); x++) {
       const i = y * width + x;
@@ -227,7 +234,9 @@ function regionMask(data, width, height, [x0, y0, x1, y1]) {
       bottom = Math.max(bottom, y);
     }
   }
+
   if (right < 0) throw new Error('the region holds nothing but background');
+
   return {
     fill: mask,
     mask,
@@ -244,6 +253,7 @@ function inpaint(data, width, height, mask) {
   const out = Buffer.from(data);
   const known = new Uint8Array(width * height);
   const queued = new Uint8Array(width * height);
+
   const neighbours = i => {
     const [x, y] = [i % width, (i / width) | 0];
     const list = [];
@@ -251,21 +261,26 @@ function inpaint(data, width, height, mask) {
     if (x < width - 1) list.push(i + 1);
     if (y > 0) list.push(i - width);
     if (y < height - 1) list.push(i + width);
+
     return list;
   };
+
   for (let i = 0; i < mask.length; i++) known[i] = mask[i] ? 0 : 1;
   /* the first ring: masked pixels that touch a known one */
   let ring = [];
+
   for (let i = 0; i < mask.length; i++) {
     if (mask[i] && neighbours(i).some(j => known[j])) {
       ring.push(i);
       queued[i] = 1;
     }
   }
+
   while (ring.length) {
     /* colour the whole ring from what is known, and only then count it as known: colours flow in evenly */
     for (const i of ring) {
       let [r, g, b, n] = [0, 0, 0, 0];
+
       for (const j of neighbours(i)) {
         if (!known[j]) continue;
         r += out[j * 3];
@@ -273,10 +288,13 @@ function inpaint(data, width, height, mask) {
         b += out[j * 3 + 2];
         n++;
       }
+
       out.set([r / n, g / n, b / n], i * 3);
     }
+
     const next = [];
     for (const i of ring) known[i] = 1;
+
     for (const i of ring) {
       for (const j of neighbours(i)) {
         if (known[j] || queued[j]) continue;
@@ -284,8 +302,10 @@ function inpaint(data, width, height, mask) {
         next.push(j);
       }
     }
+
     ring = next;
   }
+
   /* where the fill drew on the background it is a blend of magenta and its neighbours: make it plain background
      again, so it keys out completely instead of leaving a tinted haze */
   for (let i = 0; i < mask.length; i++) {
@@ -293,6 +313,7 @@ function inpaint(data, width, height, mask) {
     const magenta = Math.min(out[i * 3], out[i * 3 + 2]) - out[i * 3 + 1];
     if (magenta > BACKGROUND_TINT) out.set([255, 0, 255], i * 3);
   }
+
   return out;
 }
 
@@ -308,6 +329,7 @@ const DOOR_INSET = 9;
 function doorLight(data, width, height, seed, [x0, y0, x1, y1]) {
   const region = new Uint8Array(width * height);
   const queue = [seed[1] * width + seed[0]];
+
   while (queue.length) {
     const i = queue.pop();
     const [x, y] = [i % width, (i / width) | 0];
@@ -316,12 +338,15 @@ function doorLight(data, width, height, seed, [x0, y0, x1, y1]) {
     region[i] = 1;
     queue.push(i - 1, i + 1, i - width, i + width);
   }
+
   const mask = new Uint8Array(width * height);
   let [left, top, right, bottom] = [width, height, -1, -1];
+
   for (let y = y0; y <= y1; y++) {
     for (let x = x0; x <= x1; x++) {
       if (!region[y * width + x]) continue;
       let inside = true;
+
       for (let dy = -DOOR_INSET; dy <= DOOR_INSET && inside; dy++) {
         for (let dx = -DOOR_INSET; dx <= DOOR_INSET && inside; dx++) {
           if (dx * dx + dy * dy > DOOR_INSET * DOOR_INSET) continue;
@@ -330,6 +355,7 @@ function doorLight(data, width, height, seed, [x0, y0, x1, y1]) {
             nx >= 0 && ny >= 0 && nx < width && ny < height && Boolean(region[ny * width + nx]);
         }
       }
+
       if (!inside) continue;
       mask[y * width + x] = 1;
       left = Math.min(left, x);
@@ -338,15 +364,18 @@ function doorLight(data, width, height, seed, [x0, y0, x1, y1]) {
       bottom = Math.max(bottom, y);
     }
   }
+
   if (right < 0) throw new Error('the door seed is not inside a dark doorway');
   const box = { left, top, width: right - left + 1, height: bottom - top + 1 };
   const pixels = Buffer.alloc(box.width * box.height * 4);
+
   for (let y = 0; y < box.height; y++) {
     for (let x = 0; x < box.width; x++) {
       if (mask[(y + top) * width + x + left])
         pixels.set([...DOOR_LIGHT, 255], (y * box.width + x) * 4);
     }
   }
+
   return { box, pixels };
 }
 
@@ -357,9 +386,11 @@ const GLASS_FEATHER = 2;
 /** Turn a lantern off: its frame and wire guard stay, only the lit panes (and their soft edge) go dark. */
 function darken(data, width, height, fill) {
   const out = Buffer.from(data);
+
   for (let i = 0; i < fill.length; i++) {
     if (!fill[i]) continue;
     const [cx, cy] = [i % width, (i / width) | 0];
+
     for (let dy = -GLASS_FEATHER; dy <= GLASS_FEATHER; dy++) {
       for (let dx = -GLASS_FEATHER; dx <= GLASS_FEATHER; dx++) {
         const [x, y] = [cx + dx, cy + dy];
@@ -370,24 +401,28 @@ function darken(data, width, height, fill) {
       }
     }
   }
+
   return out;
 }
 
 /** A lantern's light: the lit shape exactly as drawn, as one cut-out the size of its box. */
 function lanternLayer(rgba, width, { mask, box }) {
   const glass = Buffer.alloc(box.width * box.height * 4);
+
   for (let y = 0; y < box.height; y++) {
     for (let x = 0; x < box.width; x++) {
       const i = (y + box.top) * width + x + box.left;
       if (mask[i]) glass.set(rgba.subarray(i * 4, i * 4 + 4), (y * box.width + x) * 4);
     }
   }
+
   return glass;
 }
 
 /** The flame as two cut-outs the size of its box: the whole flame with its core painted over, and the core alone. */
 function flameLayers(data, rgba, width, { fill, mask, box }) {
   let [r, g, b, n] = [0, 0, 0, 0];
+
   for (let i = 0; i < fill.length; i++) {
     if (!fill[i] || isCore(data[i * 3], data[i * 3 + 1], data[i * 3 + 2])) continue;
     r += data[i * 3];
@@ -395,9 +430,11 @@ function flameLayers(data, rgba, width, { fill, mask, box }) {
     b += data[i * 3 + 2];
     n++;
   }
+
   const body = [r / n, g / n, b / n];
   const flame = Buffer.alloc(box.width * box.height * 4);
   const core = Buffer.alloc(box.width * box.height * 4);
+
   for (let y = 0; y < box.height; y++) {
     for (let x = 0; x < box.width; x++) {
       const i = (y + box.top) * width + x + box.left;
@@ -411,6 +448,7 @@ function flameLayers(data, rgba, width, { fill, mask, box }) {
       if (hot) core.set([data[i * 3], data[i * 3 + 1], data[i * 3 + 2], 255], o);
     }
   }
+
   return { flame, core };
 }
 
@@ -421,6 +459,7 @@ function flameLayers(data, rgba, width, { fill, mask, box }) {
  */
 function removeBackground(data, width, height) {
   const out = Buffer.alloc(width * height * 4);
+
   for (let i = 0; i < width * height; i++) {
     const [r, g, b] = [data[i * 3], data[i * 3 + 1], data[i * 3 + 2]];
     const magenta = Math.min(r, b) - g;
@@ -433,12 +472,14 @@ function removeBackground(data, width, height) {
     out[i * 4 + 2] = unmix(b, 255);
     out[i * 4 + 3] = Math.round(alpha * 255);
   }
+
   return out;
 }
 
 /** The tight box round what is left, with a little air on three sides: never below, so it stands on its base. */
 function subjectBox(rgba, width, height) {
   let [left, top, right, bottom] = [width, height, -1, -1];
+
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       if (rgba[(y * width + x) * 4 + 3] <= TRIM_ALPHA) continue;
@@ -448,8 +489,10 @@ function subjectBox(rgba, width, height) {
       bottom = Math.max(bottom, y);
     }
   }
+
   if (right < 0) return null;
   const pad = Math.round(Math.max(right - left, bottom - top) * PADDING);
+
   return {
     left: Math.max(0, left - pad),
     top: Math.max(0, top - pad),
@@ -476,18 +519,23 @@ async function processCamp(file) {
   };
   const { data, info } = await source.extract(crop).raw().toBuffer({ resolveWithObject: true });
   const local = ([x, y]) => [x - crop.left, y - crop.top];
+
   const liftedShape = light => {
     if (light.region) {
       const [x0, y0, x1, y1] = light.region;
+
       return regionMask(data, info.width, info.height, [...local([x0, y0]), ...local([x1, y1])]);
     }
+
     return light.seeds ? flameMask(data, info.width, info.height, light.seeds.map(local)) : null;
   };
+
   const lights = (LIGHTS[name] ?? []).map(light => ({
     ...light,
     /* shapes lifted out of the picture; a door light is made from the doorway's shape instead */
     lifted: liftedShape(light),
   }));
+
   for (const light of lights) {
     if (!light.hub || !light.lifted) continue;
     const [hx, hy] = local(light.hub);
@@ -498,16 +546,20 @@ async function processCamp(file) {
     ]);
     const isKept = (x, y) =>
       kept.some(([x0, y0, x1, y1]) => x >= x0 && x <= x1 && y >= y0 && y <= y1);
+
     if (light.standsAlone) {
       /* nothing is behind these blades, so take them with their WHOLE outline: grow the mask through everything
          that is not background, stopping at the hub and at what must stay (the mast) */
       const { mask } = light.lifted;
       let ring = [];
       for (let i = 0; i < mask.length; i++) if (mask[i]) ring.push(i);
+
       for (let step = 0; step < OUTLINE_GROWTH && ring.length; step++) {
         const next = [];
+
         for (const i of ring) {
           const [x, y] = [i % info.width, (i / info.width) | 0];
+
           for (const [nx, ny] of [
             [x - 1, y],
             [x + 1, y],
@@ -523,10 +575,13 @@ async function processCamp(file) {
             next.push(j);
           }
         }
+
         ring = next;
       }
+
       /* the box follows the grown mask */
       let [left, top, right, bottom] = [info.width, info.height, -1, -1];
+
       for (let i = 0; i < mask.length; i++) {
         if (!mask[i]) continue;
         const [x, y] = [i % info.width, (i / info.width) | 0];
@@ -535,11 +590,14 @@ async function processCamp(file) {
         top = Math.min(top, y);
         bottom = Math.max(bottom, y);
       }
+
       light.lifted.box = { left, top, width: right - left + 1, height: bottom - top + 1 };
     }
+
     /* a spinner's hub does not turn: keep it (and the ring of outline round it) in the picture, not in the rotor */
     for (let y = hy - light.hubRadius; y <= hy + light.hubRadius; y++) {
       if (y < 0 || y >= info.height) continue;
+
       for (let x = hx - light.hubRadius; x <= hx + light.hubRadius; x++) {
         if (x < 0 || x >= info.width) continue;
         if ((x - hx) ** 2 + (y - hy) ** 2 <= light.hubRadius ** 2)
@@ -547,16 +605,20 @@ async function processCamp(file) {
       }
     }
   }
+
   const lit = removeBackground(data, info.width, info.height);
   /* the camp is saved with its lights out and its moving parts removed; they go on the page as layers of their own */
   let unlit = data;
+
   for (const light of lights) {
     if (!light.lifted) continue;
+
     if (light.kind === 'lantern' || light.kind === 'window') {
       unlit = darken(unlit, info.width, info.height, light.lifted.fill);
     } else if (light.standsAlone || light.region) {
       /* only background was behind it */
       unlit = Buffer.from(unlit);
+
       for (let i = 0; i < light.lifted.mask.length; i++) {
         if (light.lifted.mask[i]) unlit.set([255, 0, 255], i * 3);
       }
@@ -564,12 +626,14 @@ async function processCamp(file) {
       unlit = inpaint(unlit, info.width, info.height, light.lifted.mask);
     }
   }
+
   for (const light of lights) {
     for (const [x0, y0, x1, y1] of light.erase ?? []) {
       /* rectangles of the raw image to clear from the saved picture (the lifted layers are not touched) */
       const [left, top] = local([x0, y0]);
       const [right, bottom] = local([x1, y1]);
       if (unlit === data) unlit = Buffer.from(data);
+
       for (let y = Math.max(0, top); y <= Math.min(info.height - 1, bottom); y++) {
         for (let x = Math.max(0, left); x <= Math.min(info.width - 1, right); x++) {
           unlit.set([255, 0, 255], (y * info.width + x) * 3);
@@ -577,6 +641,7 @@ async function processCamp(file) {
       }
     }
   }
+
   const rgba = lights.length ? removeBackground(unlit, info.width, info.height) : lit;
   const box = subjectBox(rgba, info.width, info.height);
   if (!box) throw new Error(`${file}: nothing left after removing the background. Is it magenta?`);
@@ -595,6 +660,7 @@ async function processCamp(file) {
 
   const scale = size.width / box.width;
   const share = v => Number(v.toFixed(4));
+
   for (const light of lights) {
     const made = light.door
       ? doorLight(data, info.width, info.height, local(light.door.seed), [
@@ -613,6 +679,7 @@ async function processCamp(file) {
         [`${light.id}-core`, flame.core],
       ];
     } else if (!made) layers = [[light.id, lanternLayer(lit, info.width, light.lifted)]];
+
     for (const [suffix, pixels] of layers) {
       const layer = await sharp(pixels, {
         raw: { width: area.width, height: area.height, channels: 4 },
@@ -623,6 +690,7 @@ async function processCamp(file) {
       await fs.writeFile(path.join(OUT_DIR, `${name}-${suffix}.webp`), layer);
       console.log(`  ${name}-${suffix}: ${kb(layer.length)}`);
     }
+
     /* where it sits in the camp picture, as shares of its width and height */
     const placed = {
       id: light.id,
@@ -632,16 +700,19 @@ async function processCamp(file) {
       width: share(area.width / box.width),
       height: share(area.height / box.height),
     };
+
     if (light.hub) {
       /* what a spinner turns about, as shares of its own box */
       const [hx, hy] = local(light.hub);
       placed.originX = share((hx - area.left) / area.width);
       placed.originY = share((hy - area.top) / area.height);
     }
+
     (entry.lights ??= []).push(placed);
     if (light.pole !== undefined)
       entry.poleX = share((local([light.pole, 0])[0] - box.left) / box.width);
   }
+
   return [name, entry];
 }
 
@@ -650,10 +721,12 @@ const files = (await fs.readdir(RAW_DIR))
     /^(camp-(\d+|start)(-spinner)?|village-\d+|flag|tree-\d+)\.(png|jpe?g|webp)$/i.test(f)
   )
   .sort();
+
 if (!files.length) {
   console.log('Nothing to process in art/camps/raw/ yet. See art/camps/README.md.');
   process.exit(0);
 }
+
 await fs.mkdir(OUT_DIR, { recursive: true });
 const entries = [];
 for (const file of files) entries.push(await processCamp(file));

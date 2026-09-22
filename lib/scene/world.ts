@@ -53,6 +53,7 @@ export const CAMP_COUNT = JOBS.length + 1;
 export function legWeight(years: number): number {
   const weight =
     LEG_WEIGHT.BASE + LEG_WEIGHT.GAIN * Math.sqrt(Math.max(0, years) / LEG_WEIGHT.REFERENCE_YEARS);
+
   return Math.min(LEG_WEIGHT.MAX, Math.max(LEG_WEIGHT.MIN, weight));
 }
 
@@ -73,8 +74,10 @@ export const SIDES: number[] = Array.from({ length: CAMP_COUNT }, (_, i) => (i %
 /** Height is time, compressed: each camp stands as far above the last as its leg is long. */
 export const CAMP_Y: number[] = (() => {
   let walked = 0;
+
   return Array.from({ length: CAMP_COUNT }, (_, i) => {
     if (i) walked += LEG_WEIGHTS[i - 1];
+
     return TRAILHEAD_Y - (walked / TOTAL_WEIGHT) * CLIMB_HEIGHT;
   });
 })();
@@ -94,6 +97,7 @@ function trailPoints(): Point[] {
     points.push([WORLD.CENTER_X - side * SWING_OUT_X, CAMP_Y[i] + rise * 0.33]);
     points.push([WORLD.CENTER_X + side * SWING_BACK_X, CAMP_Y[i] + rise * 0.66]);
   });
+
   return points;
 }
 
@@ -104,8 +108,10 @@ function legCubics(): Cubic[][] {
   const points = trailPoints();
   const at = (j: number) => points[Math.min(points.length - 1, Math.max(0, j))];
   const legs: Cubic[][] = [];
+
   for (let leg = 0; leg < CAMP_X.length - 1; leg++) {
     const cubics: Cubic[] = [];
+
     for (let j = 3 * leg; j < 3 * leg + 3; j++) {
       const [p0, p1, p2, p3] = [at(j - 1), at(j), at(j + 1), at(j + 2)];
       cubics.push([
@@ -115,14 +121,17 @@ function legCubics(): Cubic[][] {
         p2,
       ]);
     }
+
     legs.push(cubics);
   }
+
   return legs;
 }
 
 function cubicAt([a, b, c, d]: Cubic, t: number): Point {
   const u = 1 - t;
   const [w0, w1, w2, w3] = [u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t];
+
   return [
     w0 * a[0] + w1 * b[0] + w2 * c[0] + w3 * d[0],
     w0 * a[1] + w1 * b[1] + w2 * c[1] + w3 * d[1],
@@ -131,6 +140,7 @@ function cubicAt([a, b, c, d]: Cubic, t: number): Point {
 
 function cubicsToPath(cubics: Cubic[]): string {
   const fmt = (p: Point) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`;
+
   return cubics.reduce(
     (d, [, b, c, end]) => `${d} C${fmt(b)} ${fmt(c)} ${fmt(end)}`,
     `M${fmt(cubics[0][0])}`
@@ -144,13 +154,16 @@ function sampleByLength(cubics: Cubic[], samples: number): Point[] {
     for (let n = 1; n <= FLATTEN_STEPS; n++) dense.push(cubicAt(cubic, n / FLATTEN_STEPS));
   });
   const lengths = [0];
+
   for (let n = 1; n < dense.length; n++) {
     const [dx, dy] = [dense[n][0] - dense[n - 1][0], dense[n][1] - dense[n - 1][1]];
     lengths.push(lengths[n - 1] + Math.sqrt(dx * dx + dy * dy));
   }
+
   const total = lengths[lengths.length - 1];
   const out: Point[] = [];
   let seg = 1;
+
   for (let n = 0; n <= samples; n++) {
     const target = (total * n) / samples;
     while (seg < dense.length - 1 && lengths[seg] < target) seg++;
@@ -161,6 +174,7 @@ function sampleByLength(cubics: Cubic[], samples: number): Point[] {
       dense[seg - 1][1] + (dense[seg][1] - dense[seg - 1][1]) * k,
     ]);
   }
+
   return out;
 }
 
@@ -185,6 +199,7 @@ export const SUMMIT_PITCH_D = (() => {
   const last = CAMP_X.length - 1;
   const [x, y] = [CAMP_X[last], CAMP_Y[last]];
   const top = SUMMIT.y + SUMMIT_PITCH_STOP;
+
   return `M${x},${y} C${x + 150},${y - 120} ${SUMMIT.x - 90},${SUMMIT.y + 190} ${SUMMIT.x},${top}`;
 })();
 
@@ -193,6 +208,7 @@ type CampAnchors = { FIRST: number; MIDDLE: number; LAST: number };
 /** Where camp `i` should sit on screen (0 top, 1 bottom): the first and last camps have their own place. */
 export function campAnchor(i: number, anchors: CampAnchors): number {
   if (i === 0) return anchors.FIRST;
+
   return i >= CAMP_Y.length - 1 ? anchors.LAST : anchors.MIDDLE;
 }
 
@@ -207,6 +223,7 @@ export function climberAt(leg: number, f: number): Point {
   const u = Math.min(1, Math.max(0, f)) * (points.length - 1);
   const j = Math.min(points.length - 2, Math.floor(u));
   const k = u - j;
+
   return [
     points[j][0] + (points[j + 1][0] - points[j][0]) * k,
     points[j][1] + (points[j + 1][1] - points[j][1]) * k,
