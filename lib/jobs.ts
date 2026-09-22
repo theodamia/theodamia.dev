@@ -72,7 +72,7 @@ export const JOBS: Job[] = [
     years: 3.4,
     url: 'https://geekbot.com/',
     summary:
-      'Building Geekbot’s web app in React, Redux and GraphQL, and shipping features together with Product, Design and UX.',
+      'Building Geekbot’s web app in React, Redux and GraphQL and shipping features together with Product, Design and UX.',
     highlights: [
       'Developed and optimized the web app’s frontend architecture',
       'Shipped user-facing features with Product, Design and UX',
@@ -90,11 +90,11 @@ export const JOBS: Job[] = [
     years: 4,
     url: 'https://geekbot.com/',
     summary:
-      'Leading the frontend I had built most of: an internal UI library, Tailwind and Atomic Design, and engineers who grew along with it.',
+      'Leading the frontend I had built most of: a UI library and standards that made onboarding easier, for the people using it and the people writing it.',
     highlights: [
       'Created the internal UI library; introduced Tailwind and Atomic Design',
-      'Kept a growing codebase easy to change as the product evolved',
-      'Mentored engineers and shaped technical direction and team process',
+      'Brought in Claude Code with shared rules and review contexts',
+      'Mentored engineers; ran planning, design handovers and the sprint board',
     ],
   },
   {
@@ -112,7 +112,7 @@ export const JOBS: Job[] = [
     highlights: [
       'CRA to React 19, Vite, Tailwind and Vitest, in a Turborepo',
       'Architected the design system: Storybook, icon library, Material',
-      'Set the standards: lint, formatting and AI in the daily work',
+      "Wrote the frontend guild's guides, from security to the AI rules",
     ],
   },
 ];

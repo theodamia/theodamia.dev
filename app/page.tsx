@@ -13,7 +13,7 @@ export default function Home() {
         className='rise-in max-wide:mb-[14vh] mb-[18vh] max-w-[720px] text-center'
       >
         <p className='text-ink-2 mx-auto mt-3.5 max-w-[480px] text-pretty'>
-          Every stop taught me something I carried up to the next, and I am still learning on this
+          Every stop taught me something I carried up to the next and I am still learning on this
           one. Who I am, how I work and what is in my pack: it is all on the next page.
         </p>
         <div className='mt-7 flex flex-wrap items-center justify-center gap-2.5'>
