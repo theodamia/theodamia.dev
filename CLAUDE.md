@@ -4,55 +4,80 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Personal portfolio website for Theodore Damianidis (theodamia.dev). Single-page Next.js app, "A career, hand-graphed": the CV rendered as hand-drawn napkin figures. A fixed header toggles between two views — **The climb** (`climb-view.tsx`, seven figures on graph paper plus a role drawer) and **The words** (`words-view.tsx`, the same CV as prose in a four-panel kiosk). Light mode only; there is no dark variant.
+Personal portfolio website for Theodore Damianidis (theodamia.dev). "The Ascent": ten years of frontend work drawn as one long climb. Two routes. `/` is the hero plus the climb: a sticky, scroll-driven mountain scene with one card per job, and a summit that is deliberately never reached. `/about` is a quiet reading page (About, How I work, Skills, Contact) under a still strip of that summit. A floating icon dock at the bottom is the only navigation and works across both pages; it ends with the day/night switch.
+
+The visual language is "Alpine": a cool, white, precise interface (slate ink, hairline borders, one orange accent) sitting on a green, sunny, illustrated mountain. By night ("Alpine night") the same tokens turn to dark slate and pale ink, and the mountain is moonlit under stars. Green belongs to the scene, never to the interface. The frozen design reference lives in Claude Design (`The Ascent v4`); changes now happen in code.
 
 ## Commands
 
-- `npm run dev` - Start dev server (localhost:3000)
-- `npm run build` - Production build
-- `npm run lint` - ESLint
-- `npm run format` - Prettier format
-- `npm run check` - Lint + format check combined
-- `npm run test` - Vitest in watch mode
-- `npm run test:run` - Run tests once
-- `npx vitest run components/__tests__/site-header.test.tsx` - Run a single test file
+Use **pnpm** (the only lockfile is `pnpm-lock.yaml`).
+
+- `pnpm dev` - Start dev server (localhost:3000)
+- `pnpm build` - Production build
+- `pnpm lint` - ESLint
+- `pnpm format` - Prettier format
+- `pnpm check` - Types, lint, format check and tests, all four
+- `pnpm typecheck` - `tsc --noEmit`
+- `pnpm camps` - Rebuild the camp artwork from `art/camps/raw/`
+- `pnpm test` - Vitest in watch mode
+- `pnpm test:run` - Run tests once
+- `pnpm vitest run components/__tests__/dock.test.tsx` - Run a single test file
 
 ## Architecture
 
 - **Framework**: Next.js 16 App Router, React 19, TypeScript (strict mode)
-- **Styling**: Tailwind CSS 4 with shadcn/ui (New York style, Radix UI primitives). All design tokens live in `@theme` in `app/globals.css` — colours, the four font families, shadows, easing. No `:root`/`.dark` pair; the design is light-only.
-- **Type**: Instrument Serif (display), DM Sans (UI/body), JetBrains Mono (labels/meta), Patrick Hand (hand-drawn labels and captions), all via `next/font/google` in `app/layout.tsx`
-- **Charts**: `chart.xkcd`, loaded client-side through `hooks/use-xkcd-chart.ts`. The library forces its own aspect ratio and renders its legend as a nested `<svg>`, so every chart runs a tidy-up pass from `lib/xkcd-dom.ts`
-- **Animations**: CSS transitions. `hooks/use-reveal.ts` adds the reveal class on intersection; content already on screen is never hidden
+- **Styling**: Tailwind CSS 4 with `cva` for variants. All design tokens live in `@theme` in `app/globals.css` — colours, the two font families, radii, shadows, easing, keyframes. The `@theme` values are the day; the night overrides the same tokens under `:root[data-theme='dark']`, so components never carry two sets of colours. `dark:` is a custom variant on `data-theme` (not the system setting), for the few element-level changes. `touch:` and `touch-xs:` are custom variants for screens that cannot hover (`touch-xs` is below 400px, where the dock drops Home to fit the day/night switch). The one page breakpoint is the `--breakpoint-wide: 900px` token: `wide:` and `max-wide:` in markup, `WIDE_QUERY` in `constants/` for the same line in JS. A `--shadow-*` value is inlined into its utility by Tailwind, so the night's shadows flip through a `--shadow-cast-*` colour instead
+- **Type**: Bricolage Grotesque (display; loaded variable with its `opsz` axis, the big headings need the narrow display cut) and Instrument Sans (text), via `next/font/google` in `app/layout.tsx`
+- **Scene**: pure SVG and CSS, no WebGL and no chart or animation library. `lib/scene/` generates the mountain deterministically; `components/scene/ascent-stage.tsx` renders and moves it
 - **Testing**: Vitest + React Testing Library + jsdom
 - **Pre-commit**: Husky runs lint-staged (ESLint fix + Prettier on TS/TSX/JS/JSX, Prettier on JSON/MD/CSS)
 
+### The scene boundary
+
+Everything outside `components/scene/` knows the mountain through two things only, so the stage can change (or be replaced) without touching cards, dock or altimeter. The illustrated SVG look is the chosen one: a 3D low-poly renderer was tried and rejected, so "more alive" means small touches on this scene, not a new art style:
+
+- `lib/scene/world.ts` — the mountain as numbers: world size, camp positions derived from `JOBS[].level`, the trail legs as Béziers, and 48 points sampled along each leg **mathematically** (no `getPointAtLength`, so it runs on the server and in jsdom)
+- `SceneHandle` (`applyFrame(frame)`, `resize()`) — the stage implements it; `hooks/use-climb-scroll.ts` is the only caller
+
 ### Directory Layout
 
-- `app/` - Single route: `layout.tsx` (root layout + metadata), `page.tsx` (home), `globals.css`
-- `components/` - Views (`portfolio.tsx`, `climb-view.tsx`, `words-view.tsx`) and one file per figure (`tenure-figure.tsx`, `opinions-figure.tsx`, …). `figure-card.tsx` holds the shared card shell, label and caption
-- `components/ui/` - shadcn/ui primitives (button, badge, card). Add new ones via `npx shadcn@latest add <component>`
-- `components/__tests__/` - Component tests colocated in `__tests__` directories
-- `hooks/` - Custom React hooks (`use-media-query.ts`, `use-reveal.ts`, `use-slice-hover.ts`, `use-xkcd-chart.ts`)
-- `constants/index.ts` - Palette, climb geometry, timings, breakpoints
-- `utils/cn.ts` - `cn()` helper (clsx + tailwind-merge). One utility per file, named for what it does — don't add a catch-all `utils.ts`
-- `lib/xkcd-dom.ts` - The only third-party adapter in `lib/`: post-processes `chart.xkcd`'s DOM output
-- `lib/milestones.ts`, `lib/skill-groups.ts`, `lib/panels.ts`, `lib/figures.ts` - All page content. Nothing is fetched; edit the CV here, not in JSX
-- `lib/climb-geometry.ts` - Maps year/level to the measured plot box and builds the mountains behind Fig. 1
-- `types/chart-xkcd.d.ts` - Hand-written types for `chart.xkcd`, which ships none
+- `app/` - `layout.tsx` (fonts, metadata, the dock), `page.tsx` (`/`), `about/page.tsx` (`/about`), `globals.css`
+- `components/` - One file per piece: `climb.tsx` (the main page's client shell), `hero`, `job-card`, `altimeter`, `scroll-cue`, `dock`, and the `/about` sections (`section-card`, `fact-list`, `opinion-bars`, `week-split`, `skill-grid`, `contact-rows`, `copy-email-button`, `signal-tower`, `social-links`)
+- `components/scene/` - `ascent-stage.tsx` (the moving stage; it carries `.scene-stage`, which is how the CSS tells the climb's layers from the still ones on `/about`), `camp-mark.tsx` (one camp: tent, flag, name), `summit-strip.tsx` (the still header on `/about`), `scene-layer.tsx` (shared layer, sky, stars and `Celestial`, the sun that becomes the moon), `village.tsx` (the houses at the trailhead), `light-source.tsx` (the lit layer shared by camps and houses)
+- `components/icons/` - Inline SVG icons. The dock uses `lucide-react` (Tent, Map, NotebookPen, RadioTower) at stroke 1.75, except Skills: Lucide has no ice axe, so `ice-axe-icon.tsx` is hand-drawn on `dock-icon.tsx` to match Lucide's 24 grid, round caps and joins, `currentColor`. `brand-icon.tsx` holds the three Simple Icons glyphs, and its `BrandIcon` also draws the Skills pills' logos, whose paths come from the `simple-icons` package (server-only, so it never reaches the client). A skill with no logo (a practice) gets a Lucide symbol instead; the pairing lives in `lib/skill-groups.ts` (`brand` or `icon` per skill), and both render in `accent-text`, the one touch of colour in the section
+- `components/ui/` - Small primitives: `button` and `text` (`Heading`, `Eyebrow`, `Lede`) carry `cva` variants, `pill` is the Skills pill
+- `components/__tests__/`, `lib/__tests__/`, `lib/scene/__tests__/` - Tests colocated in `__tests__` directories
+- `hooks/` - `use-climb-scroll.ts` (scroll controller), `use-reduced-motion.ts`, `use-theme.ts` (the theme on `<html>`, and following the system until someone picks)
+- `constants/index.ts` - Camp anchors, scroll thresholds, breakpoints, series colours, the theme reveal and the star field
+- `utils/cn.ts` - `cn()` helper (clsx + tailwind-merge), `utils/time-at-progress.ts` (inverse of a cubic-bezier easing). One utility per file, named for what it does — don't add a catch-all `utils.ts`
+- `lib/theme.ts` - Day and night: the no-flash `<head>` script, reading and storing the choice, and `switchTheme()`, the reveal
+- `lib/jobs.ts`, `lib/skill-groups.ts`, `lib/about.ts`, `lib/site.ts`, `lib/dock-items.ts` - All page content. Nothing is fetched; edit the CV here, not in JSX. Changing a job's `level` moves its camp and the trail around it
+- `lib/scene/world.ts`, `lib/scene/scenery.ts`, `lib/scene/stars.ts`, `lib/scene/noise.ts` - Geometry, the deterministic scenery generator, the star field and their noise (integer hashing; no `Math.random`, no trigonometry, so server and browser paint the same markup)
 - `test/setup.ts` - Global test setup and mocks (Next.js router, browser APIs)
 
 ### Key Conventions
 
-- Path alias: `@/*` maps to project root (e.g., `@/components/climb-view`, `@/utils/cn`)
+- Path alias: `@/*` maps to project root (e.g., `@/components/dock`, `@/utils/cn`)
 - Components use named exports (`export function Component()`), pages use default exports
-- Server Components by default; use `'use client'` only when necessary
+- Server Components by default; use `'use client'` only when necessary. The two scene components are client components on purpose: the drawing is generated from code on both sides instead of travelling a second time in the RSC payload
 - File names: kebab-case. Component names: PascalCase
 - Prettier: single quotes, JSX single quotes, semicolons, 2-space indent, 100 char line width, trailing commas (es5)
 - Use `cn()` for conditional/merged Tailwind classes
 - Use `cva` (class-variance-authority) for component variants
 - Avoid nested ternaries; extract to variables or early returns
 - Extract magic numbers into named constants
-- Add a token in `@theme` rather than hardcoding an `oklch()` value in JSX
-- Fig. 1's overlays are positioned from the **measured** bounding box of the plotted line, never from assumed percentages — keep the measure/ResizeObserver/retry path intact if you touch `climb-chart.tsx`
-- Below 640px Fig. 1 swaps to `climb-ladder.tsx`. The chart must not mount on phones, so the split is a JS media query (`hooks/use-media-query.ts`), not `display: none`
+- Add a token in `@theme` rather than hardcoding a colour in JSX, and give it a night value under `:root[data-theme='dark']` unless it is the same in both (no `white` or `rgb(30 43 55 / …)` literals, except white text on the accent: text on an ink fill is `on-ink`, a shadow or hole is `shade`)
+- **The frame rule.** While scrolling, write only `transform` (pixels, snapped to the device pixel grid) and one `opacity`, on whole layers. No CSS variables feeding `calc()`, no layout reads, no SVG attribute changes, no React state per frame. Everything that needs layout is read in `measure()` (resize and `ResizeObserver` only). This is what keeps the climb smooth — keep it intact if you touch `use-climb-scroll.ts` or `ascent-stage.tsx`
+- Elements the stage moves per frame get their resting pose from the `transform` property (`[transform:…]`), never from Tailwind's translate utilities: those set the separate `translate` property, which would add to the per-frame transform instead of being replaced by it
+- Camps are **not** part of the big SVG layers. Each is a small SVG of its own (`camp-mark.tsx`) in a layer that moves with the mountain, so its arrival animation (`data-reached` flips when `use-climb-scroll` reports a new stop: the flag runs up and the name brightens; rules under `.camp-*` in `globals.css`) repaints only that small element. Anything else that should animate inside the scene follows the same pattern — never animate inside a full-height layer
+- Camp artwork is generated (Gemini) from the prompts in `art/camps/README.md` and processed by `node scripts/process-camps.mjs` into `public/camps/camp-<start year>.webp` + `lib/scene/camp-art.json` (keyed by the job's start year, so adding or removing a job never shifts the artwork). `camp-mark.tsx` shows the artwork when the manifest has an entry and a hand-drawn tent otherwise. The name always stays in code. The flag is one generated picture shared by every job camp (`raw/flag` → `flag` in the manifest, pole and stones, `poleX` where the pole stands): its cloth is lifted into a layer of its own (`kind: 'flag'`), which runs up the pole on arrival and then ripples, never restarting (like the spinner); the drawn pole and pennant remain only as a fallback. **A camp never changes colour or size**: arrival is the flag's cloth running up its pole, the name brightening and the camp's one animated item. A camp listed in the script's `LIGHTS` (a list per camp; `kind: 'fire' | 'lantern' | 'spinner'`, seed pixels inside the shape, or `door` for a doorway drawn dark) has those shapes lifted into their own layers (`lights` in the manifest) and is saved with its lights out and its moving parts removed (anything with moving parts is drawn as a picture of its own and placed beside the camp through `ART_EXTRAS` in `camp-layout.ts`, so nothing is ever behind it); on the page the layers are plain HTML elements (`.camp-light-source[data-kind]`) animated with opacity and transform only, so the compositor handles them and nothing repaints. A fire catches and flickers; a lantern fades in and breathes. The village houses at the trailhead (`VILLAGE` in `camp-layout.ts`, `raw/village-<n>`) go through the same pipeline; their lights are `kind: 'window'` and follow the night instead of the climber: no `data-reached`, a `data-wave` target of the theme reveal, dark glass by day and lit (steady, no breathing) as the night reaches them. A house without artwork is still drawn as a flat hut by `scenery.ts`. It stands to the right of where the trail arrives. `lib/scene/camp-layout.ts` holds where artwork stands and how wide each camp's is, and both `camp-mark.tsx` and `scenery.ts` read it: the mountain's level ledge under a camp is sized from that camp's artwork (`campGround`), so a wide camp never hangs over the edge where the ridge starts to fall. How deep a picture is sunk below the ridge is per image (`ART_SINK_SHARES` in `camp-mark.tsx`): side-on art stands on the ridge, art drawn from above sits on the mountain's face
+- The sun is fixed at the top right, just left of the altimeter's card (hidden on phones, where the massif fills the top of the screen). It does not move with the scroll; only the sky does: dawn to day by day, dusk to midnight by night, from the same two layers and the same one opacity per frame (only their tokens change)
+- **Day and night.** `data-theme` on `<html>` is the only switch. The inline script from `lib/theme.ts` sets it in `<head>` before the first paint (stored choice, else the system's; always day where `light-dark()` is missing, and the switch hides there), so there is no flash; `<html>` has `suppressHydrationWarning` for that reason. `color-scheme` follows it. There is no theme library
+- **Trees:** the near layer's trees and the four framing pines in the foreground are pictures (`tree-1` spruce, `tree-2` fir; `TREE_PICTURES` in `scenery.ts`, `<image class="scene-tree">` in the layer markup, dimmed at night); far layers keep flat two-triangle silhouettes, which suit the haze. A tree picture never stands on the silhouette edge of a steep flank (it would hang over empty air and read as floating): `planted()` moves it down onto the hill's face, below the ground on both sides of its trunk, so the hill is behind it. The early mountains (wooded near bands up to the Geekbot ledge) also get a scatter of trees down their faces (`faceTreeSpots`, `FACE_TREES`), kept clear of the trail (`clearOfTrail`, drawn over this layer), of every camp's flag, art and name (`clearOfCamps`) and of each other; drawn top to bottom so nearer trees overlap further ones. Trees under the foreground mist look pale on purpose. Every picture in the scene is lit from the left: the fir is always mirrored because it was drawn lit from the right, and nothing is ever flipped at random
+- **The scene's colours follow the theme without a second drawing.** `scenery.ts` writes every generated colour as `light-dark(day, night)` (night from `moonlit()`), with the day colour also as the plain attribute for browsers without `light-dark()`; everything else in the scene uses tokens (`ink` for line work, which turns pale at night; `shade` for shadows, holes and doorways, which stays dark; `halo`, `cloud`, `wisp`). Never write a bare colour into scene markup. At night the camp artwork is dimmed with a filter and its light layers are not, so fires and lanterns glow
+- **The reveal** (`switchTheme()` in `lib/theme.ts`, rules under "Switching day and night" in `globals.css`): a view transition keeps the old page still and shows the new one through a soft-edged circle that grows from the toggle (`--reveal-r`, animated from script, ease-out, `THEME_REVEAL`). The new view is the live page, so things in the sky change on the wave: any element with `data-wave` gets a `--wave-delay`, when the circle's edge reaches it, and its own CSS transitions wait for it. The sun becomes the moon that way (`.celestial`: the earth's shadow slides over it from the lower left), and each star comes out that way (`.star`, with a lag: the brightest first). Anything new that should change with the night in the sky follows the same pattern. Reduced motion: the browser's own cross-fade, no circle, no wave. No view transitions: an instant switch, with the wave still timing the sky
+- Every stop is a job, but the trail starts lower: camps are waypoints, `[TRAILHEAD, ...JOBS]` (`CAMP_COUNT = JOBS.length + 1`). Camp 0 is the trailhead (village, signpost, no card, no altimeter mark, always reached); job `i` stands at camp `i + 1`. Legs are sized by **compressed tenure** (`legWeight(years)` in `lib/scene/world.ts`, limits in `LEG_WEIGHT`): the same weight sets a camp's height above the last one and the `min-height` of that job's `<li>` (`LEG_SCROLL_LVH`), so long stays scroll longer and the camera keeps one speed. It is deliberately not proportional to years (a six-month job would be a sliver no card fits in) and not calendar-based (gaps between jobs never show). Adding or removing a job in `lib/jobs.ts` needs no other change
+- The altimeter (`components/altimeter.tsx`) is the trail in miniature, fixed on the right: "Still climbing" (`SUMMIT_LINE` in `lib/site.ts`, the same words as the label over the summit) at the top, Start at the bottom, and a two-line mark (year and camp `place`) for every stop; the present one says "Now". The marks are plain right-aligned text with a soft halo (`text-shadow-halo`, the card colour, so it flips with the theme); only the stop you are at is an ink pill (pills of different widths side by side looked uneven). Walked is solid ink and still to climb is dotted, like the scene's trail. Per frame the scroll controller moves only the needle and scales the walked bar (transforms); the lit mark and filled nodes change only when a new stop is reached. On wide screens the list of cards carries `.clear-of-altimeter`, a right padding that keeps right-hand cards clear of the labels at any width; keep it if the labels get wider
+- Job cards live in normal flow over the sticky stage (same grid cell), never inside the moving world. Everything is on the card at once, nothing behind a button: role, period and a one-sentence `summary` on top, then a pale "What I did" panel with two or three `highlights`; the company name is the card's only link. A content test keeps the copy short (summary ≤ 150 characters, points ≤ 72). No toggles, overlays, drawers or modals anywhere
+- The root must not get `overflow-x: hidden` (it would become a scroll container and break `position: sticky`); `body` uses `overflow-x: clip`
+- The dock is icon-only, so names come from `aria-label`; bubbles and icons are `aria-hidden`. Tests query by role and name. The day/night switch sits after a hairline, outside the `Sections` landmark (a setting, not a place); its icon (a moon by day, a sun at night: where the click takes you) is picked by CSS so it is right from the first paint

@@ -1,28 +1,27 @@
 # theodamia.dev
 
-Personal portfolio website for Theodore Damianidis - Frontend Engineer. "A career, hand-graphed": the CV rendered as hand-drawn napkin figures, with a second view that says the same thing in prose.
+Personal portfolio website for Theodore Damianidis - Senior Frontend Software Engineer. "The Ascent": ten years of frontend work drawn as one long, scroll-driven climb up a mountain, with a second, quiet page for about, skills and contact.
 
 ## 🚀 Tech Stack
 
 - **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **UI Library**: [React 19](https://react.dev/)
-- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
-- **UI Components**: [shadcn/ui](https://ui.shadcn.com/) (Radix UI primitives)
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Charts**: [chart.xkcd](https://timqian.com/chart.xkcd/)
-- **Type**: Instrument Serif, DM Sans, JetBrains Mono, Patrick Hand via `next/font`
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) with `class-variance-authority`
+- **Scene**: hand-written SVG + CSS, generated deterministically — no WebGL, no chart or animation library
+- **Icons**: [Lucide](https://lucide.dev/) for the dock (plus one hand-drawn ice axe) and for skills without a logo, [Simple Icons](https://simpleicons.org/) for brand logos in Skills and the links
+- **Type**: Bricolage Grotesque and Instrument Sans via `next/font`
 - **Analytics**: [Vercel Analytics](https://vercel.com/analytics)
 - **Code Quality**: ESLint + Prettier
 
 ## ✨ Features
 
-- 📈 The CV as seven hand-drawn figures on graph paper, with clickable career landmarks
-- 📖 A second "The words" view: the same CV as prose, four panels, no scrolling
-- ⚡ Optimized performance with Next.js App Router
-- 🎭 Smooth scroll-triggered reveals
-- 📱 Fully responsive mobile-first design
-- ♿ Accessible components and semantic HTML
+- 🏔️ The CV as a climb: a sticky parallax mountain, one camp and one card per job, a summit that is never reached
+- 🧭 An altimeter with clickable year marks and a floating icon dock that works across both pages
+- 📖 A quiet `/about` page: about, how I work, skills and contact
+- ⚡ Scroll frames that only write transforms, so the climb stays smooth
+- 📱 Responsive down to 320px, with touch-specific dock behaviour
+- ♿ Semantic HTML, keyboard-reachable everything, reduced-motion support
 - 🎯 Type-safe with TypeScript
 - 🧹 Clean code with ESLint and Prettier
 
@@ -31,24 +30,25 @@ Personal portfolio website for Theodore Damianidis - Frontend Engineer. "A caree
 ```
 theodamia.dev/
 ├── app/                    # Next.js App Router
-│   ├── layout.tsx         # Root layout
-│   ├── page.tsx           # Home page
-│   └── globals.css        # Global styles
+│   ├── layout.tsx         # Root layout: fonts, metadata, the dock
+│   ├── page.tsx           # "/" — hero and the climb
+│   ├── about/page.tsx     # "/about" — about, how I work, skills, contact
+│   └── globals.css        # Design tokens (@theme) and scene layer CSS
 ├── components/             # React components
-│   ├── ui/                # shadcn/ui components
-│   ├── portfolio.tsx      # View switcher
-│   ├── site-header.tsx    # Fixed header + view toggle
-│   ├── climb-view.tsx     # "The climb" — Figs. 1-7
-│   ├── climb-chart.tsx    # Fig. 1, with measured overlays
-│   ├── climb-ladder.tsx   # Fig. 1 on phones
-│   ├── role-drawer.tsx    # Career detail drawer
-│   └── words-view.tsx     # "The words" — the prose kiosk
-├── lib/                   # Content, geometry and hooks
-│   ├── milestones.ts      # Career timeline (source of truth)
-│   ├── skill-groups.ts    # Skills, self-rated
-│   ├── panels.ts          # "The words" copy
-│   └── figures.ts         # Everything else the figures plot
-├── types/                 # Hand-written module declarations
+│   ├── scene/             # The SVG stage, the still summit strip, shared layers
+│   ├── icons/             # Inline SVG icons
+│   ├── ui/                # Small primitives (button, pill, text)
+│   ├── climb.tsx          # Client shell of the main page
+│   ├── job-card.tsx       # One stop on the climb
+│   ├── altimeter.tsx      # Year rail, needle and the "Now" card
+│   └── dock.tsx           # The only navigation
+├── hooks/                 # use-climb-scroll (scroll controller), use-reduced-motion
+├── lib/                   # All content, plus the scene maths
+│   ├── jobs.ts            # Career timeline (source of truth)
+│   ├── skill-groups.ts    # Skills by category
+│   ├── about.ts           # About copy, facts, opinions, week split
+│   └── scene/             # world.ts (geometry) and scenery.ts (generator)
+├── constants/             # Anchors, thresholds, breakpoints
 └── public/                # Static assets
 ```
 
@@ -56,8 +56,8 @@ theodamia.dev/
 
 ### Prerequisites
 
-- Node.js 18+
-- npm, yarn, pnpm or bun
+- Node.js 20+
+- [pnpm](https://pnpm.io/)
 
 ### Installation
 
@@ -71,20 +71,12 @@ cd theodamia.dev
 2. Install dependencies:
 
 ```bash
-npm install
-# or
-yarn install
-# or
 pnpm install
 ```
 
 3. Run the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
 pnpm dev
 ```
 
@@ -92,26 +84,25 @@ pnpm dev
 
 ## 📜 Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run format` - Format code with Prettier
-- `npm run format:check` - Check code formatting
-- `npm run check` - Run both ESLint and Prettier checks
-- `npm run test` - Run tests in watch mode
-- `npm run test:run` - Run tests once
-- `npm run test:ui` - Run tests with UI
-- `npm run test:coverage` - Run tests with coverage report
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm start` - Start production server
+- `pnpm lint` - Run ESLint
+- `pnpm format` - Format code with Prettier
+- `pnpm format:check` - Check code formatting
+- `pnpm check` - Run both ESLint and Prettier checks
+- `pnpm test` - Run tests in watch mode
+- `pnpm test:run` - Run tests once
+- `pnpm test:ui` - Run tests with UI
+- `pnpm test:coverage` - Run tests with coverage report
 
 ## 🎨 Styling
 
 This project uses Tailwind CSS with the following configuration:
 
-- **Design System**: shadcn/ui (New York style)
-- **Base Color**: Neutral
-- **CSS Variables**: Enabled for theming
-- **Dark Mode**: Supported via CSS variables
+- **Design System**: "Alpine" — cool slate interface, hairline borders, one orange accent; green lives only in the scene
+- **Tokens**: every colour, radius, shadow and easing is declared in `@theme` in `app/globals.css`
+- **Day and night**: a toggle at the end of the dock. The night spreads from it as a soft circle (a view transition), the sun turns into the moon and the stars come out as it passes. First visits follow the system setting
 
 ## 🔧 Code Quality
 
@@ -152,10 +143,10 @@ Tests follow React Testing Library best practices:
 ### Running Tests
 
 ```bash
-npm run test          # Run tests in watch mode
-npm run test:run      # Run tests once
-npm run test:ui       # Run tests with UI
-npm run test:coverage # Generate coverage report
+pnpm test          # Run tests in watch mode
+pnpm test:run      # Run tests once
+pnpm test:ui       # Run tests with UI
+pnpm test:coverage # Generate coverage report
 ```
 
 ### Test Coverage
@@ -176,9 +167,6 @@ See `test/README.md` for detailed testing guidelines.
 - `next` - React framework
 - `react` & `react-dom` - UI library
 - `tailwindcss` - Utility-first CSS
-- `chart.xkcd` - Hand-drawn chart rendering
-- `lucide-react` - Icon library
-- `@radix-ui/*` - Accessible UI primitives
 - `class-variance-authority` - Component variants
 - `clsx` & `tailwind-merge` - Class name utilities
 

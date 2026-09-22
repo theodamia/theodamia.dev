@@ -1,53 +1,46 @@
 import type React from 'react';
 import type { Metadata } from 'next';
-import { DM_Sans, Instrument_Serif, JetBrains_Mono, Patrick_Hand } from 'next/font/google';
+import { Bricolage_Grotesque, Instrument_Sans } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Dock } from '@/components/dock';
+import { SITE } from '@/lib/site';
+import { THEME_SCRIPT } from '@/lib/theme';
 import './globals.css';
 
-const dmSans = DM_Sans({
+/* Variable, with the optical-size axis: the big headings need the narrower display cut. */
+const bricolage = Bricolage_Grotesque({
   subsets: ['latin'],
-  variable: '--font-dm-sans',
+  axes: ['opsz'],
+  variable: '--font-bricolage',
   display: 'swap',
 });
 
-const instrumentSerif = Instrument_Serif({
+const instrumentSans = Instrument_Sans({
   subsets: ['latin'],
-  weight: '400',
-  variable: '--font-instrument-serif',
-  display: 'swap',
-});
-
-const jetBrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-jetbrains-mono',
-  display: 'swap',
-});
-
-const patrickHand = Patrick_Hand({
-  subsets: ['latin'],
-  weight: '400',
-  variable: '--font-patrick-hand',
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-instrument-sans',
   display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: 'Theodore Damianidis | Frontend Engineer',
+  title: `${SITE.name} | ${SITE.title}`,
   description:
-    'A career, hand-graphed — ten years of frontend engineering plotted on graph paper. Senior Frontend Engineer at DeepSea.ai, previously Frontend Lead at Geekbot.',
+    'The Ascent — ten years of frontend engineering drawn as one long climb. Senior Frontend Software Engineer at DeepSea.ai, previously Frontend Lead at Geekbot.',
   generator: 'theodamia.dev',
   keywords: [
     'Frontend Engineer',
+    'Frontend Software Engineer',
     'React',
     'TypeScript',
     'Tailwind CSS',
     'GraphQL',
     'Web Development',
   ],
-  authors: [{ name: 'Theodore Damianidis' }],
+  authors: [{ name: SITE.name }],
   openGraph: {
-    title: 'Theodore Damianidis | Frontend Engineer',
-    description: 'A career, hand-graphed — ten years of frontend engineering, plotted',
+    title: `${SITE.name} | ${SITE.title}`,
+    description: 'Ten years of frontend engineering, drawn as one long climb',
     type: 'website',
   },
   icons: {
@@ -74,17 +67,21 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const fontVariables = [
-    dmSans.variable,
-    instrumentSerif.variable,
-    jetBrainsMono.variable,
-    patrickHand.variable,
-  ].join(' ');
-
   return (
-    <html lang='en' className={fontVariables}>
-      <body>
+    /* the script below sets data-theme before hydration, so <html> differs from the server render on purpose */
+    <html
+      lang='en'
+      className={`${bricolage.variable} ${instrumentSans.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        {/* before the first paint: day or night, so the page never flashes the wrong sky */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
+      {/* overflow-x: clip, not hidden — hidden would make the body a scroll container and break the sticky stage */}
+      <body className='overflow-x-clip'>
         {children}
+        <Dock />
         <Analytics />
         <SpeedInsights />
       </body>

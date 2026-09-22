@@ -3,13 +3,6 @@ import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
 import prettier from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
-import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const prettierOptions = JSON.parse(readFileSync(join(__dirname, '.prettierrc'), 'utf-8'));
 
 const eslintConfig = defineConfig([
   ...nextVitals,
@@ -22,10 +15,9 @@ const eslintConfig = defineConfig([
       prettier,
     },
     rules: {
-      // Explicitly pass Prettier options to ensure single quotes are used
-      'prettier/prettier': ['error', prettierOptions],
+      /* one source for formatting: the rule reads .prettierrc itself, so eslint --fix and prettier agree */
+      'prettier/prettier': 'error',
       'react/no-unescaped-entities': 'off',
-      'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
     },
   },

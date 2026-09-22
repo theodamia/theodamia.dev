@@ -1,0 +1,151 @@
+{
+  "camp-2015": {
+    "width": 384,
+    "height": 274,
+    "lights": [
+      {
+        "id": "light",
+        "kind": "lantern",
+        "x": 0.3895,
+        "y": 0.5337,
+        "width": 0.131,
+        "height": 0.1987
+      }
+    ]
+  },
+  "camp-2016": {
+    "width": 384,
+    "height": 194,
+    "lights": [
+      {
+        "id": "light",
+        "kind": "lantern",
+        "x": 0.1632,
+        "y": 0.2368,
+        "width": 0.1143,
+        "height": 0.2588
+      }
+    ]
+  },
+  "camp-2018": {
+    "width": 384,
+    "height": 282,
+    "lights": [
+      {
+        "id": "light",
+        "kind": "fire",
+        "x": 0.2223,
+        "y": 0.6827,
+        "width": 0.146,
+        "height": 0.2255
+      }
+    ]
+  },
+  "camp-2022": {
+    "width": 384,
+    "height": 307,
+    "lights": [
+      {
+        "id": "light",
+        "kind": "lantern",
+        "x": 0.2599,
+        "y": 0.5176,
+        "width": 0.2349,
+        "height": 0.3872
+      }
+    ]
+  },
+  "camp-2026-spinner": {
+    "width": 100,
+    "height": 202,
+    "lights": [
+      {
+        "id": "blades",
+        "kind": "spinner",
+        "x": -0.4247,
+        "y": -0.3164,
+        "width": 1.8493,
+        "height": 0.9425,
+        "originX": 0.5,
+        "originY": 0.4973
+      }
+    ]
+  },
+  "camp-2026": {
+    "width": 384,
+    "height": 251,
+    "lights": [
+      {
+        "id": "light",
+        "kind": "lantern",
+        "x": 0.2897,
+        "y": 0.5399,
+        "width": 0.1898,
+        "height": 0.3379
+      }
+    ]
+  },
+  "camp-start": {
+    "width": 160,
+    "height": 222
+  },
+  "flag": {
+    "width": 140,
+    "height": 305,
+    "lights": [
+      {
+        "id": "cloth",
+        "kind": "flag",
+        "x": 0.5667,
+        "y": 0.143,
+        "width": 0.9861,
+        "height": 0.3014
+      }
+    ],
+    "poleX": 0.4806
+  },
+  "tree-1": {
+    "width": 384,
+    "height": 598
+  },
+  "tree-2": {
+    "width": 384,
+    "height": 565
+  },
+  "village-1": {
+    "width": 240,
+    "height": 205,
+    "lights": [
+      {
+        "id": "gable",
+        "kind": "window",
+        "x": 0.33,
+        "y": 0.3416,
+        "width": 0.0917,
+        "height": 0.1309
+      },
+      {
+        "id": "window",
+        "kind": "window",
+        "x": 0.4295,
+        "y": 0.6662,
+        "width": 0.1107,
+        "height": 0.1662
+      }
+    ]
+  },
+  "village-2": {
+    "width": 200,
+    "height": 164,
+    "lights": [
+      {
+        "id": "window",
+        "kind": "window",
+        "x": 0.4295,
+        "y": 0.6508,
+        "width": 0.1107,
+        "height": 0.1746
+      }
+    ]
+  }
+}

@@ -1,78 +1,118 @@
+import {
+  Accessibility,
+  Atom,
+  Blocks,
+  Gauge,
+  GitPullRequest,
+  GraduationCap,
+  Handshake,
+  Layers,
+  SwatchBook,
+  Users,
+  type LucideIcon,
+} from 'lucide-react';
+import {
+  siApollographql,
+  siBem,
+  siClaude,
+  siCursor,
+  siDocker,
+  siFigma,
+  siGraphql,
+  siModelcontextprotocol,
+  siNextdotjs,
+  siNodedotjs,
+  siPrisma,
+  siReact,
+  siRedux,
+  siSentry,
+  siSocketdotio,
+  siStorybook,
+  siTailwindcss,
+  siTanstack,
+  siTurborepo,
+  siTypescript,
+  siV0,
+  siVite,
+  siVitest,
+  type SimpleIcon,
+} from 'simple-icons';
+
+/** A brand carries its logo (Simple Icons); a practice, which has none, a Lucide symbol. */
+export type Skill = { name: string } & ({ brand: SimpleIcon } | { icon: LucideIcon });
+
 export type SkillGroup = {
   name: string;
-  /** Depth, self-rated 0–10. */
-  score: number;
-  items: string[];
+  items: Skill[];
 };
 
-export const MAX_SKILL_SCORE = 10;
-
+/**
+ * Skills: a category name, then its skills, strongest first. No ratings, no per-job filter. Curated, not complete:
+ * every pill is one worth ten minutes in an interview, so the basics every frontend engineer has are left out.
+ */
 export const SKILL_GROUPS: SkillGroup[] = [
   {
-    name: 'Core Frontend',
-    score: 9,
+    name: 'Frontend',
     items: [
-      'TypeScript',
-      'React',
-      'Redux',
-      'React Router',
-      'Next.js',
-      'TanStack Query',
-      'Web Vitals',
-      'Performance Optimization',
-      'Accessibility',
+      { name: 'TypeScript', brand: siTypescript },
+      { name: 'React', brand: siReact },
+      { name: 'Next.js', brand: siNextdotjs },
+      { name: 'Redux', brand: siRedux },
+      { name: 'TanStack Query', brand: siTanstack },
     ],
   },
   {
-    name: 'Styling & UI',
-    score: 9,
+    name: 'Design systems',
     items: [
-      'Tailwind CSS',
-      'PostCSS',
-      'Shadcn UI',
-      'Mantine UI',
-      'MUI',
-      'Storybook',
-      'BEM',
-      'Atomic Design',
-      'Responsive Design',
+      { name: 'Design Systems', icon: SwatchBook },
+      { name: 'Tailwind CSS', brand: siTailwindcss },
+      { name: 'Atomic Design', icon: Atom },
+      { name: 'BEM', brand: siBem },
+      { name: 'Storybook', brand: siStorybook },
+      // Shadcn UI, MUI and Mantine UI in one pill
+      { name: 'Various UI Libs', icon: Blocks },
+      { name: 'Figma', brand: siFigma },
     ],
   },
   {
-    name: 'Data & APIs',
-    score: 7,
-    items: ['REST APIs', 'GraphQL', 'Apollo Client', 'WebSockets', 'JWT', 'Node.js', 'Prisma'],
-  },
-  {
-    name: 'Tools & Workflow',
-    score: 8,
+    name: 'Across the stack',
     items: [
-      'ESLint/Prettier',
-      'Git',
-      'Vite',
-      'Turborepo',
-      'Figma',
-      'Vitest',
-      'Webpack',
-      'Docker',
-      'Sentry',
-      'Asana',
+      { name: 'GraphQL', brand: siGraphql },
+      { name: 'Apollo Client', brand: siApollographql },
+      { name: 'Node.js', brand: siNodedotjs },
+      { name: 'Prisma', brand: siPrisma },
+      { name: 'Socket.io', brand: siSocketdotio },
     ],
   },
   {
-    name: 'AI Tooling',
-    score: 8,
-    items: ['Claude Code', 'Cursor', 'ChatGPT', 'v0', 'MCP'],
+    name: 'Quality and tooling',
+    items: [
+      { name: 'Accessibility', icon: Accessibility },
+      { name: 'Performance', icon: Gauge },
+      { name: 'Vitest', brand: siVitest },
+      { name: 'Sentry', brand: siSentry },
+      { name: 'Vite', brand: siVite },
+      { name: 'Turborepo', brand: siTurborepo },
+      { name: 'Docker', brand: siDocker },
+    ],
   },
   {
-    name: 'Leadership & Process',
-    score: 8,
+    name: 'AI in the workflow',
     items: [
-      'System Design',
-      'Stakeholder Management',
-      'Component Architecture',
-      'Cross-team Delivery',
-      'Mentoring',
+      { name: 'Claude Code', brand: siClaude },
+      { name: 'Cursor', brand: siCursor },
+      { name: 'v0', brand: siV0 },
+      { name: 'MCP', brand: siModelcontextprotocol },
+    ],
+  },
+  {
+    name: 'Leadership',
+    items: [
+      { name: 'Frontend Architecture', icon: Layers },
+      { name: 'Code Review', icon: GitPullRequest },
+      { name: 'Mentoring', icon: GraduationCap },
+      { name: 'Cross-team Delivery', icon: Users },
+      { name: 'Stakeholder Management', icon: Handshake },
     ],
   },
 ];

@@ -5,23 +5,23 @@ This project uses [Vitest](https://vitest.dev/) and [React Testing Library](http
 ## Test Structure
 
 - **Unit Tests**: Test individual utilities and functions (`lib/__tests__/`)
-- **Component Tests**: Test React components (`components/__tests__/`, `components/ui/__tests__/`)
+- **Component Tests**: Test React components (`components/__tests__/`)
 - **Integration Tests**: Test component interactions (can be added as needed)
 
 ## Running Tests
 
 ```bash
 # Run tests in watch mode (development)
-npm run test
+pnpm test
 
 # Run tests once
-npm run test:run
+pnpm test:run
 
 # Run tests with UI
-npm run test:ui
+pnpm test:ui
 
 # Run tests with coverage
-npm run test:coverage
+pnpm test:coverage
 ```
 
 ## Writing Tests
@@ -75,9 +75,10 @@ describe('MyComponent', () => {
 
 Common mocks are set up in `test/setup.ts`:
 
-- Next.js router (`next/navigation`)
+- `usePathname` (`next/navigation`), which the dock reads
 - `window.matchMedia`
-- `IntersectionObserver`
+- `ResizeObserver`, which the climb and the dock re-measure through
+- `localStorage`, which holds the day/night choice
 
 ## Coverage
 
