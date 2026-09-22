@@ -19,6 +19,7 @@ export const DOCK_ITEMS: DockItem[] = [
   { id: 'contact', label: 'Contact', page: '/about', section: 'contact' },
 ];
 
+/** The item's `href`, and what the dock compares against to know it is already on that page (`/about#skills`). */
 export function dockHref(item: DockItem): string {
   return item.section ? `${item.page}#${item.section}` : item.page;
 }

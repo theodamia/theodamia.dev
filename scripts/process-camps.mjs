@@ -1,10 +1,10 @@
 /**
  * Turns the generated camp illustrations in art/camps/raw/ into what the site ships.
  *
- *   node scripts/process-camps.mjs
+ *   pnpm camps
  *
- * For every raw/camp-<start year>.(png|jpeg) (and the trailhead's `camp-start`, the village's `village-<n>`, the
- * `flag`, the near slopes' `tree-<n>`): crop the outer margin (where a generator's corner mark would sit), remove the flat
+ * For every raw/camp-<start year>.(png|jpe?g|webp) (and the trailhead's `camp-start`, a camp's stand-alone
+ * `-spinner`, the village's `village-<n>`, the `flag`, the near slopes' `tree-<n>`): crop the outer margin (where a generator's corner mark would sit), remove the flat
  * magenta background, trim to the subject so every camp stands on its own bottom edge, then write
  * public/camps/camp-<start year>.webp at twice the display size (the camp is an SVG <image>, which takes one
  * source, and WebP is supported everywhere the site runs). The sizes go into lib/scene/camp-art.json so the
@@ -325,7 +325,9 @@ function doorLight(data, width, height, seed, [x0, y0, x1, y1]) {
       for (let dy = -DOOR_INSET; dy <= DOOR_INSET && inside; dy++) {
         for (let dx = -DOOR_INSET; dx <= DOOR_INSET && inside; dx++) {
           if (dx * dx + dy * dy > DOOR_INSET * DOOR_INSET) continue;
-          inside = Boolean(region[(y + dy) * width + x + dx]);
+          const [nx, ny] = [x + dx, y + dy];
+          inside =
+            nx >= 0 && ny >= 0 && nx < width && ny < height && Boolean(region[ny * width + nx]);
         }
       }
       if (!inside) continue;
@@ -412,6 +414,11 @@ function flameLayers(data, rgba, width, { fill, mask, box }) {
   return { flame, core };
 }
 
+/**
+ * Turns the flat magenta behind the subject into transparency. A pixel's magenta share is measured from its
+ * green channel (the background's own green is 0, the subject's is not), and along a soft edge that share is
+ * divided back out of the colour, so an anti-aliased outline keeps its own hue instead of turning pink.
+ */
 function removeBackground(data, width, height) {
   const out = Buffer.alloc(width * height * 4);
   for (let i = 0; i < width * height; i++) {
@@ -429,6 +436,7 @@ function removeBackground(data, width, height) {
   return out;
 }
 
+/** The tight box round what is left, with a little air on three sides: never below, so it stands on its base. */
 function subjectBox(rgba, width, height) {
   let [left, top, right, bottom] = [width, height, -1, -1];
   for (let y = 0; y < height; y++) {
@@ -451,6 +459,10 @@ function subjectBox(rgba, width, height) {
   };
 }
 
+/**
+ * One raw image to what the site ships: crop the generator's margin, lift any light or moving part into a layer
+ * of its own, take the background out, trim to the subject, and write the WebP files plus this camp's entry.
+ */
 async function processCamp(file) {
   const name = path.basename(file, path.extname(file));
   const source = sharp(path.join(RAW_DIR, file)).removeAlpha();
@@ -527,7 +539,9 @@ async function processCamp(file) {
     }
     /* a spinner's hub does not turn: keep it (and the ring of outline round it) in the picture, not in the rotor */
     for (let y = hy - light.hubRadius; y <= hy + light.hubRadius; y++) {
+      if (y < 0 || y >= info.height) continue;
       for (let x = hx - light.hubRadius; x <= hx + light.hubRadius; x++) {
+        if (x < 0 || x >= info.width) continue;
         if ((x - hx) ** 2 + (y - hy) ** 2 <= light.hubRadius ** 2)
           light.lifted.mask[y * info.width + x] = 0;
       }
@@ -588,6 +602,8 @@ async function processCamp(file) {
           ...local(light.door.box.slice(2)),
         ])
       : null;
+    if (!made && !light.lifted)
+      throw new Error(`${file}: light "${light.id}" needs seeds, a region or a door`);
     const area = made ? made.box : light.lifted.box;
     const flame = light.kind === 'fire' ? flameLayers(data, lit, info.width, light.lifted) : null;
     let layers = [[light.id, made ? made.pixels : null]];
@@ -635,7 +651,7 @@ const files = (await fs.readdir(RAW_DIR))
   )
   .sort();
 if (!files.length) {
-  console.log('No camp-<start year> images in art/camps/raw/ yet. See art/camps/README.md.');
+  console.log('Nothing to process in art/camps/raw/ yet. See art/camps/README.md.');
   process.exit(0);
 }
 await fs.mkdir(OUT_DIR, { recursive: true });

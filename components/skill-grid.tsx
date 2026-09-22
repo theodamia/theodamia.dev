@@ -1,5 +1,5 @@
 import { BrandIcon } from '@/components/icons/brand-icon';
-import { Chip } from '@/components/ui/chip';
+import { Pill } from '@/components/ui/pill';
 import { Heading } from '@/components/ui/text';
 import type { Skill, SkillGroup } from '@/lib/skill-groups';
 
@@ -34,21 +34,21 @@ function SkillIcon({ skill }: { skill: Skill }) {
 /** One full-width row per category: its name, then its skills as pills below. Nothing else. */
 export function SkillGrid({ groups }: { groups: SkillGroup[] }) {
   return (
-    <div className='mt-[34px] flex flex-col max-[899px]:mt-7'>
+    <div className='max-wide:mt-7 mt-[34px] flex flex-col'>
       {groups.map(group => (
         <div
           key={group.name}
-          className='border-line flex flex-col gap-3.5 border-t py-6 first:border-t-0 first:pt-0 last:pb-0 max-[899px]:py-5'
+          className='border-line max-wide:py-5 flex flex-col gap-3.5 border-t py-6 first:border-t-0 first:pt-0 last:pb-0'
         >
           <Heading as='h3' size='sub'>
             {group.name}
           </Heading>
           <ul className='flex flex-wrap gap-3'>
             {group.items.map(skill => (
-              <Chip key={skill.name} shape='pill'>
+              <Pill key={skill.name}>
                 <SkillIcon skill={skill} />
                 {skill.name}
-              </Chip>
+              </Pill>
             ))}
           </ul>
         </div>

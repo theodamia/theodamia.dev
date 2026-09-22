@@ -31,8 +31,9 @@ function scrollTargetFor(item: DockItem): number {
   if (!item.section) return 0;
   const el = document.getElementById(item.section);
   if (!el) return 0;
+  /* the climb publishes where a section starts; the emptiness check is because Number('') is a finite 0 */
   const published = Number(el.dataset.scrollY);
-  if (Number.isFinite(published) && el.dataset.scrollY) return published;
+  if (el.dataset.scrollY && Number.isFinite(published)) return published;
   return el.getBoundingClientRect().top + window.scrollY - SECTION_SCROLL_OFFSET_PX;
 }
 
@@ -45,11 +46,12 @@ function useActiveSection(pathname: string): string | null {
       item => item.section as string
     );
     let tops: number[] = [];
+    let probeOffset = 0;
     let raf = 0;
 
     const update = () => {
       raf = 0;
-      const probe = window.scrollY + window.innerHeight * DOCK_PROBE_RATIO;
+      const probe = window.scrollY + probeOffset;
       let current: string | null = null;
       ids.forEach((id, i) => {
         if (probe >= tops[i]) current = id;
@@ -60,6 +62,7 @@ function useActiveSection(pathname: string): string | null {
       if (!raf) raf = requestAnimationFrame(update);
     };
     const measure = () => {
+      probeOffset = window.innerHeight * DOCK_PROBE_RATIO;
       tops = ids.map(id => {
         const el = document.getElementById(id);
         return el ? el.getBoundingClientRect().top + window.scrollY : Infinity;

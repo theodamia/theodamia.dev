@@ -39,7 +39,7 @@ describe('scenery', () => {
         []),
     ];
     expect(wisps).toHaveLength(CAMP_Y.length - 1);
-    CAMP_Y.forEach((campY, i) => {
+    CAMP_Y.forEach((_, i) => {
       const anchor = campAnchor(i, CAMP_ANCHORS.WIDE);
       const top = cameraKnot(i, anchor);
       wisps.forEach(([, cy, ry]) => {

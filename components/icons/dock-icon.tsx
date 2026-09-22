@@ -1,4 +1,5 @@
 import type React from 'react';
+import { DOCK_ICON_STROKE } from '@/constants';
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'>;
 
@@ -15,7 +16,7 @@ export function DockIcon({ children, ...props }: IconProps & { children: React.R
       height={24}
       fill='none'
       stroke='currentColor'
-      strokeWidth={1.75}
+      strokeWidth={DOCK_ICON_STROKE}
       strokeLinecap='round'
       strokeLinejoin='round'
       aria-hidden='true'

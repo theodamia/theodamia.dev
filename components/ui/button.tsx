@@ -6,7 +6,7 @@ import { cva } from 'class-variance-authority';
  * transition has to name it: listing only `transform` leaves the lift snapping.
  */
 export const buttonVariants = cva(
-  'rounded-ctl inline-flex cursor-pointer items-center justify-center gap-2 border-[1.5px] font-semibold no-underline ease-soft transition-[transform,translate,box-shadow,border-color] duration-[180ms] motion-reduce:transition-none',
+  'rounded-ctl inline-flex cursor-pointer items-center justify-center gap-2 border-[1.5px] font-semibold no-underline ease-soft transition-[translate,box-shadow,border-color] duration-[180ms] motion-reduce:transition-none',
   {
     variants: {
       variant: {

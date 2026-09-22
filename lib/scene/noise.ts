@@ -1,5 +1,5 @@
 /**
- * Deterministic noise shared by both renderers. Integer hashing only (no Math.random, no trigonometry), so the
+ * Deterministic noise, shared by the scene generators. Integer hashing only (no Math.random, no trigonometry), so the
  * server, the browser and the tests all get the same mountain.
  */
 
@@ -12,7 +12,7 @@ export function rnd(n: number): number {
 }
 
 /** Smooth 1D value noise in [0, 1). */
-export function noise(seed: number, x: number): number {
+function noise(seed: number, x: number): number {
   const i = Math.floor(x);
   const f = x - i;
   const a = rnd(seed * 1009 + i);

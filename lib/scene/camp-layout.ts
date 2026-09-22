@@ -17,7 +17,7 @@ export type CampLight = {
   originY?: number;
 };
 /** `poleX`: where a flag's pole stands in its picture, as a share of the picture's width. */
-export type CampArt = { width: number; height: number; lights?: CampLight[]; poleX?: number };
+type CampArt = { width: number; height: number; lights?: CampLight[]; poleX?: number };
 /**
  * Generated artwork, written by scripts/process-camps.mjs (see art/camps/README.md). Anything without an entry keeps
  * its hand-drawn stand-in, so artwork can arrive one piece at a time.
@@ -41,7 +41,7 @@ export const VILLAGE = [
 /** The village stands on the trailhead's level ground, a hair below where the trail starts. */
 export const VILLAGE_GROUND_Y = CAMP_Y[0] + 2;
 
-/**
+/*
  * Where a camp's artwork stands and how much level ground it needs. Shared by the component that draws the camp
  * and the scenery generator that shapes the mountain under it, so a wide camp always gets a wide enough ledge:
  * nothing may hang over the edge where the ridge starts to fall.
@@ -77,6 +77,7 @@ export function campArtKey(camp: number): string {
   return camp === 0 ? 'camp-start' : `camp-${JOBS[camp - 1].start}`;
 }
 
+/** How wide a camp's picture is drawn, in world units: its own width where it has one, else the common one. */
 export function artWidthFor(artKey: string): number {
   return ART_WIDTHS[artKey] ?? DEFAULT_ART_WIDTH;
 }

@@ -29,7 +29,6 @@
   --color-accent-wash: rgb(207 67 24 / 0.1);
   /* the shaded side of a tent */
   --color-accent-shade: #a5330f;
-  --color-lake: #1d6796;
   --color-lake-fill: #2474ab;
   --color-sun: #e2a12b;
   --color-mist: #a9b7c4;
@@ -56,12 +55,15 @@
   --color-star: oklch(0.97 0.025 95);
   --color-moon-shadow: oklch(0.3 0.035 258);
 
+  /* Shape and size */
+  /* where the page turns from one column into two: `wide:` and `max-wide:`, and WIDE_QUERY in constants/ */
+  --breakpoint-wide: 900px;
+
   /* Type */
   --font-display: var(--font-bricolage), system-ui, sans-serif;
   --font-sans: var(--font-instrument-sans), system-ui, sans-serif;
 
   /* Shape */
-  --radius-chip: 8px;
   --radius-ctl: 12px;
   --radius-tile: 14px;
   --radius-inner: 16px;
@@ -69,10 +71,13 @@
   --radius-card: 20px;
   --radius-section: 28px;
 
-  /* Depth */
-  --shadow-card: 0 18px 40px -26px rgb(30 43 55 / 0.5);
-  --shadow-soft: 0 8px 20px -14px rgb(30 43 55 / 0.45);
-  --shadow-dock: 0 16px 36px -18px rgb(30 43 55 / 0.6);
+  /*
+   * Depth. Tailwind inlines a --shadow-* value into the utility, so a night override of these would never be
+   * read: only the colour below travels as a var(), and that is what the night redefines.
+   */
+  --shadow-card: 0 18px 40px -26px var(--shadow-cast-card);
+  --shadow-soft: 0 8px 20px -14px var(--shadow-cast-soft);
+  --shadow-dock: 0 16px 36px -18px var(--shadow-cast-dock);
   /*
    * a tight edge in the page's card colour, so plain text stays readable wherever it floats over the scene. Kept to
    * a few pixels: a wider glow reads as a pale cloud behind the text, and washes it out
@@ -129,6 +134,11 @@
  */
 :root {
   color-scheme: light;
+
+  /* what the shadows above are cast in; outside @theme so Tailwind leaves the var() in place */
+  --shadow-cast-card: rgb(30 43 55 / 0.5);
+  --shadow-cast-soft: rgb(30 43 55 / 0.45);
+  --shadow-cast-dock: rgb(30 43 55 / 0.6);
 }
 
 :root[data-theme='dark'] {
@@ -148,7 +158,6 @@
 
   --color-accent-text: #ff8a5c;
   --color-accent-wash: rgb(255 138 92 / 0.14);
-  --color-lake: #7cbbe6;
   --color-lake-fill: #5aa9dc;
 
   /* dusk at the trailhead, deepening to midnight as you climb: the same two layers as dawn and day */
@@ -169,9 +178,10 @@
   --color-halo: rgb(10 16 24 / 0.75);
   --color-wisp: oklch(0.4 0.03 255);
 
-  --shadow-card: 0 18px 40px -26px rgb(0 0 0 / 0.8);
-  --shadow-soft: 0 8px 20px -14px rgb(0 0 0 / 0.7);
-  --shadow-dock: 0 16px 36px -18px rgb(0 0 0 / 0.85);
+  /* by night the light is behind you: the same shadows, cast in black */
+  --shadow-cast-card: rgb(0 0 0 / 0.8);
+  --shadow-cast-soft: rgb(0 0 0 / 0.7);
+  --shadow-cast-dock: rgb(0 0 0 / 0.85);
 }
 
 /* `dark:` means the night theme, not the system's: it follows `data-theme`. */
@@ -185,6 +195,11 @@
 @custom-variant touch (@media (hover: none));
 @custom-variant touch-xs (@media (max-width: 399px) and (hover: none));
 
+/*
+ * The page's own defaults: where an anchor lands (clear of the card's top corner, the same 28px as the page
+ * gutter, and SECTION_SCROLL_OFFSET_PX in constants/), how it scrolls there, the reading type, and the one
+ * focus ring the whole site uses.
+ */
 @layer base {
   html {
     scroll-padding-top: 28px;
@@ -219,12 +234,18 @@
   display: block;
   overflow: visible;
   pointer-events: none;
+  /* 240 and 500 are WORLD.WIDTH and WORLD.TRAVEL over WORLD.VIEW (lib/scene/world.ts): change those, change these */
   width: 240vh;
   width: 240lvh;
   height: calc(100vh + var(--d) * 500vh);
   height: calc(100lvh + var(--d) * 500lvh);
   transform: translate3d(-50%, calc(var(--cam) * (100vh - 100%)), 0);
   transform: translate3d(-50%, calc(var(--cam) * (100lvh - 100%)), 0);
+}
+
+/* Only the climb writes transforms; the still strip on /about renders the same layers and never moves them. */
+.scene-stage .scene-layer,
+.scene-stage .scene-layer-window {
   will-change: transform;
 }
 
@@ -233,6 +254,7 @@
  * right keep clear of it: the list of cards gets as much right padding as the page's own margin (28px padding plus
  * whatever the 1180px track leaves) does not already give.
  */
+/* the --breakpoint-wide token, written out: a bare @media cannot read it */
 @media (min-width: 900px) {
   .clear-of-altimeter {
     --altimeter-reach: 158px;
@@ -348,10 +370,6 @@
   animation-play-state: running;
 }
 
-:root[data-theme='dark'] .camp-light-source[data-kind='flag'] {
-  filter: brightness(0.68) saturate(0.8);
-}
-
 @keyframes flag-ripple {
   0% {
     transform: none;
@@ -426,8 +444,8 @@
 
 [data-kind='spinner'] .camp-lit {
   animation:
-    spinner-start 2.4s cubic-bezier(0.5, 0, 0.75, 0.6) 0.3s 1 both,
-    spinner-turn 1.5s linear 2.7s infinite;
+    spin 2.4s cubic-bezier(0.5, 0, 0.75, 0.6) 0.3s 1 both,
+    spin 1.5s linear 2.7s infinite;
   animation-play-state: paused;
 }
 
@@ -435,16 +453,7 @@
   animation-play-state: running;
 }
 
-@keyframes spinner-start {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes spinner-turn {
+@keyframes spin {
   from {
     transform: rotate(0deg);
   }
@@ -527,8 +536,12 @@
   }
 }
 
-/* At night the painted camps sink into the dark; their lights are separate layers, so they stay bright and glow. */
-:root[data-theme='dark'] .camp-art {
+/*
+ * At night the painted camps sink into the dark; their lights are separate layers, so they stay bright and glow.
+ * The flag's cloth is a layer too, but it gives no light: it dims with the picture it belongs to.
+ */
+:root[data-theme='dark'] .camp-art,
+:root[data-theme='dark'] .camp-light-source[data-kind='flag'] {
   filter: brightness(0.68) saturate(0.8);
 }
 
@@ -581,6 +594,7 @@
   transition: scale 1.2s var(--ease-soft) var(--wave-delay, 0ms);
 }
 
+/* below --breakpoint-wide, where the massif fills the top of the screen */
 @media (max-width: 899px) {
   .celestial {
     --disc: 60px;
@@ -720,22 +734,19 @@
   .camp-pennant,
   .camp-label,
   .camp-light-source,
-  .camp-light-source[data-kind='fire'],
-  .camp-light-source[data-kind='window'],
-  .camp-light-source[data-kind='flag'] {
+  .camp-light-source[data-kind] {
     transition: none;
   }
 
-  .camp-lit,
-  .camp-glow,
-  [data-kind='spinner'] .camp-lit,
-  [data-kind='flag'] .camp-lit {
+  /* [data-kind] matches the specificity of the rules that start these animations, so every kind is silenced */
+  [data-kind] .camp-lit,
+  [data-kind] .camp-glow {
     animation: none;
   }
 
-  /* The two fastest layers are the ones that make people queasy. */
-  .scene-layer[data-depth='0.8'],
-  .scene-layer[data-depth='1.35'] {
+  /* The two that sweep widest across the screen are the ones that make people queasy. The still strip keeps them. */
+  .scene-stage .scene-layer[data-depth='0.8'],
+  .scene-stage .scene-layer[data-depth='1.35'] {
     display: none;
   }
 }

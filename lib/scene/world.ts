@@ -71,10 +71,13 @@ const TOTAL_WEIGHT = LEG_WEIGHTS.reduce((sum, weight) => sum + weight, 0);
 export const SIDES: number[] = Array.from({ length: CAMP_COUNT }, (_, i) => (i % 2 === 0 ? 1 : -1));
 
 /** Height is time, compressed: each camp stands as far above the last as its leg is long. */
-export const CAMP_Y: number[] = Array.from({ length: CAMP_COUNT }, (_, i) => {
-  const walked = LEG_WEIGHTS.slice(0, i).reduce((sum, weight) => sum + weight, 0);
-  return TRAILHEAD_Y - (walked / TOTAL_WEIGHT) * CLIMB_HEIGHT;
-});
+export const CAMP_Y: number[] = (() => {
+  let walked = 0;
+  return Array.from({ length: CAMP_COUNT }, (_, i) => {
+    if (i) walked += LEG_WEIGHTS[i - 1];
+    return TRAILHEAD_Y - (walked / TOTAL_WEIGHT) * CLIMB_HEIGHT;
+  });
+})();
 
 export const CAMP_X: number[] = SIDES.map(side => WORLD.CENTER_X + side * CAMP_OFFSET_X);
 
@@ -161,7 +164,7 @@ function sampleByLength(cubics: Cubic[], samples: number): Point[] {
   return out;
 }
 
-export type Leg = {
+type Leg = {
   /** SVG path data for the leg. */
   d: string;
   /** WORLD.LEG_SAMPLES + 1 points, camp to camp. */
@@ -185,7 +188,7 @@ export const SUMMIT_PITCH_D = (() => {
   return `M${x},${y} C${x + 150},${y - 120} ${SUMMIT.x - 90},${SUMMIT.y + 190} ${SUMMIT.x},${top}`;
 })();
 
-export type CampAnchors = { FIRST: number; MIDDLE: number; LAST: number };
+type CampAnchors = { FIRST: number; MIDDLE: number; LAST: number };
 
 /** Where camp `i` should sit on screen (0 top, 1 bottom): the first and last camps have their own place. */
 export function campAnchor(i: number, anchors: CampAnchors): number {

@@ -43,7 +43,7 @@ const FLAG_SINK_SHARE = 0.04;
 /** The shelter grows with the career: a ridge tent on the climb, an expedition dome up high. */
 export type TentKind = 'ridge' | 'dome';
 /** What stands at a camp until its artwork arrives: a tent for a job, a signpost for the trailhead. */
-export type CampKind = TentKind | 'signpost';
+type CampKind = TentKind | 'signpost';
 const DOME_FROM_LEVEL = 5;
 
 export function tentFor(level: number): TentKind {
@@ -169,6 +169,7 @@ export function CampMark({ index, artKey, name, tent, reached }: CampMarkProps) 
   /* the trailhead is a signpost: nothing to conquer, so no flag to raise */
   const hasFlag = tent !== 'signpost';
   const groundWidth = hasFlag ? 66 : 30;
+  /* the camp's middle (the label hangs over it) and the top of its picture, which the name sits above */
   const centerX = art ? ART_LEFT + artWidth / 2 : TENT_CENTER_X;
   const labelY = art ? artSink - artHeight - LABEL_GAP : -96;
   /* the flag's picture, standing where the pole goes: its `poleX` is where the pole is in the picture */
@@ -254,9 +255,7 @@ export function CampMark({ index, artKey, name, tent, reached }: CampMarkProps) 
       ))}
       {!art && (
         <g transform={TENT_PLACEMENT}>
-          <g className='camp-tent'>
-            <Tent />
-          </g>
+          <Tent />
         </g>
       )}
       <text

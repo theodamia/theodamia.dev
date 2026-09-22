@@ -3,7 +3,9 @@ import { rnd } from '@/lib/scene/noise';
 
 export type StarTier = 'faint' | 'mid' | 'bright';
 
-export type Star = {
+type Star = {
+  /** Its cell in the grid below: unique, and the key the page renders it under. */
+  cell: number;
   /** Position, in % of the sky's width and height. */
   x: number;
   y: number;
@@ -54,6 +56,7 @@ export function starField(): Star[] {
       const twinkles = tier === 'bright' || (tier === 'mid' && r(5) < STAR_FIELD.MID_TWINKLE_SHARE);
       const twinkle = twinkles ? between(TWINKLE_S, r(6)) : 0;
       stars.push({
+        cell,
         x: ((column + (1 - JITTER) / 2 + r(2) * JITTER) / COLUMNS) * 100,
         y: down * (0.55 + 0.45 * down) * SKY_SHARE * 100,
         size: between(look.size, r(4)),

@@ -18,12 +18,14 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "pnpm lint && pnpm format:check",
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test:run",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "prepare": "husky"
+    "prepare": "husky",
+    "typecheck": "tsc --noEmit",
+    "camps": "node scripts/process-camps.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [

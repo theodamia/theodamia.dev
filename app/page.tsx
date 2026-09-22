@@ -10,7 +10,7 @@ export default function Home() {
       <SectionCard
         eyebrow='Today'
         title='The ascent never stops'
-        className='rise-in mb-[18vh] max-w-[720px] text-center max-[899px]:mb-[14vh]'
+        className='rise-in max-wide:mb-[14vh] mb-[18vh] max-w-[720px] text-center'
       >
         <p className='text-ink-2 mx-auto mt-3.5 max-w-[480px] text-pretty'>
           Every stop taught me something I carried up to the next, and I am still learning on this

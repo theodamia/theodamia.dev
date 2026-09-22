@@ -18,9 +18,10 @@ export function SocialLinks() {
             aria-label={label}
             title={label}
             {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-            className='rounded-tile border-line bg-card shadow-soft text-ink hover:border-ink hover:text-accent ease-soft inline-flex size-[52px] items-center justify-center border transition-[transform,translate,border-color,color] duration-[180ms] hover:-translate-y-0.5 motion-reduce:transition-none'
+            className='rounded-tile border-line bg-card shadow-soft text-ink hover:border-ink hover:text-accent ease-soft inline-flex size-[52px] items-center justify-center border transition-[translate,border-color,color] duration-[180ms] hover:-translate-y-0.5 motion-reduce:transition-none'
           >
             <Icon />
+            {external && <span className='sr-only'>(opens in a new tab)</span>}
           </a>
         </li>
       ))}

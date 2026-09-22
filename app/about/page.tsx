@@ -8,7 +8,7 @@ import { SectionCard } from '@/components/section-card';
 import { SignalTower } from '@/components/signal-tower';
 import { SkillGrid } from '@/components/skill-grid';
 import { buttonVariants } from '@/components/ui/button';
-import { Eyebrow, Heading } from '@/components/ui/text';
+import { Eyebrow, Heading, Lede } from '@/components/ui/text';
 import { WeekSplit } from '@/components/week-split';
 import { ABOUT_PARAGRAPHS, FACTS, OPINIONS, WEEK } from '@/lib/about';
 import { SITE } from '@/lib/site';
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 };
 
 const TWO_COLUMNS =
-  'grid grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] gap-11 max-[899px]:grid-cols-1 max-[899px]:gap-7';
+  'grid grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] gap-11 max-wide:grid-cols-1 max-wide:gap-7';
 
 /** The quiet reading page under a still strip of the unreached summit. No moving scene here. */
 export default function About() {
@@ -29,8 +29,8 @@ export default function About() {
     <main className='bg-page relative min-h-screen'>
       <SummitStrip />
 
-      <div className='relative z-[2] mx-auto w-full max-w-[1180px] px-7 max-[899px]:px-4'>
-        <header className='mx-auto max-w-[980px] pt-[84px] pb-11 max-[899px]:pt-16 max-[899px]:pb-8'>
+      <div className='max-wide:px-4 relative z-[2] mx-auto w-full max-w-[1180px] px-7'>
+        <header className='max-wide:pt-16 max-wide:pb-8 mx-auto max-w-[980px] pt-[84px] pb-11'>
           <Eyebrow className='text-[17px]'>
             {SITE.name} · {SITE.title}
           </Eyebrow>
@@ -38,9 +38,7 @@ export default function About() {
           <Heading as='h1' size='page' className='mt-3'>
             Behind the climb
           </Heading>
-          <p className='text-ink-2 mt-[18px] max-w-[480px] text-[19px] text-pretty max-[899px]:max-w-full max-[899px]:text-[18px]'>
-            Who carries the pack, how the work gets done and what is in it.
-          </p>
+          <Lede>Who carries the pack, how the work gets done and what is in it.</Lede>
           <div className='mt-7'>
             <Link href='/' className={buttonVariants({ variant: 'quiet' })}>
               <span aria-hidden='true'>←</span> Back to the climb
@@ -48,7 +46,7 @@ export default function About() {
           </div>
         </header>
 
-        <div className='flex flex-col gap-9 max-[899px]:gap-5'>
+        <div className='max-wide:gap-5 flex flex-col gap-9'>
           <SectionCard id='about' eyebrow='About' title='Building things that have to last'>
             <div className={`${TWO_COLUMNS} mt-[26px]`}>
               <div className='flex flex-col gap-4'>

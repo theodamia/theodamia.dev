@@ -2,7 +2,8 @@ import type React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/utils/cn';
 
-export const headingVariants = cva('font-display font-semibold text-ink', {
+/** The display scale: hero and page for the two titles, section and card inside them, sub for a block's heading. */
+const headingVariants = cva('font-display font-semibold text-ink', {
   variants: {
     size: {
       hero: 'text-[clamp(44px,6.6vw,84px)] leading-none tracking-[-0.025em]',
@@ -18,8 +19,22 @@ export const headingVariants = cva('font-display font-semibold text-ink', {
 type HeadingProps = React.HTMLAttributes<HTMLHeadingElement> &
   VariantProps<typeof headingVariants> & { as?: 'h1' | 'h2' | 'h3' };
 
+/** Every heading on the site. The tag and the size are chosen separately: order in the page, then weight on it. */
 export function Heading({ as: Tag = 'h2', size, className, ...props }: HeadingProps) {
   return <Tag className={cn(headingVariants({ size }), className)} {...props} />;
+}
+
+/** The sentence under a page's title: one size up from the body, and never wider than a comfortable line. */
+export function Lede({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p
+      className={cn(
+        'text-ink-2 max-wide:max-w-full max-wide:text-[18px] mt-[18px] max-w-[480px] text-[19px] text-pretty',
+        className
+      )}
+      {...props}
+    />
+  );
 }
 
 /** The small grey line above a heading, and every other quiet caption. */

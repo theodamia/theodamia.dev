@@ -20,8 +20,8 @@ describe('ContactRows', () => {
     render(<ContactRows />);
 
     [
-      { name: `LinkedIn ${SITE.linkedin.handle}`, href: SITE.linkedin.url },
-      { name: `GitHub ${SITE.github.handle}`, href: SITE.github.url },
+      { name: `LinkedIn ${SITE.linkedin.handle} (opens in a new tab)`, href: SITE.linkedin.url },
+      { name: `GitHub ${SITE.github.handle} (opens in a new tab)`, href: SITE.github.url },
     ].forEach(({ name, href }) => {
       const link = screen.getByRole('link', { name });
       expect(link).toHaveAttribute('href', href);

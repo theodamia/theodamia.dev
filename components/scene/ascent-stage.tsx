@@ -54,7 +54,7 @@ type AscentStageProps = {
  * No CSS variables, no layout reads, no SVG changes: that is what keeps the scroll smooth.
  *
  * The camps are small SVGs of their own in a layer that moves with the mountain, not part of the big drawing:
- * when one is reached it animates (flag up, tent pops) and only that small element repaints.
+ * when one is reached its flag runs up the pole and its name brightens, and only that small element repaints.
  */
 export function AscentStage({ reducedMotion, stop, ref }: AscentStageProps) {
   const stage = useRef<HTMLDivElement>(null);
@@ -67,19 +67,25 @@ export function AscentStage({ reducedMotion, stop, ref }: AscentStageProps) {
   /** Last transform written per layer, so an unchanged layer is left alone. */
   const written = useRef<(number | null)[]>([]);
   const size = useRef({ width: 0, height: 0 });
+  /** World units to pixels, and the rounding onto the device pixel grid: both fixed until the next resize. */
+  const scaleRef = useRef(0);
+  const snapRef = useRef((v: number) => v);
 
+  /* no dependency array: every frame must see the current `reducedMotion`, and the rest lives in refs */
   useImperativeHandle(ref, () => ({
     resize() {
       if (!stage.current) return;
       size.current = { width: stage.current.clientWidth, height: stage.current.clientHeight };
+      scaleRef.current = size.current.height / WORLD.VIEW;
+      const dpr = window.devicePixelRatio || 1;
+      snapRef.current = (v: number) => Math.round(v * dpr) / dpr;
       written.current = [];
     },
     applyFrame({ yTop, leg, f }: SceneFrame) {
       const { width, height } = size.current;
       if (!height) return;
-      const scale = height / WORLD.VIEW;
-      const dpr = window.devicePixelRatio || 1;
-      const snap = (v: number) => Math.round(v * dpr) / dpr;
+      const scale = scaleRef.current;
+      const snap = snapRef.current;
 
       /* the mountain: each layer slides by its own depth */
       let near = 0;
@@ -105,7 +111,7 @@ export function AscentStage({ reducedMotion, stop, ref }: AscentStageProps) {
       const edge = reducedMotion ? snap(near + CAMP_Y[CAMP_Y.length - 1] * scale) : cy;
       if (clip.current) clip.current.style.transform = `translate3d(0,${edge}px,0)`;
       if (path.current) {
-        path.current.style.transform = `translate3d(-50%,${(near - edge).toFixed(2)}px,0)`;
+        path.current.style.transform = `translate3d(-50%,${snap(near - edge)}px,0)`;
       }
 
       /* dawn turns to day as you climb (by night, dusk to midnight) */
@@ -132,7 +138,7 @@ export function AscentStage({ reducedMotion, stop, ref }: AscentStageProps) {
     <div
       ref={stage}
       aria-hidden='true'
-      className='sticky top-0 col-start-1 row-start-1 h-lvh self-start overflow-clip contain-[layout_paint]'
+      className='scene-stage sticky top-0 col-start-1 row-start-1 h-lvh self-start overflow-clip contain-[layout_paint]'
       style={{ '--cam': 1 } as React.CSSProperties}
     >
       <Sky />
@@ -144,12 +150,12 @@ export function AscentStage({ reducedMotion, stop, ref }: AscentStageProps) {
       <Cloud className='motion-safe:animate-drift top-[7%] left-[40%] w-[190px]' />
       <Cloud className='motion-safe:animate-drift-slow top-[24%] left-[70%] w-[120px] opacity-80' />
 
-      {SCENE_LAYERS.slice(0, TRAIL_INDEX).map((_, i) => renderLayer(i))}
+      {Array.from({ length: TRAIL_INDEX }, (_, i) => renderLayer(i))}
 
       {/* the walked path is a finished drawing behind a window; the window's top edge follows the climber, so the line appears to be drawn without being redrawn */}
       <div
         ref={clip}
-        className='absolute inset-0 [transform:translate3d(0,100%,0)] overflow-clip will-change-transform'
+        className='scene-layer-window absolute inset-0 [transform:translate3d(0,100%,0)] overflow-clip'
       >
         <SceneLayerSvg
           ref={path}
@@ -184,7 +190,9 @@ export function AscentStage({ reducedMotion, stop, ref }: AscentStageProps) {
         <span className='border-ink bg-card absolute -top-2.5 -left-2.5 size-5 rounded-full border-[3.5px] shadow-[0_0_0_8px_color-mix(in_oklab,var(--color-ink)_16%,transparent)]' />
       </div>
 
-      {SCENE_LAYERS.slice(TRAIL_INDEX + 1).map((_, i) => renderLayer(TRAIL_INDEX + 1 + i))}
+      {Array.from({ length: SCENE_LAYERS.length - TRAIL_INDEX - 1 }, (_, i) =>
+        renderLayer(TRAIL_INDEX + 1 + i)
+      )}
     </div>
   );
 }

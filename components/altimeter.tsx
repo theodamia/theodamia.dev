@@ -17,23 +17,6 @@ type AltimeterProps = {
   walkedRef: React.Ref<HTMLSpanElement>;
 };
 
-/** Every stop on the rail: the trailhead, then one per job. `job` is what `onJump` takes. */
-const STOPS = [
-  {
-    job: -1,
-    year: TRAILHEAD.year,
-    place: TRAILHEAD.label,
-    label: `${TRAILHEAD.year}, the start of the trail`,
-  },
-  ...JOBS.map((job, i) => ({
-    job: i,
-    year: job.start,
-    place: job.place,
-    label: `${job.start}, ${job.role} at ${job.company}`,
-  })),
-];
-const NOW = JOBS.length - 1;
-
 /** Where a stop sits on the rail: the camera position at its camp, as a share of the whole climb. */
 function stopTop(job: number): string {
   /* camp 0 is the trailhead, so job `i` stands at camp `i + 1` */
@@ -41,6 +24,26 @@ function stopTop(job: number): string {
   const knot = cameraKnot(camp, campAnchor(camp, CAMP_ANCHORS.WIDE));
   return `${Math.min(100, (knot / WORLD.TRAVEL) * 100).toFixed(1)}%`;
 }
+
+/** Every stop on the rail: the trailhead, then one per job. `job` is what `onJump` takes, `top` where it sits. */
+const STOPS = [
+  {
+    job: -1,
+    year: TRAILHEAD.year,
+    place: TRAILHEAD.label,
+    label: `${TRAILHEAD.year}, the start of the trail`,
+    top: stopTop(-1),
+  },
+  ...JOBS.map((job, i) => ({
+    job: i,
+    year: job.start,
+    place: job.place,
+    label: `${job.start}, ${job.role} at ${job.company}`,
+    top: stopTop(i),
+  })),
+];
+/** The last job in `lib/jobs.ts` is the present one: its mark says "Now". */
+const NOW = JOBS.length - 1;
 
 /**
  * The trail in miniature, fixed on the right: the summit it leads to at the top, the start at the bottom, and a mark
@@ -60,9 +63,9 @@ export function Altimeter({
   walkedRef,
 }: AltimeterProps) {
   return (
-    <div className='pointer-events-none fixed top-[22px] right-[22px] bottom-10 z-[6] flex flex-col items-end gap-5 max-[899px]:top-3.5 max-[899px]:right-3 max-[899px]:bottom-auto'>
+    <div className='max-wide:top-3.5 max-wide:right-3 max-wide:bottom-auto pointer-events-none fixed top-[22px] right-[22px] bottom-10 z-[6] flex flex-col items-end gap-5'>
       {/* the top of the rail: the summit the trail leads to and never reaches, because the climb goes on */}
-      <p className='text-ink-3 mr-[5px] flex items-center gap-1.5 text-[12.5px] leading-none font-semibold max-[899px]:hidden'>
+      <p className='text-ink-3 max-wide:hidden mr-[5px] flex items-center gap-1.5 text-[12.5px] leading-none font-semibold'>
         {SUMMIT_LINE}
         <svg aria-hidden='true' viewBox='0 0 12 10' width='12' height='10' className='shrink-0'>
           <path
@@ -76,7 +79,7 @@ export function Altimeter({
 
       <div
         aria-hidden='true'
-        className='border-line shadow-soft bg-card/94 hidden items-baseline gap-2 rounded-full border px-3.5 pt-1.5 pb-[7px] max-[899px]:flex'
+        className='border-line shadow-soft bg-card/94 max-wide:flex hidden items-baseline gap-2 rounded-full border px-3.5 pt-1.5 pb-[7px]'
       >
         <span className='font-display text-[20px] leading-none font-semibold tracking-[-0.02em]'>
           {year}
@@ -87,7 +90,7 @@ export function Altimeter({
       <nav
         ref={railRef}
         aria-label='Jump to a year on the climb'
-        className='relative mr-2.5 w-[3px] flex-1 max-[899px]:hidden'
+        className='max-wide:hidden relative mr-2.5 w-[3px] flex-1'
       >
         {/* still to climb: dotted, like the trail ahead in the scene */}
         <span
@@ -106,7 +109,7 @@ export function Altimeter({
             key={`node-${stop.year}`}
             aria-hidden='true'
             data-reached={stop.job <= reached}
-            style={{ top: stopTop(stop.job) }}
+            style={{ top: stop.top }}
             className={cn(
               'absolute left-1/2 size-[9px] -translate-x-1/2 -translate-y-1/2 rounded-full',
               stop.job <= reached
@@ -123,7 +126,7 @@ export function Altimeter({
             <button
               key={stop.year}
               type='button'
-              style={{ top: stopTop(stop.job) }}
+              style={{ top: stop.top }}
               aria-label={now ? `Now: ${stop.label}` : stop.label}
               aria-current={current ? 'true' : undefined}
               onClick={() => onJump(stop.job)}

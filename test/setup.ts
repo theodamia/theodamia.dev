@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
 import { afterEach, vi } from 'vitest';
 
@@ -29,16 +29,9 @@ const localStorageMock = (() => {
 })();
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
-// Mock Next.js router
+// Mock Next.js navigation — the dock reads the path to light its current item
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: vi.fn(),
-    replace: vi.fn(),
-    prefetch: vi.fn(),
-    back: vi.fn(),
-  }),
   usePathname: () => '/',
-  useSearchParams: () => new URLSearchParams(),
 }));
 
 // Mock window.matchMedia
@@ -62,14 +55,3 @@ global.ResizeObserver = class ResizeObserver {
   unobserve() {}
   disconnect() {}
 } as unknown as typeof ResizeObserver;
-
-// Mock IntersectionObserver
-global.IntersectionObserver = class IntersectionObserver {
-  constructor() {}
-  disconnect() {}
-  observe() {}
-  takeRecords() {
-    return [];
-  }
-  unobserve() {}
-} as unknown as typeof IntersectionObserver;

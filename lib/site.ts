@@ -1,3 +1,4 @@
+/** Who the site is: the metadata, the hero, the contact rows and the social links all read from here. */
 export const SITE = {
   name: 'Theodore Damianidis',
   title: 'Senior Frontend Software Engineer',

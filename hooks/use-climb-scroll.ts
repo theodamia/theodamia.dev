@@ -43,7 +43,8 @@ const FIRST_JOB_STOP = 1;
  * Drives the climb from the page scroll. Everything that needs layout is read in `measure()` (on resize and
  * when the track changes height), never while scrolling: the scroll position at which each card meets its camp
  * and the matching camera positions. A frame then only interpolates between those and hands the scene one
- * `SceneFrame`. React state changes only when a new stop or year is reached.
+ * `SceneFrame`. The three pieces of state are set every frame but almost always with the value they already
+ * hold, so React bails out and nothing re-renders until the stop or the year actually changes.
  */
 export function useClimbScroll({
   scene,
@@ -113,6 +114,7 @@ export function useClimbScroll({
       let previous = 0;
       const cardStops = cards.map((card, i) => {
         const top = card.getBoundingClientRect().top + window.scrollY;
+        /* `previous + 1` keeps the stops strictly increasing, so the progress within a leg never divides by zero */
         previous = Math.max(previous + 1, top - (anchorFor(i + 1) + lead) * window.innerHeight);
         return previous;
       });

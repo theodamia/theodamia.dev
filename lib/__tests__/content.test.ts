@@ -38,14 +38,16 @@ describe('jobs', () => {
 });
 
 describe('about', () => {
-  it('splits the week into exactly 100%', () => {
+  it('splits the week into exactly 100%, largest share first', () => {
     expect(WEEK.reduce((sum, slice) => sum + slice.share, 0)).toBe(100);
+    WEEK.slice(1).forEach((slice, i) => expect(slice.share).toBeLessThanOrEqual(WEEK[i].share));
   });
 
-  it('keeps opinions between "it depends" and "every time"', () => {
-    OPINIONS.forEach(opinion => {
+  it('keeps opinions between "it depends" and "every time", strongest first', () => {
+    OPINIONS.forEach((opinion, i) => {
       expect(opinion.holds).toBeGreaterThan(0);
       expect(opinion.holds).toBeLessThanOrEqual(1);
+      if (i) expect(opinion.holds).toBeLessThanOrEqual(OPINIONS[i - 1].holds);
     });
   });
 

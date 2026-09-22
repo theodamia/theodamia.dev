@@ -17,16 +17,15 @@ type SceneLayerSvgProps = {
   depth: number;
   height: number;
   markup: string;
-  className?: string;
   ref?: React.Ref<SVGSVGElement>;
 };
 
 /** One parallax layer. `--d` sizes it (see `.scene-layer` in globals.css); the stage moves it as a whole. */
-export function SceneLayerSvg({ depth, height, markup, className, ref }: SceneLayerSvgProps) {
+export function SceneLayerSvg({ depth, height, markup, ref }: SceneLayerSvgProps) {
   return (
     <svg
       ref={ref}
-      className={cn('scene-layer', className)}
+      className='scene-layer'
       data-depth={depth}
       style={{ '--d': depth } as React.CSSProperties}
       viewBox={`0 0 ${WORLD.WIDTH} ${height}`}
@@ -72,7 +71,7 @@ export function Stars() {
     <div className='absolute inset-0'>
       {STARS.map(star => (
         <span
-          key={`${star.x.toFixed(2)}-${star.y.toFixed(2)}`}
+          key={star.cell}
           data-wave
           data-tier={star.tier}
           data-twinkle={star.twinkle ? '' : undefined}

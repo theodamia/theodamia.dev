@@ -18,7 +18,8 @@ import {
  * Scenery generator for the SVG stage. Everything is deterministic (integer-hash noise, no Math.random and
  * no trigonometry), so the server and the browser produce the same markup and the drawing is unit-testable.
  * Nothing here changes after it is painted: the stage moves whole layers with transforms and never touches
- * the SVG again, which is why scrolling costs no repaint. Each band's trees are a single path.
+ * the SVG again, which is why scrolling costs no repaint. Near slopes carry tree pictures, one <image> each;
+ * far bands keep flat silhouettes, which suit the haze and stay cheap.
  */
 
 const { CENTER_X: CX, VIEW, TRAVEL } = WORLD;
@@ -43,7 +44,7 @@ const BAND_X0 = -260;
 const BAND_X1 = 2660;
 const BAND_STEP = 36;
 
-export type Oklch = [l: number, c: number, h: number];
+type Oklch = [l: number, c: number, h: number];
 
 type Band = {
   seed: number;
@@ -83,6 +84,13 @@ export type SceneLayer = {
   markup: string;
 };
 
+/**
+ * The height of a band's crest at `x`, and the one piece of geometry the whole module is built on. Four things
+ * shape it: the crest's own height, a fall-off once past the summit's half-width (`slope`), fractal roughness
+ * (`rough`), and a slow droop outward (`beyond * 0.05`) so distant flanks keep sinking. A band with a `ledge`
+ * (the level ground a camp stands on) starts from that ledge's height and blends into the rough crest over
+ * `LEDGE_BLEND`, smoothstepped, so the join never shows as a corner.
+ */
 function crestY(b: Band, x: number): number {
   const d = Math.abs(x - b.cx);
   const shoulder = d > b.half ? (d - b.half) * b.slope : 0;
@@ -332,7 +340,8 @@ function faceTreeSpots(b: Band, taken: TreeSpot[]): TreeSpot[] {
       r(0) < FACE_TREES.CHANCE &&
       clearOfTrail(spot.x, spot.y, spot.s * 3) &&
       clearOfCamps(spot.x, spot.y) &&
-      !crowded(spot, [...taken, ...spots])
+      !crowded(spot, taken) &&
+      !crowded(spot, spots)
     ) {
       spots.push(spot);
     }
@@ -578,7 +587,7 @@ function escapeText(text: string): string {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-function label(x: number, y: number, text: string, size = 30): string {
+function label(x: number, y: number, text: string, size: number): string {
   if (!text) return '';
   return (
     `<text x="${x}" y="${y}" text-anchor="middle" style="font-family:${LABEL_FONT};font-weight:${LABEL_WEIGHT};font-size:${size}px;` +

@@ -1,11 +1,14 @@
+/** The About section, in the order it reads: where I come from, the lead years, and what I am doing now. */
 export const ABOUT_PARAGRAPHS: string[] = [
   'Frontend engineer, ten years in, mostly at startups. I work across the stack: React and TypeScript up front, Node.js, GraphQL and databases behind. I take a feature from the schema to the screen.',
   "I work closely with Product, Design and UX, from the first sketch to release. At Geekbot I led the frontend team for four years: I built its design system, set the team's coding and review standards, made AI tools part of the daily workflow and mentored the engineers who joined.",
   'Now I am hands-on again at DeepSea.ai, where I set the frontend architecture: a Turborepo monorepo, the move off Create React App, a design system and the standards around them, with releases going out all the while. I ask what we are solving before how, and I write code that stays easy to change.',
 ];
 
+/** One line of the fact list beside the About text. */
 export type Fact = { label: string; value: string };
 
+/** Ordered by what a reader wants first: the job now, then where, then how long, then the rest. */
 export const FACTS: Fact[] = [
   { label: 'Currently', value: 'Senior Frontend Software Engineer at DeepSea.ai' },
   { label: 'Based in', value: 'Thessaloniki, Greece. Remote since before it was mandatory.' },
@@ -20,6 +23,7 @@ export type Opinion = {
   holds: number;
 };
 
+/** Ordered by how often each holds, strongest first: the bars read as one falling line down the section. */
 export const OPINIONS: Opinion[] = [
   { name: 'Boring code beats clever code', holds: 0.92 },
   { name: 'What we are solving, before how', holds: 0.9 },
@@ -36,6 +40,7 @@ export type WeekSlice = {
   note: string;
 };
 
+/** Largest share first, so the legend follows the bar above it. The shares must add up to 100. */
 export const WEEK: WeekSlice[] = [
   {
     label: 'Writing code',

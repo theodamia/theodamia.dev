@@ -53,7 +53,7 @@ export function Climb({ hero, children }: ClimbProps) {
 
       <div
         ref={track}
-        className='relative z-[2] col-start-1 row-start-1 mx-auto w-full max-w-[1180px] px-7 max-[899px]:px-4'
+        className='max-wide:px-4 relative z-[2] col-start-1 row-start-1 mx-auto w-full max-w-[1180px] px-7'
       >
         {hero}
         <ol

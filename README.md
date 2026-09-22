@@ -1,6 +1,6 @@
 # theodamia.dev
 
-Personal portfolio website for Theodore Damianidis - Frontend Engineer. "The Ascent": ten years of frontend work drawn as one long, scroll-driven climb up a mountain, with a second, quiet page for about, skills and contact.
+Personal portfolio website for Theodore Damianidis - Senior Frontend Software Engineer. "The Ascent": ten years of frontend work drawn as one long, scroll-driven climb up a mountain, with a second, quiet page for about, skills and contact.
 
 ## 🚀 Tech Stack
 
@@ -9,7 +9,7 @@ Personal portfolio website for Theodore Damianidis - Frontend Engineer. "The Asc
 - **UI Library**: [React 19](https://react.dev/)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) with `class-variance-authority`
 - **Scene**: hand-written SVG + CSS, generated deterministically — no WebGL, no chart or animation library
-- **Icons**: [Lucide](https://lucide.dev/) for the dock (plus one hand-drawn ice axe), Simple Icons glyphs for the links
+- **Icons**: [Lucide](https://lucide.dev/) for the dock (plus one hand-drawn ice axe) and for skills without a logo, [Simple Icons](https://simpleicons.org/) for brand logos in Skills and the links
 - **Type**: Bricolage Grotesque and Instrument Sans via `next/font`
 - **Analytics**: [Vercel Analytics](https://vercel.com/analytics)
 - **Code Quality**: ESLint + Prettier
@@ -37,7 +37,7 @@ theodamia.dev/
 ├── components/             # React components
 │   ├── scene/             # The SVG stage, the still summit strip, shared layers
 │   ├── icons/             # Inline SVG icons
-│   ├── ui/                # Small primitives (button, chip, text)
+│   ├── ui/                # Small primitives (button, pill, text)
 │   ├── climb.tsx          # Client shell of the main page
 │   ├── job-card.tsx       # One stop on the climb
 │   ├── altimeter.tsx      # Year rail, needle and the "Now" card

@@ -16,7 +16,9 @@ Use **pnpm** (the only lockfile is `pnpm-lock.yaml`).
 - `pnpm build` - Production build
 - `pnpm lint` - ESLint
 - `pnpm format` - Prettier format
-- `pnpm check` - Lint + format check combined
+- `pnpm check` - Types, lint, format check and tests, all four
+- `pnpm typecheck` - `tsc --noEmit`
+- `pnpm camps` - Rebuild the camp artwork from `art/camps/raw/`
 - `pnpm test` - Vitest in watch mode
 - `pnpm test:run` - Run tests once
 - `pnpm vitest run components/__tests__/dock.test.tsx` - Run a single test file
@@ -24,7 +26,7 @@ Use **pnpm** (the only lockfile is `pnpm-lock.yaml`).
 ## Architecture
 
 - **Framework**: Next.js 16 App Router, React 19, TypeScript (strict mode)
-- **Styling**: Tailwind CSS 4 with `cva` for variants. All design tokens live in `@theme` in `app/globals.css` — colours, the two font families, radii, shadows, easing, keyframes. The `@theme` values are the day; the night overrides the same tokens under `:root[data-theme='dark']`, so components never carry two sets of colours. `dark:` is a custom variant on `data-theme` (not the system setting), for the few element-level changes. `touch:` and `touch-xs:` are custom variants for screens that cannot hover (`touch-xs` is below 400px, where the dock drops Home to fit the day/night switch)
+- **Styling**: Tailwind CSS 4 with `cva` for variants. All design tokens live in `@theme` in `app/globals.css` — colours, the two font families, radii, shadows, easing, keyframes. The `@theme` values are the day; the night overrides the same tokens under `:root[data-theme='dark']`, so components never carry two sets of colours. `dark:` is a custom variant on `data-theme` (not the system setting), for the few element-level changes. `touch:` and `touch-xs:` are custom variants for screens that cannot hover (`touch-xs` is below 400px, where the dock drops Home to fit the day/night switch). The one page breakpoint is the `--breakpoint-wide: 900px` token: `wide:` and `max-wide:` in markup, `WIDE_QUERY` in `constants/` for the same line in JS. A `--shadow-*` value is inlined into its utility by Tailwind, so the night's shadows flip through a `--shadow-cast-*` colour instead
 - **Type**: Bricolage Grotesque (display; loaded variable with its `opsz` axis, the big headings need the narrow display cut) and Instrument Sans (text), via `next/font/google` in `app/layout.tsx`
 - **Scene**: pure SVG and CSS, no WebGL and no chart or animation library. `lib/scene/` generates the mountain deterministically; `components/scene/ascent-stage.tsx` renders and moves it
 - **Testing**: Vitest + React Testing Library + jsdom
@@ -41,9 +43,9 @@ Everything outside `components/scene/` knows the mountain through two things onl
 
 - `app/` - `layout.tsx` (fonts, metadata, the dock), `page.tsx` (`/`), `about/page.tsx` (`/about`), `globals.css`
 - `components/` - One file per piece: `climb.tsx` (the main page's client shell), `hero`, `job-card`, `altimeter`, `scroll-cue`, `dock`, and the `/about` sections (`section-card`, `fact-list`, `opinion-bars`, `week-split`, `skill-grid`, `contact-rows`, `copy-email-button`, `signal-tower`, `social-links`)
-- `components/scene/` - `ascent-stage.tsx` (the moving stage), `camp-mark.tsx` (one camp: tent, flag, name), `summit-strip.tsx` (the still header on `/about`), `scene-layer.tsx` (shared layer, sky, stars and `Celestial`, the sun that becomes the moon), `village.tsx` (the houses at the trailhead), `light-source.tsx` (the lit layer shared by camps and houses)
+- `components/scene/` - `ascent-stage.tsx` (the moving stage; it carries `.scene-stage`, which is how the CSS tells the climb's layers from the still ones on `/about`), `camp-mark.tsx` (one camp: tent, flag, name), `summit-strip.tsx` (the still header on `/about`), `scene-layer.tsx` (shared layer, sky, stars and `Celestial`, the sun that becomes the moon), `village.tsx` (the houses at the trailhead), `light-source.tsx` (the lit layer shared by camps and houses)
 - `components/icons/` - Inline SVG icons. The dock uses `lucide-react` (Tent, Map, NotebookPen, RadioTower) at stroke 1.75, except Skills: Lucide has no ice axe, so `ice-axe-icon.tsx` is hand-drawn on `dock-icon.tsx` to match Lucide's 24 grid, round caps and joins, `currentColor`. `brand-icon.tsx` holds the three Simple Icons glyphs, and its `BrandIcon` also draws the Skills pills' logos, whose paths come from the `simple-icons` package (server-only, so it never reaches the client). A skill with no logo (a practice) gets a Lucide symbol instead; the pairing lives in `lib/skill-groups.ts` (`brand` or `icon` per skill), and both render in `accent-text`, the one touch of colour in the section
-- `components/ui/` - Small primitives with `cva` variants: `button`, `chip`, `text` (`Heading`, `Eyebrow`)
+- `components/ui/` - Small primitives: `button` and `text` (`Heading`, `Eyebrow`, `Lede`) carry `cva` variants, `pill` is the Skills pill
 - `components/__tests__/`, `lib/__tests__/`, `lib/scene/__tests__/` - Tests colocated in `__tests__` directories
 - `hooks/` - `use-climb-scroll.ts` (scroll controller), `use-reduced-motion.ts`, `use-theme.ts` (the theme on `<html>`, and following the system until someone picks)
 - `constants/index.ts` - Camp anchors, scroll thresholds, breakpoints, series colours, the theme reveal and the star field

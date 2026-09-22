@@ -28,25 +28,25 @@ const WHEREABOUTS = [SITE.location, 'Remote', 'UTC+2/+3'];
 export function ContactRows() {
   return (
     <div className='mt-[26px]'>
-      <ul className='grid grid-cols-2 gap-3 max-[899px]:grid-cols-1'>
+      <ul className='max-wide:grid-cols-1 grid grid-cols-2 gap-3'>
         <li
           className={cn(
             TILE,
-            'col-span-2 flex items-center gap-x-4 gap-y-3.5 px-5 py-4 max-[899px]:col-span-1 max-[899px]:flex-wrap max-[899px]:px-4'
+            'max-wide:col-span-1 max-wide:flex-wrap max-wide:px-4 col-span-2 flex items-center gap-x-4 gap-y-3.5 px-5 py-4'
           )}
         >
-          <div className='min-w-0 flex-1 text-[20px] font-semibold break-words max-[899px]:text-[17px]'>
+          <div className='max-wide:text-[17px] min-w-0 flex-1 text-[20px] font-semibold break-words'>
             <Eyebrow className={LABEL}>
               <GmailIcon width={LOGO_SIZE} height={LOGO_SIZE} className='shrink-0' />
               Email
             </Eyebrow>
             {SITE.email}
           </div>
-          <div className='flex shrink-0 gap-2 max-[899px]:w-full'>
+          <div className='max-wide:w-full flex shrink-0 gap-2'>
             <CopyEmailButton email={SITE.email} className='whitespace-nowrap' />
             <a
               href={`mailto:${SITE.email}`}
-              className={cn(buttonVariants({ size: 'sm' }), 'whitespace-nowrap max-[899px]:flex-1')}
+              className={cn(buttonVariants({ size: 'sm' }), 'max-wide:flex-1 whitespace-nowrap')}
             >
               Email me
               <ArrowRight size={ARROW_SIZE} aria-hidden='true' />
@@ -61,10 +61,10 @@ export function ContactRows() {
               rel='noopener noreferrer'
               className={cn(
                 TILE,
-                'group hover:border-ink ease-soft grid h-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 px-5 py-4 font-semibold transition-[border-color,transform,translate] duration-[180ms] hover:-translate-y-0.5 motion-reduce:transition-none max-[899px]:px-4'
+                'group hover:border-ink ease-soft max-wide:px-4 grid h-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 px-5 py-4 font-semibold transition-[border-color,translate] duration-[180ms] hover:-translate-y-0.5 motion-reduce:transition-none'
               )}
             >
-              <div className='min-w-0 break-words max-[899px]:text-base'>
+              <div className='max-wide:text-base min-w-0 break-words'>
                 <Eyebrow className={LABEL}>
                   <Icon
                     width={LOGO_SIZE}
@@ -75,6 +75,7 @@ export function ContactRows() {
                 </Eyebrow>
                 {value}
               </div>
+              <span className='sr-only'>(opens in a new tab)</span>
               <ArrowUpRight
                 size={ARROW_SIZE}
                 aria-hidden='true'

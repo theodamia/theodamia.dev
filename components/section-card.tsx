@@ -17,7 +17,7 @@ export function SectionCard({ id, eyebrow, title, className, children }: Section
       id={id}
       className={cn(
         // w-full: an auto margin in the page's flex column would otherwise shrink the card to its content
-        'rounded-section border-line bg-card shadow-card mx-auto w-full max-w-[980px] border px-[52px] pt-12 pb-[52px] max-[899px]:rounded-[22px] max-[899px]:px-[22px] max-[899px]:pt-[30px] max-[899px]:pb-8',
+        'rounded-section border-line bg-card shadow-card max-wide:rounded-[22px] max-wide:px-[22px] max-wide:pt-[30px] max-wide:pb-8 mx-auto w-full max-w-[980px] border px-[52px] pt-12 pb-[52px]',
         className
       )}
     >

@@ -21,14 +21,14 @@ export function JobCard({ job, index, side, legLvh }: JobCardProps) {
   return (
     <li
       className={cn(
-        'flex items-start max-[899px]:justify-center',
+        'max-wide:justify-center flex items-start',
         side === 'left' ? 'justify-start' : 'justify-end'
       )}
       style={{ minHeight: `${legLvh}lvh` }}
     >
       <article
         data-card
-        className='rounded-card border-line bg-card shadow-card w-[min(420px,100%)] overflow-hidden border max-[899px]:w-[min(480px,100%)]'
+        className='rounded-card border-line bg-card shadow-card max-wide:w-[min(480px,100%)] w-[min(420px,100%)] overflow-hidden border'
       >
         <div className='px-6 pt-[22px] pb-4'>
           <div className='flex items-center gap-2.5'>
