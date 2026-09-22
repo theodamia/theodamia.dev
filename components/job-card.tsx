@@ -18,6 +18,7 @@ type JobCardProps = {
  */
 export function JobCard({ job, index, side, legLvh }: JobCardProps) {
   const pointsId = `job-${job.start}-did`;
+
   return (
     <li
       className={cn(

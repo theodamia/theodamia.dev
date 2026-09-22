@@ -8,6 +8,7 @@ export function rnd(n: number): number {
   let x = Math.imul(n | 0, 374761393) + 668265263;
   x = Math.imul(x ^ (x >>> 13), 1274126177);
   x = x ^ (x >>> 16);
+
   return (x >>> 0) / 4294967296;
 }
 
@@ -17,6 +18,7 @@ function noise(seed: number, x: number): number {
   const f = x - i;
   const a = rnd(seed * 1009 + i);
   const b = rnd(seed * 1009 + i + 1);
+
   return a + (b - a) * (f * f * (3 - 2 * f));
 }
 

@@ -17,6 +17,7 @@ function renderAltimeter(job: number, onJump = vi.fn()) {
     />
   );
   const rail = screen.getByRole('navigation', { name: 'Jump to a year on the climb' });
+
   return { onJump, rail, container };
 }
 

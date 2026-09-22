@@ -26,6 +26,7 @@ const ICONS: Record<DockItemId, DockIconComponent> = {
   skills: IceAxeIcon,
   contact: RadioTower,
 };
+
 /** Where a same-page click should scroll to. The climb publishes its first stop; other sections use their top. */
 function scrollTargetFor(item: DockItem): number {
   if (!item.section) return 0;
@@ -34,6 +35,7 @@ function scrollTargetFor(item: DockItem): number {
   /* the climb publishes where a section starts; the emptiness check is because Number('') is a finite 0 */
   const published = Number(el.dataset.scrollY);
   if (el.dataset.scrollY && Number.isFinite(published)) return published;
+
   return el.getBoundingClientRect().top + window.scrollY - SECTION_SCROLL_OFFSET_PX;
 }
 
@@ -58,13 +60,16 @@ function useActiveSection(pathname: string): string | null {
       });
       setActive(current);
     };
+
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(update);
     };
+
     const measure = () => {
       probeOffset = window.innerHeight * DOCK_PROBE_RATIO;
       tops = ids.map(id => {
         const el = document.getElementById(id);
+
         return el ? el.getBoundingClientRect().top + window.scrollY : Infinity;
       });
       onScroll();
@@ -112,6 +117,7 @@ export function Dock() {
           const Icon = ICONS[item.id];
           const isHome = item.id === 'home';
           const isOn = Boolean(item.section) && item.section === active;
+
           return (
             <Link
               key={item.id}

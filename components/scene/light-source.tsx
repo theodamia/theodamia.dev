@@ -33,6 +33,7 @@ export function LightSource({ art, light, box, reached }: LightSourceProps) {
     light.originX === undefined || light.originY === undefined
       ? undefined
       : `${light.originX * 100}% ${light.originY * 100}%`;
+
   return (
     <div
       className='camp-light-source absolute'

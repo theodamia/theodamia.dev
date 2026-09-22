@@ -18,17 +18,20 @@ function mockMedia(matching: string[]) {
         removeEventListener: vi.fn(),
       }) as unknown as MediaQueryList
   );
+
   return listeners;
 }
 
 /** A stand-in for the browser's view transition: runs the switch at once, finishes when told to. */
 function mockViewTransition() {
   let finish = () => {};
+
   const finished = new Promise<undefined>(resolve => {
     finish = () => resolve(undefined);
   });
   const start = vi.fn((update: () => void) => {
     update();
+
     return {
       ready: Promise.resolve(),
       finished,
@@ -37,6 +40,7 @@ function mockViewTransition() {
     };
   });
   Object.defineProperty(document, 'startViewTransition', { value: start, configurable: true });
+
   return { start, finish };
 }
 
@@ -46,6 +50,7 @@ function skyThing(x: number, y: number) {
   el.dataset.wave = '';
   el.getBoundingClientRect = () => ({ left: x, top: y, width: 0, height: 0 }) as DOMRect;
   document.body.append(el);
+
   return el;
 }
 

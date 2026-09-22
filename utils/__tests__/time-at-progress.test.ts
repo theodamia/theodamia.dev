@@ -11,6 +11,7 @@ function progressAt(time: number): number {
     3 * (1 - s) ** 2 * s * p1 + 3 * (1 - s) * s * s * p2 + s ** 3;
   let s = 0;
   while (s < 1 && at(x1, x2, s) < time) s += 1e-5;
+
   return at(y1, y2, s);
 }
 

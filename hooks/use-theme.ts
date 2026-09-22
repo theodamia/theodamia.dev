@@ -5,6 +5,7 @@ import { applyTheme, readTheme, storedTheme, supportsNight, type Theme } from '@
 function subscribe(onChange: () => void) {
   const observer = new MutationObserver(onChange);
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
   return () => observer.disconnect();
 }
 
@@ -21,11 +22,14 @@ export function useTheme(): Theme {
 export function useFollowSystemTheme() {
   useEffect(() => {
     const query = window.matchMedia(DARK_SCHEME_QUERY);
+
     const follow = () => {
       if (storedTheme() || !supportsNight()) return;
       applyTheme(query.matches ? 'dark' : 'light');
     };
+
     query.addEventListener('change', follow);
+
     return () => query.removeEventListener('change', follow);
   }, []);
 }

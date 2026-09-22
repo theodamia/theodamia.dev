@@ -4,6 +4,7 @@ import { REDUCED_MOTION_QUERY } from '@/constants';
 function subscribe(onChange: () => void) {
   const query = window.matchMedia(REDUCED_MOTION_QUERY);
   query.addEventListener('change', onChange);
+
   return () => query.removeEventListener('change', onChange);
 }
 

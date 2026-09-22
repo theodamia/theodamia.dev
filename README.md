@@ -12,7 +12,7 @@ Personal portfolio website for Theodore Damianidis - Senior Frontend Software En
 - **Icons**: [Lucide](https://lucide.dev/) for the dock (plus one hand-drawn ice axe) and for skills without a logo, [Simple Icons](https://simpleicons.org/) for brand logos in Skills and the links
 - **Type**: Bricolage Grotesque and Instrument Sans via `next/font`
 - **Analytics**: [Vercel Analytics](https://vercel.com/analytics)
-- **Code Quality**: ESLint + Prettier
+- **Code Quality**: ESLint (Next + React Hooks + full jsx-a11y + type-aware TypeScript rules) and Prettier
 
 ## ✨ Features
 

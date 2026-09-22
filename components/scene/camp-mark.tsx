@@ -99,6 +99,7 @@ function RidgeTent() {
 /** An expedition dome: crossed poles, a pale cap, an arched doorway. */
 function DomeTent() {
   const shell = 'M-38,0 C-38,-32 -21,-52 0,-52 C21,-52 38,-32 38,0 Z';
+
   return (
     <>
       <GuyLine from={[-31, -22]} to={[-50, 1]} />
@@ -198,6 +199,7 @@ export function CampMark({ index, artKey, name, tent, reached }: CampMarkProps) 
             if (!extraArt) return [];
             const height = (extra.width * extraArt.height) / extraArt.width;
             const sink = height * (ART_SINK_SHARES[extra.key] ?? ART_SINK_SHARE);
+
             return [
               { key: extra.key, art: extraArt, left: extra.left, width: extra.width, height, sink },
             ];

@@ -26,6 +26,7 @@ export function CopyEmailButton({ email, className }: { email: string; className
     } catch {
       return;
     }
+
     setCopied(true);
     window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => setCopied(false), COPIED_FOR_MS);
@@ -37,7 +38,7 @@ export function CopyEmailButton({ email, className }: { email: string; className
     <>
       <button
         type='button'
-        onClick={copy}
+        onClick={() => void copy()}
         aria-label='Copy email address'
         className={cn(buttonVariants({ variant: 'quiet', size: 'sm' }), className)}
       >

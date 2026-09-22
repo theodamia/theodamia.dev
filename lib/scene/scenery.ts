@@ -96,43 +96,53 @@ function crestY(b: Band, x: number): number {
   const shoulder = d > b.half ? (d - b.half) * b.slope : 0;
   let n = rough(b.seed, x, b.rough);
   const beyond = Math.max(0, d - (b.flat ?? 0));
+
   if (b.ledge && b.n0 !== undefined) {
     const k = Math.min(1, beyond / LEDGE_BLEND);
     n = b.n0 + (n - b.n0) * (k * k * (3 - 2 * k));
   }
+
   return b.y + shoulder + beyond * 0.05 + n;
 }
 
 function smooth(points: [number, number][]): string {
   let d = '';
+
   for (let j = 1; j < points.length - 1; j++) {
     const [x, y] = points[j];
     const [nx, ny] = points[j + 1];
     d += ` Q${x},${y.toFixed(1)} ${((x + nx) / 2).toFixed(1)},${((y + ny) / 2).toFixed(1)}`;
   }
+
   return d;
 }
 
 function bandPath(b: Band, height: number): string {
   const floor = Math.min(height + 40, b.y + b.reach + 80);
   const points: [number, number][] = [];
+
   for (let x = BAND_X0; x <= BAND_X1; x += BAND_STEP) {
     points.push([x, Math.min(crestY(b, x), floor)]);
   }
+
   const first = points[0];
   const last = points[points.length - 1];
+
   return `M${BAND_X0},${floor + 20} L${first[0]},${first[1].toFixed(1)}${smooth(points)} L${last[0]},${last[1].toFixed(1)} L${BAND_X1},${floor + 20} Z`;
 }
 
 function crestLine(b: Band): { d: string; x0: number; x1: number } | null {
   const points: [number, number][] = [];
+
   for (let x = BAND_X0; x <= BAND_X1; x += BAND_STEP) {
     const y = crestY(b, x);
     if (b.solid || y - b.y < b.reach * 0.5) points.push([x, y]);
   }
+
   if (points.length < 3) return null;
   const first = points[0];
   const last = points[points.length - 1];
+
   return {
     d: `M${first[0]},${first[1].toFixed(1)}${smooth(points)} L${last[0]},${last[1].toFixed(1)}`,
     x0: first[0],
@@ -153,15 +163,20 @@ const MIST: Oklch = [0.972, 0.01, 85];
 
 function ramp(t: number): Oklch {
   const clamped = Math.min(1, Math.max(0, t));
+
   for (let i = 0; i < RAMP.length - 1; i++) {
     const a = RAMP[i];
     const b = RAMP[i + 1];
+
     if (clamped <= b[0]) {
       const k = (clamped - a[0]) / (b[0] - a[0]);
+
       return [a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k, a[3] + (b[3] - a[3]) * k];
     }
   }
+
   const last = RAMP[RAMP.length - 1];
+
   return [last[1], last[2], last[3]];
 }
 
@@ -171,6 +186,7 @@ function mix(a: Oklch, b: Oklch, t: number): Oklch {
 
 function col(c: Oklch, alpha?: number): string {
   const a = alpha === undefined ? '' : ` / ${alpha}`;
+
   return `oklch(${c[0].toFixed(3)} ${c[1].toFixed(3)} ${c[2].toFixed(1)}${a})`;
 }
 
@@ -204,6 +220,7 @@ export function moonlit([l, c, h]: Oklch): Oklch {
  */
 function paint(prop: 'fill' | 'stop-color', c: Oklch, alpha?: number): string {
   const day = col(c, alpha);
+
   return `${prop}="${day}" style="${prop}:light-dark(${day},${col(moonlit(c), alpha)})"`;
 }
 
@@ -215,6 +232,7 @@ function inkStop(offset: number, alpha: number): string {
 /** Path data for one tree: two stacked triangles. */
 function pineD(x: number, y: number, s: number): string {
   const f = (n: number) => n.toFixed(1);
+
   return (
     `M${f(x)},${f(y - 2.7 * s)} L${f(x - 0.55 * s)},${f(y - 1.15 * s)} L${f(x + 0.55 * s)},${f(y - 1.15 * s)} Z ` +
     `M${f(x)},${f(y - 1.9 * s)} L${f(x - 0.85 * s)},${f(y)} L${f(x + 0.85 * s)},${f(y)} Z `
@@ -228,16 +246,20 @@ function bandTreeSpots(b: Band): TreeSpot[] {
   let x = 300;
   let n = 0;
   const spots: TreeSpot[] = [];
+
   while (x < 2100 && n < 34) {
     const r = rnd(b.seed * 77 + n);
     const y = crestY(b, x);
     const clear = !b.keep || b.keep.every(kx => Math.abs(x - kx) > 80);
+
     if (clear && r > 0.3 && y < b.y + b.reach * 0.35) {
       spots.push({ x, y: y + 5, s: 18 + rnd(b.seed * 31 + n) * 20, n: b.seed * 101 + n });
     }
+
     x += 34 + r * 70;
     n++;
   }
+
   return spots;
 }
 
@@ -272,6 +294,7 @@ function planted(b: Band, spot: TreeSpot): TreeSpot | null {
   const downhill = Math.max(crestY(b, spot.x - reach), crestY(b, spot.x + reach));
   const steep = downhill - crestY(b, spot.x) > reach * LEVEL_MAX_SLOPE;
   const y = steep ? Math.max(spot.y, downhill + FACE_SINK) : spot.y;
+
   return y < b.y + b.reach * SOLID_REACH ? { ...spot, y } : null;
 }
 
@@ -325,6 +348,7 @@ function crowded(spot: TreeSpot, others: TreeSpot[]): boolean {
 function faceTreeSpots(b: Band, taken: TreeSpot[]): TreeSpot[] {
   const spots: TreeSpot[] = [];
   let x = 220;
+
   for (let k = 0; x < 2180; k++) {
     const r = (i: number) => rnd(b.seed * 191 + k * 7 + i);
     const crest = crestY(b, x);
@@ -333,6 +357,7 @@ function faceTreeSpots(b: Band, taken: TreeSpot[]): TreeSpot[] {
     const spot = planted(b, { x, y, s, n: b.seed * 211 + k });
     const onFace = crest < b.y + b.reach * FACE_TREES.FACE_REACH;
     const clear = !b.keep || b.keep.every(kx => Math.abs(x - kx) > 80);
+
     if (
       spot &&
       onFace &&
@@ -345,10 +370,13 @@ function faceTreeSpots(b: Band, taken: TreeSpot[]): TreeSpot[] {
     ) {
       spots.push(spot);
     }
+
     x += FACE_TREES.STEP + r(3) * FACE_TREES.JITTER;
   }
+
   return spots;
 }
+
 /** How much a tree may be stretched taller or squashed shorter than its picture, either way. */
 const TREE_STRETCH = 0.12;
 
@@ -360,6 +388,7 @@ function treePicture({ x, y, s, n }: TreeSpot): string {
   const width = (s * tree.height * art.width) / art.height;
   const left = tree.mirror ? -(x + width / 2) : x - width / 2;
   const flip = tree.mirror ? ' transform="scale(-1 1)"' : '';
+
   return `<image href="/camps/${tree.key}.webp" class="scene-tree" x="${left.toFixed(1)}" y="${(y - height).toFixed(1)}" width="${width.toFixed(1)}" height="${height.toFixed(1)}" preserveAspectRatio="none"${flip}/>`;
 }
 
@@ -380,13 +409,16 @@ function genLayer(key: string, depth: number, bands: Band[], opts: LayerOptions)
       `<stop offset="1" ${end}/></linearGradient>`;
     body += `<path d="${bandPath(fades ? b : { ...b, reach: 99999 }, height)}" fill="url(#${gid})"/>`;
     const line = ink ? crestLine(b) : null;
+
     if (ink && line) {
       defs +=
         `<linearGradient id="${gid}i" gradientUnits="userSpaceOnUse" x1="${line.x0}" y1="0" x2="${line.x1}" y2="0">` +
         `${inkStop(0, 0)}${inkStop(0.3, ink)}${inkStop(0.7, ink)}${inkStop(1, 0)}</linearGradient>`;
       body += `<path d="${line.d}" fill="none" stroke="url(#${gid}i)" stroke-width="2.5" stroke-linecap="round"/>`;
     }
+
     const spots = b.pines ? bandTreeSpots(b) : [];
+
     if (spots.length && opts.trees && HAS_TREE_PICTURES) {
       const onRidge = spots.flatMap(spot => planted(b, spot) ?? []);
       const onFace = b.solid ? [] : faceTreeSpots(b, onRidge);
@@ -400,12 +432,14 @@ function genLayer(key: string, depth: number, bands: Band[], opts: LayerOptions)
       body += `<path d="${trees}" ${paint('fill', [0.47 + (b.pines ?? 0) * 0.05, 0.05, 152])}/>`;
     }
   });
+
   return { key, depth, height, markup: `<defs>${defs}</defs>${body}` };
 }
 
 /** Rolling foothills at the bottom of a slow layer: the horizon sinks as you climb. */
 function foothills(seed: number, depth: number, crests: number[], amp: number): Band[] {
   const height = VIEW + TRAVEL * depth;
+
   return crests.map((off, k) => ({
     seed: seed + k,
     y: height - off,
@@ -421,6 +455,7 @@ function foothills(seed: number, depth: number, crests: number[], amp: number): 
 function giants(depth: number): Band[] {
   const height = VIEW + TRAVEL * depth;
   const snow: Oklch = [0.945, 0.018, 245];
+
   return [
     {
       seed: 301,
@@ -479,6 +514,7 @@ function giants(depth: number): Band[] {
 function sisterPeaks(seed: number, height: number, from: number, gap: number): Band[] {
   const count = Math.floor((height - from) / gap);
   const out: Band[] = [];
+
   for (let k = 0; k <= count; k++) {
     const t = count ? k / count : 0;
     const side = k % 2 ? 1 : -1;
@@ -492,6 +528,7 @@ function sisterPeaks(seed: number, height: number, from: number, gap: number): B
       reach: 620,
     });
   }
+
   return out;
 }
 
@@ -531,6 +568,7 @@ function nearBands(): Band[] {
   out.push(top);
 
   const highest = CAMP_X.length - 1;
+
   for (let i = highest; i >= 0; i--) {
     const ledge = LEDGES[Math.min(i, LEDGES.length - 1)];
     const ground = campGround(i);
@@ -556,17 +594,21 @@ function nearBands(): Band[] {
       ],
       y: 0,
     };
+
     if (i === highest) {
       b.tone = [0.95, 0.014, 235];
       b.ink = 0.42;
     }
+
     if (i === highest - 1) {
       b.tone = [0.91, 0.02, 235];
       b.ink = 0.36;
     }
+
     b.n0 = rough(b.seed, b.cx, b.rough);
     b.y = CAMP_Y[i] - b.n0;
     out.push(b);
+
     if (i > 0) {
       out.push({
         seed: 80 + i,
@@ -580,6 +622,7 @@ function nearBands(): Band[] {
       });
     }
   }
+
   return out;
 }
 
@@ -589,6 +632,7 @@ function escapeText(text: string): string {
 
 function label(x: number, y: number, text: string, size: number): string {
   if (!text) return '';
+
   return (
     `<text x="${x}" y="${y}" text-anchor="middle" style="font-family:${LABEL_FONT};font-weight:${LABEL_WEIGHT};font-size:${size}px;` +
     `fill:${INK};paint-order:stroke;stroke:var(--color-halo);stroke-width:7px;stroke-linejoin:round">${escapeText(text)}</text>`
@@ -598,6 +642,7 @@ function label(x: number, y: number, text: string, size: number): string {
 /** A village house until its artwork arrives: wall, roof, door and a lit window. */
 function hut(x: number, y: number, w: number, roof: string): string {
   const h = w * 0.5;
+
   return (
     `<rect x="${x - w / 2}" y="${y - h}" width="${w}" height="${h}" style="fill:var(--color-hut-wall);stroke:${INK};stroke-width:3;stroke-linejoin:round"/>` +
     `<path d="M${x - w * 0.62},${y - h} L${x},${y - h - w * 0.36} L${x + w * 0.62},${y - h} Z" style="fill:${roof};stroke:${INK};stroke-width:3;stroke-linejoin:round"/>` +
@@ -616,6 +661,7 @@ function foreground(depth: number): SceneLayer {
   let markup =
     '<defs><radialGradient id="fgw"><stop offset="0" style="stop-color:var(--color-wisp);stop-opacity:0.6"/>' +
     '<stop offset="1" style="stop-color:var(--color-wisp);stop-opacity:0"/></radialGradient></defs>';
+
   /*
    * One wisp per leg, placed so it drifts across the middle of the screen while the camera is half way between
    * two camps. This layer moves faster than the mountain, so by the time a camp arrives its wisp is long gone:
@@ -631,18 +677,21 @@ function foreground(depth: number): SceneLayer {
     const rx = (520 + rnd(910 + k) * 300).toFixed(0);
     markup += `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="70" fill="url(#fgw)"/>`;
   }
+
   const framing = Array.from({ length: FRAMING_PINES }, (_, p) => ({
     x: 300 + rnd(700 + p) * 260 - p * 45,
     y: height + 30,
     s: 92 + rnd(720 + p) * 48,
     n: 700 + p,
   }));
+
   if (HAS_TREE_PICTURES) {
     markup += framing.map(treePicture).join('');
   } else {
     const pines = framing.map(spot => pineD(spot.x, spot.y, spot.s)).join('');
     markup += `<path d="${pines}" style="fill:var(--color-pine-front)"/>`;
   }
+
   return { key: 'front', depth, height, markup };
 }
 
@@ -655,6 +704,7 @@ function trailLayer(summitLabel: string): SceneLayer {
     .map(house => hut(house.x, VILLAGE_GROUND_Y, house.hut.width, house.hut.roof))
     .join('');
   markup += label(SUMMIT.x, SUMMIT.y - 34, summitLabel, 26);
+
   return { key: 'trail', depth: 1, height: VIEW + TRAVEL, markup };
 }
 

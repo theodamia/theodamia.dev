@@ -25,6 +25,7 @@ export function Village() {
       width: house.width,
       height,
     };
+
     return (
       <Fragment key={house.key}>
         <svg

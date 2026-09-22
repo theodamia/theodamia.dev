@@ -93,6 +93,7 @@ export function AscentStage({ reducedMotion, stop, ref }: AscentStageProps) {
         const y = snap(-yTop * layer.depth * scale);
         if (layer.depth === NEAR_DEPTH) near = y;
         const el = layers.current[i];
+
         if (el && written.current[i] !== y) {
           written.current[i] = y;
           el.style.transform = `translate3d(-50%,${y}px,0)`;
@@ -110,6 +111,7 @@ export function AscentStage({ reducedMotion, stop, ref }: AscentStageProps) {
       /* the walked path: the window's top edge sits at the climber, and the drawing inside is shifted back by the same amount */
       const edge = reducedMotion ? snap(near + CAMP_Y[CAMP_Y.length - 1] * scale) : cy;
       if (clip.current) clip.current.style.transform = `translate3d(0,${edge}px,0)`;
+
       if (path.current) {
         path.current.style.transform = `translate3d(-50%,${snap(near - edge)}px,0)`;
       }
@@ -121,6 +123,7 @@ export function AscentStage({ reducedMotion, stop, ref }: AscentStageProps) {
 
   const renderLayer = (index: number) => {
     const layer = SCENE_LAYERS[index];
+
     return (
       <SceneLayerSvg
         key={layer.key}
