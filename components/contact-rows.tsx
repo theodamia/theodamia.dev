@@ -23,7 +23,7 @@ const WHEREABOUTS = [SITE.location, 'Remote', 'UTC+2/+3'];
 /**
  * Email first, the one channel that needs no account: a full-width row with the address and its two actions,
  * copy it or write straight away. The two profiles sit side by side below it, whole tiles as links; their logo
- * turns to the accent on hover, as in the hero.
+ * and their arrow turn to the accent on hover, as in the hero.
  */
 export function ContactRows() {
   return (
@@ -79,7 +79,7 @@ export function ContactRows() {
               <ArrowUpRight
                 size={ARROW_SIZE}
                 aria-hidden='true'
-                className='text-ink-3 group-hover:text-ink transition-colors duration-[180ms] motion-reduce:transition-none'
+                className='text-ink-3 group-hover:text-accent transition-colors duration-[180ms] motion-reduce:transition-none'
               />
             </a>
           </li>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { WEEK, OPINIONS } from '@/lib/about';
+import { WEEK, OPINIONS, EDUCATION, SUMMARY_FACTS } from '@/lib/about';
 import { DOCK_ITEMS, dockHref } from '@/lib/dock-items';
 import { JOBS } from '@/lib/jobs';
 import { SKILL_GROUPS } from '@/lib/skill-groups';
@@ -49,6 +49,14 @@ describe('about', () => {
       expect(opinion.holds).toBeLessThanOrEqual(1);
       if (i) expect(opinion.holds).toBeLessThanOrEqual(OPINIONS[i - 1].holds);
     });
+  });
+
+  it('finds every fact the Experience page summarises, so a rename cannot go quiet', () => {
+    expect(SUMMARY_FACTS.map(fact => fact.label)).toEqual(['Experience', 'Based in', 'Languages']);
+  });
+
+  it('still finds the degree the printed CV carries under the jobs', () => {
+    expect(EDUCATION?.value).toBeTruthy();
   });
 
   it('lists every skill once', () => {

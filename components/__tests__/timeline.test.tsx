@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { Timeline } from '@/components/timeline';
-import { JOBS } from '@/lib/jobs';
+import { JOBS, TRAILHEAD } from '@/lib/jobs';
 
 const newestFirst = [...JOBS].reverse();
 
@@ -25,6 +25,15 @@ describe('Timeline', () => {
       newestFirst.map(job => job.start)
     );
     expect(stops[0]).toHaveTextContent('Now');
+  });
+
+  it('closes the rail with the trailhead, which is a place and not a job', () => {
+    render(<Timeline />);
+
+    const list = screen.getByRole('list', { name: 'Experience, newest first' });
+    const trailhead = screen.getByText(`${TRAILHEAD.year} · where the trail starts`);
+    expect(list).not.toContainElement(trailhead);
+    expect(list.querySelectorAll(':scope > li')).toHaveLength(JOBS.length);
   });
 
   it('shows what I did for every job without a click', () => {

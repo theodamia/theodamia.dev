@@ -1,5 +1,6 @@
 import { GitHubIcon, GmailIcon, LinkedInIcon } from '@/components/icons/brand-icon';
 import { SITE } from '@/lib/site';
+import { cn } from '@/utils/cn';
 
 const LINKS = [
   { label: 'LinkedIn', href: SITE.linkedin.url, Icon: LinkedInIcon, external: true },
@@ -8,9 +9,9 @@ const LINKS = [
 ];
 
 /** Three white tiles, one glyph each. The glyph turns to the accent on hover. */
-export function SocialLinks() {
+export function SocialLinks({ className }: { className?: string }) {
   return (
-    <ul className='mt-7 flex flex-wrap gap-2.5'>
+    <ul className={cn('mt-7 flex flex-wrap gap-2.5', className)}>
       {LINKS.map(({ label, href, Icon, external }) => (
         <li key={label}>
           <a

@@ -14,8 +14,8 @@ export function Hero() {
         {SITE.name}
       </Heading>
       <Lede>
-        Ten years of frontend work, drawn as one long climb. Every stop on the trail is a job, and
-        the summit is still ahead.
+        Ten years of frontend work, drawn as one long climb: a camp for every job, and the summit
+        still ahead.
       </Lede>
       <SocialLinks />
       {/* the climb is a lot of movement; for anyone who asked for less of it, the plain list is one line away */}

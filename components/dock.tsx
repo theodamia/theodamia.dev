@@ -108,7 +108,7 @@ export function Dock() {
   };
 
   return (
-    <div className='rounded-dock border-line shadow-dock bg-card/96 touch:p-1 fixed bottom-4 left-1/2 z-[90] flex max-w-[calc(100vw-20px)] -translate-x-1/2 items-center border p-1.5'>
+    <div className='rounded-dock border-line shadow-dock bg-card/96 touch:p-1 fixed bottom-4 left-1/2 z-[90] flex max-w-[calc(100vw-20px)] -translate-x-1/2 items-center border p-1.5 print:hidden'>
       <nav aria-label='Sections' className='touch:gap-0 flex items-center gap-0.5'>
         {DOCK_ITEMS.map(item => {
           const Icon = ICONS[item.id];
