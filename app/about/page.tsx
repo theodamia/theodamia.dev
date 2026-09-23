@@ -11,14 +11,16 @@ import { buttonVariants } from '@/components/ui/button';
 import { Eyebrow, Heading, Lede } from '@/components/ui/text';
 import { WeekSplit } from '@/components/week-split';
 import { ABOUT_PARAGRAPHS, FACTS, OPINIONS, WEEK } from '@/lib/about';
+import { pageMetadata } from '@/lib/page-metadata';
 import { SITE } from '@/lib/site';
 import { SKILL_GROUPS } from '@/lib/skill-groups';
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: `About | ${SITE.name}`,
   description:
     'Who carries the pack, how the work gets done and what is in it: about, skills and contact.',
-};
+  path: '/about',
+});
 
 const TWO_COLUMNS =
   'grid grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] gap-11 max-wide:grid-cols-1 max-wide:gap-7';
