@@ -1,6 +1,11 @@
+import { ContactRows } from '@/components/contact-rows';
 import { JobCard } from '@/components/job-card';
+import { SectionCard } from '@/components/section-card';
+import { SocialLinks } from '@/components/social-links';
+import { Eyebrow, Heading } from '@/components/ui/text';
 import { ViewLink } from '@/components/view-link';
 import { JOBS } from '@/lib/jobs';
+import { SITE } from '@/lib/site';
 import { LIST_ATTR } from '@/lib/view';
 import { cn } from '@/utils/cn';
 
@@ -9,15 +14,28 @@ const STOPS = JOBS.map((job, index) => ({ job, index })).reverse();
 const NOW = JOBS.length - 1;
 
 /**
- * The climb read plainly: the same cards down one rail, newest first, with nothing to scroll through to reach
- * them. Hidden until `data-view` says otherwise, so the choice is made in CSS before the first paint and the
- * reader never sees the other view flash past.
+ * The climb read plainly, and the whole page while it is on: who this is, every job newest first, and how to
+ * reach me. No mountain, no hero holding the first screen, no closing card — someone who asked for the plain
+ * reading is here for the facts, and the way back to the climb is one line at the top.
+ *
+ * Hidden until `data-view` says otherwise, so the choice is made in CSS before the first paint and the reader
+ * never sees the other view flash past.
  */
 export function Timeline({ className }: { className?: string }) {
   return (
-    <div className={cn('pt-2 pb-4', className)}>
-      <p className='text-ink-3 mb-7 text-[15px]'>
-        The same ten years, newest first. <ViewLink>Back to the climb</ViewLink>
+    <div className={cn('max-wide:pt-[84px] pt-[92px] pb-[130px]', className)}>
+      <header>
+        <Eyebrow className='text-[17px]'>
+          {SITE.title} · {SITE.location}
+        </Eyebrow>
+        <Heading as='h1' size='page' className='mt-2'>
+          {SITE.name}
+        </Heading>
+        <SocialLinks />
+      </header>
+
+      <p className='text-ink-3 mt-10 mb-7 text-[15px]'>
+        Ten years, newest first. <ViewLink>Or take the climb instead</ViewLink>
       </p>
 
       <ol
@@ -57,6 +75,14 @@ export function Timeline({ className }: { className?: string }) {
           </li>
         ))}
       </ol>
+
+      <SectionCard
+        eyebrow='Contact'
+        title='Putting a team together?'
+        className='mx-0 max-w-[720px]'
+      >
+        <ContactRows />
+      </SectionCard>
     </div>
   );
 }

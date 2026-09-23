@@ -1,12 +1,12 @@
 import { SocialLinks } from '@/components/social-links';
 import { Eyebrow, Heading, Lede } from '@/components/ui/text';
+import { ViewLink } from '@/components/view-link';
 import { SITE } from '@/lib/site';
 
 /** The top of the climb page: who this is, what the page is, and the three ways to reach me. */
 export function Hero() {
-  /* the first screen belongs to the mountain; the timeline has no use for it and starts right after the name */
   return (
-    <section className='max-wide:pt-[84px] timeline:min-h-0 timeline:pb-4 min-h-screen pt-[92px]'>
+    <section className='max-wide:pt-[84px] timeline:hidden min-h-screen pt-[92px]'>
       <Eyebrow className='text-[17px]'>
         {SITE.title} · {SITE.location}
       </Eyebrow>
@@ -17,6 +17,10 @@ export function Hero() {
         Ten years of frontend work, drawn as one long climb. Every stop on the trail is a job, and
         the summit is still ahead.
       </Lede>
+      {/* the offer, put once and quietly, to whoever would rather have the facts than the walk */}
+      <p className='mt-3.5'>
+        <ViewLink className='text-shadow-halo'>Or read it as a plain timeline</ViewLink>
+      </p>
       <SocialLinks />
     </section>
   );

@@ -11,7 +11,7 @@ export default function Home() {
       <SectionCard
         eyebrow='Today'
         title='The ascent never stops'
-        className='rise-in max-wide:mb-[14vh] mb-[18vh] max-w-[720px] text-center'
+        className='rise-in max-wide:mb-[14vh] timeline:hidden mb-[18vh] max-w-[720px] text-center'
       >
         <p className='text-ink-2 mx-auto mt-3.5 max-w-[480px] text-pretty'>
           Every stop taught me something I carried up to the next and I am still learning on this
@@ -22,13 +22,13 @@ export default function Home() {
             About and skills
           </Link>
         </div>
-        {/* the cue's offer is long gone by now, and the dock is tight on a small phone */}
-        <p className='timeline:hidden mt-5'>
+        {/* the hero's offer is long gone by now, and the dock is tight on a small phone */}
+        <p className='mt-5'>
           <ViewLink>Read the same ten years as a timeline</ViewLink>
         </p>
       </SectionCard>
 
-      <footer className='pb-[130px] text-center'>
+      <footer className='timeline:hidden pb-[130px] text-center'>
         <a href='#top' className={buttonVariants({ variant: 'quiet', size: 'sm' })}>
           Back down to the start
         </a>
