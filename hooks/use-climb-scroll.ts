@@ -1,22 +1,26 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import {
-  CAMP_ANCHORS,
-  CARD_LEAD,
   CUE_HIDE_AFTER_PX,
   STOP_LEFT_AT,
   STOP_REACHED_AT,
   STOP_SCROLL_NUDGE_PX,
   WIDE_QUERY,
 } from '@/constants';
+import { anchorsFor, stopPositions } from '@/lib/climb-stops';
 import { JOBS, TRAILHEAD } from '@/lib/jobs';
 import { CAMP_COUNT, cameraKnot, campAnchor, WORLD, type SceneHandle } from '@/lib/scene/world';
+import { readView } from '@/lib/view';
 
 type ClimbScrollRefs = {
+  /** False in the timeline, where there is no scene to drive and nothing to measure. */
+  enabled: boolean;
   scene: RefObject<SceneHandle | null>;
-  /** The column of cards. Its `[data-card]` children are the stops. */
+  /** Everything in normal flow over the stage; the climb re-measures when its height changes. */
   track: RefObject<HTMLElement | null>;
-  /** The list of stops; the first stop's scroll position is published on it for the dock. */
-  climb: RefObject<HTMLElement | null>;
+  /** What the dock scrolls to, and where the first stop's position is published for it. */
+  anchor: RefObject<HTMLElement | null>;
+  /** The climb's own list; its `[data-card]` children are the stops, the timeline's are not. */
+  climbList: RefObject<HTMLElement | null>;
   rail: RefObject<HTMLElement | null>;
   needle: RefObject<HTMLElement | null>;
   /** The altimeter's walked bar: scaled from the bottom up to the needle. */
@@ -45,11 +49,16 @@ const FIRST_JOB_STOP = 1;
  * and the matching camera positions. A frame then only interpolates between those and hands the scene one
  * `SceneFrame`. The three pieces of state are set every frame but almost always with the value they already
  * hold, so React bails out and nothing re-renders until the stop or the year actually changes.
+ *
+ * In the timeline it drives nothing: it attaches no listeners and puts back everything it wrote, because a stale
+ * published position would send the dock to a place that view does not have.
  */
 export function useClimbScroll({
+  enabled,
   scene,
   track,
-  climb,
+  anchor,
+  climbList,
   rail,
   needle,
   walked,
@@ -62,8 +71,19 @@ export function useClimbScroll({
   const knots = useRef<number[]>([]);
   const railHeight = useRef(0);
   const reached = useRef(0);
+  /** The landing jump from the other page's dock happens once, not on every switch back to the climb. */
+  const landed = useRef(false);
 
   useEffect(() => {
+    /*
+     * The attribute, not the prop: `useSyncExternalStore` hands the server's answer to the first pass, so a
+     * reader who chose the timeline would otherwise measure a hidden list here before React corrected itself.
+     */
+    if (!enabled || readView() !== 'climb') return;
+    /* held for the cleanup: by then the refs may point at whatever the next view rendered */
+    const anchorEl = anchor.current;
+    const needleEl = needle.current;
+    const walkedEl = walked.current;
     let raf = 0;
 
     const frame = () => {
@@ -108,61 +128,72 @@ export function useClimbScroll({
       if (!raf) raf = requestAnimationFrame(frame);
     };
 
-    const measure = () => {
+    const measure = (paint: () => void = onScroll) => {
       const wide = window.matchMedia(WIDE_QUERY).matches;
-      const anchors = wide ? CAMP_ANCHORS.WIDE : CAMP_ANCHORS.PHONE;
-      const lead = wide ? CARD_LEAD.WIDE : CARD_LEAD.PHONE;
-      const anchorFor = (i: number) => campAnchor(i, anchors);
-      knots.current = CAMP_YEARS.map((_, i) => cameraKnot(i, anchorFor(i)));
-      const cards = Array.from(track.current?.querySelectorAll<HTMLElement>('[data-card]') ?? []);
+      const anchors = anchorsFor(wide);
+      knots.current = CAMP_YEARS.map((_, i) => cameraKnot(i, campAnchor(i, anchors)));
+      const cards = Array.from(
+        climbList.current?.querySelectorAll<HTMLElement>('[data-card]') ?? []
+      );
       /* the trailhead is the top of the page; every other camp is reached when its card arrives */
-      let previous = 0;
-      const cardStops = cards.map((card, i) => {
-        const top = card.getBoundingClientRect().top + window.scrollY;
-        /* `previous + 1` keeps the stops strictly increasing, so the progress within a leg never divides by zero */
-        previous = Math.max(previous + 1, top - (anchorFor(i + 1) + lead) * window.innerHeight);
-
-        return previous;
+      stops.current = stopPositions(cards, {
+        wide,
+        innerHeight: window.innerHeight,
+        scrollY: window.scrollY,
       });
-      stops.current = [0, ...cardStops];
       railHeight.current = rail.current?.clientHeight ?? 0;
       scene.current?.resize();
 
       /* the dock reads this to send "Experience" to the first job rather than the top of the list */
       if (stops.current.length > FIRST_JOB_STOP) {
-        climb.current?.setAttribute(
+        anchor.current?.setAttribute(
           'data-scroll-y',
           String(stops.current[FIRST_JOB_STOP] + STOP_SCROLL_NUDGE_PX)
         );
       }
 
-      onScroll();
+      paint();
     };
 
-    measure();
+    /* the stage was last posed for wherever the reader was when it went away: put it right in this frame, not the next */
+    measure(frame);
 
     /* arriving from the other page's dock: land on the first stop, not on the top of the list */
-    if (window.location.hash === '#climb' && stops.current.length > FIRST_JOB_STOP) {
+    if (
+      !landed.current &&
+      window.location.hash === '#climb' &&
+      stops.current.length > FIRST_JOB_STOP
+    ) {
+      landed.current = true;
       window.scrollTo({
         top: stops.current[FIRST_JOB_STOP] + STOP_SCROLL_NUDGE_PX,
         behavior: 'instant',
       });
     }
 
+    const remeasure = () => measure();
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', measure);
-    window.addEventListener('load', measure);
-    const observer = new ResizeObserver(measure);
+    window.addEventListener('resize', remeasure);
+    window.addEventListener('load', remeasure);
+    const observer = new ResizeObserver(remeasure);
     if (track.current) observer.observe(track.current);
 
     return () => {
+      /* the pending frame first: it would write the transforms back over the ones cleared below */
       if (raf) cancelAnimationFrame(raf);
       window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', measure);
-      window.removeEventListener('load', measure);
+      window.removeEventListener('resize', remeasure);
+      window.removeEventListener('load', remeasure);
       observer.disconnect();
+      /* a published position the timeline does not have is worse than none: the dock prefers it over geometry */
+      anchorEl?.removeAttribute('data-scroll-y');
+      /* both resting poses are classes, so dropping what the frames wrote restores them */
+      needleEl?.style.removeProperty('transform');
+      walkedEl?.style.removeProperty('transform');
+      stops.current = [];
+      reached.current = 0;
     };
-  }, [scene, track, climb, rail, needle, walked]);
+  }, [enabled, scene, track, anchor, climbList, rail, needle, walked]);
 
   const scrollToStop = useCallback((index: number) => {
     const top = stops.current[index];

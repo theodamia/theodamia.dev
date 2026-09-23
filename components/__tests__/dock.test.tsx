@@ -26,6 +26,14 @@ describe('Dock', () => {
     expect(screen.getByRole('link', { name: 'Contact' })).toHaveAttribute('href', '/about#contact');
   });
 
+  it('offers the view switch on the climb page, also outside the Sections landmark', () => {
+    render(<Dock />);
+
+    const nav = screen.getByRole('navigation', { name: 'Sections' });
+    const toggle = screen.getByRole('button', { name: /^Show the (plain timeline|climb)$/ });
+    expect(nav).not.toContainElement(toggle);
+  });
+
   it('ends with the day and night switch, a setting kept outside the Sections landmark', () => {
     render(<Dock />);
 

@@ -9,6 +9,7 @@ import { Map, NotebookPen, RadioTower, Tent } from 'lucide-react';
 import { DockBubble } from '@/components/dock-bubble';
 import { IceAxeIcon } from '@/components/icons/ice-axe-icon';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { ViewToggle } from '@/components/view-toggle';
 import { DOCK_ITEMS, dockHref, type DockItem, type DockItemId } from '@/lib/dock-items';
 import { cn } from '@/utils/cn';
 
@@ -101,6 +102,7 @@ function useActiveSection(pathname: string): string | null {
 export function Dock() {
   const pathname = usePathname();
   const active = useActiveSection(pathname);
+  const onClimb = pathname === '/';
 
   const onClick = (event: React.MouseEvent<HTMLAnchorElement>, item: DockItem) => {
     const plainClick = !(event.metaKey || event.ctrlKey || event.shiftKey || event.altKey);
@@ -142,15 +144,27 @@ export function Dock() {
         })}
       </nav>
       {/*
-        the night needs light-dark() (the scene's colours use it); without it the site stays in daylight.
-        The hairline sits further from Contact than from the switch: Contact's outline is at the edge of its box,
-        the switch's icon 10px inside its own, so this is what centres it between the two things you see.
+        the night needs light-dark() (the scene's colours use it); without it the site stays in daylight and the
+        switch goes with it, so the hairline goes too — unless the climb page's view switch is keeping it company.
+        The hairline sits further from Contact than from the switches: Contact's outline is at the edge of its box,
+        an icon 10px inside its own, so this is what centres it between the two things you see.
       */}
       <span
         aria-hidden='true'
-        className='bg-line touch:ml-2 touch:mr-0 mr-0.5 ml-3 h-6 w-px shrink-0 not-supports-[color:light-dark(#000,#fff)]:hidden'
+        className={cn(
+          'bg-line touch:ml-2 touch:mr-0 mr-0.5 ml-3 h-6 w-px shrink-0',
+          !onClimb && 'not-supports-[color:light-dark(#000,#fff)]:hidden'
+        )}
       />
-      <ThemeToggle className='not-supports-[color:light-dark(#000,#fff)]:hidden' />
+      <div className='flex items-center gap-0.5'>
+        {/*
+          the climb is the only page with a view to switch, and it is the control that steps aside when the dock
+          runs out of room: below 400px on a touch screen (where the lit item spells itself out) and in a narrow
+          window with a pointer. The page carries its own links to the other view either way.
+        */}
+        {onClimb && <ViewToggle className='touch-xs:hidden narrow-hover:hidden' />}
+        <ThemeToggle className='not-supports-[color:light-dark(#000,#fff)]:hidden' />
+      </div>
     </div>
   );
 }

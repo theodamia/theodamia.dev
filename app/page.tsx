@@ -3,6 +3,7 @@ import { Climb } from '@/components/climb';
 import { Hero } from '@/components/hero';
 import { SectionCard } from '@/components/section-card';
 import { buttonVariants } from '@/components/ui/button';
+import { ViewLink } from '@/components/view-link';
 
 export default function Home() {
   return (
@@ -21,6 +22,10 @@ export default function Home() {
             About and skills
           </Link>
         </div>
+        {/* the cue's offer is long gone by now, and the dock is tight on a small phone */}
+        <p className='timeline:hidden mt-5'>
+          <ViewLink>Read the same ten years as a timeline</ViewLink>
+        </p>
       </SectionCard>
 
       <footer className='pb-[130px] text-center'>

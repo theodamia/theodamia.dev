@@ -6,6 +6,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Dock } from '@/components/dock';
 import { SITE } from '@/lib/site';
 import { THEME_SCRIPT } from '@/lib/theme';
+import { VIEW_SCRIPT } from '@/lib/view';
 import './globals.css';
 
 /* Variable, with the optical-size axis: the big headings need the narrower display cut. */
@@ -68,7 +69,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    /* the script below sets data-theme before hydration, so <html> differs from the server render on purpose */
+    /* the scripts below set data-theme and data-view before hydration, so <html> differs from the server render on purpose */
     <html
       lang='en'
       className={`${bricolage.variable} ${instrumentSans.variable}`}
@@ -77,6 +78,8 @@ export default function RootLayout({
       <head>
         {/* before the first paint: day or night, so the page never flashes the wrong sky */}
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        {/* and the climb or the plain timeline, so a returning reader never sees the other one first */}
+        <script dangerouslySetInnerHTML={{ __html: VIEW_SCRIPT }} />
       </head>
       {/* overflow-x: clip, not hidden — hidden would make the body a scroll container and break the sticky stage */}
       <body className='overflow-x-clip'>

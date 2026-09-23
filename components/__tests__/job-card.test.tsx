@@ -6,7 +6,7 @@ import { JOBS, type Job } from '@/lib/jobs';
 const job = JOBS[2];
 
 function renderCard(card: Job = job) {
-  render(<JobCard job={card} index={2} side='right' legLvh={100} />);
+  render(<JobCard job={card} index={2} idPrefix='climb' />);
 }
 
 describe('JobCard', () => {
