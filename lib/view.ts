@@ -2,11 +2,9 @@ import {
   DOCK_PROBE_RATIO,
   REDUCED_MOTION_QUERY,
   SECTION_SCROLL_OFFSET_PX,
-  STOP_SCROLL_NUDGE_PX,
   VIEW_STORAGE_KEY,
-  WIDE_QUERY,
 } from '@/constants';
-import { anchorJobIndex, stopPositions } from '@/lib/climb-stops';
+import { anchorJobIndex } from '@/lib/climb-stops';
 
 /** The climb is the page; the timeline is the same jobs read plainly, newest first. */
 export type View = 'climb' | 'timeline';
@@ -49,32 +47,30 @@ function timelineTop(job: number): number | null {
   return card ? card.getBoundingClientRect().top + window.scrollY - SECTION_SCROLL_OFFSET_PX : null;
 }
 
-/** Where the climb has to be scrolled for that job's camp to be the one the climber is at. */
-function climbTop(job: number): number | null {
-  const list = listOf('climb');
-  if (!list) return null;
-  const stops = stopPositions(Array.from(list.querySelectorAll<HTMLElement>('[data-card]')), {
-    wide: window.matchMedia(WIDE_QUERY).matches,
-    innerHeight: window.innerHeight,
-    scrollY: window.scrollY,
-  });
-  const top = stops[job + 1];
-
-  return top === undefined ? null : top + STOP_SCROLL_NUDGE_PX;
-}
-
 /**
- * Flip the attribute and land on the same job, all in one go: the reader's place is read from the view being
- * left, and the new one is measured only once the CSS has swapped them, because a hidden list has no geometry.
+ * Flip the attribute, and land somewhere that makes sense in the view being entered. The two run in opposite
+ * directions, so carrying the reader's place across only works one way:
+ *
+ * - to the timeline, the job they were on, measured after the swap because a hidden list has no geometry;
+ * - to the climb, the beginning. It is a story, and the job they were reading in the list is usually near its
+ *   end: dropping someone at the summit is not taking them on the climb.
+ *
  * Doing it here rather than in an effect is what keeps the scroll inside the view transition, so the page is
  * already in the right place when the new state is captured.
  */
 function flip(next: View) {
-  const job = anchorJobIndex(listOf(readView()), DOCK_PROBE_RATIO);
+  if (next === 'climb') {
+    applyView(next);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+
+    return;
+  }
+
+  const job = anchorJobIndex(listOf('climb'), DOCK_PROBE_RATIO);
   applyView(next);
-  /* no card had passed the probe: the reader is in the hero, which is the same in both views */
+  /* no card had passed the probe: the reader is in the hero, which the timeline answers with its own header */
   if (job === null) return;
-  const top = next === 'timeline' ? timelineTop(job) : climbTop(job);
+  const top = timelineTop(job);
   if (top !== null) window.scrollTo({ top: Math.max(0, top), behavior: 'instant' });
 }
 
