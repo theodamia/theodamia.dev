@@ -21,6 +21,15 @@ export default function Home() {
             About and skills
           </Link>
         </div>
+        {/* whoever walked the whole climb can still have the short version */}
+        <p className='mt-5'>
+          <Link
+            href='/cv'
+            className='text-ink-3 hover:text-ink text-[15px] font-semibold underline decoration-dotted underline-offset-4'
+          >
+            Or read the same ten years as a plain list
+          </Link>
+        </p>
       </SectionCard>
 
       <footer className='pb-[130px] text-center'>

@@ -21,7 +21,7 @@ type DockIconComponent = React.ComponentType<{
 /** Lucide icons, except Skills: Lucide has no ice axe, so that one is drawn to match its 24px grid and stroke. */
 const ICONS: Record<DockItemId, DockIconComponent> = {
   home: Tent,
-  climb: Map,
+  cv: Map,
   about: NotebookPen,
   skills: IceAxeIcon,
   contact: RadioTower,
@@ -32,9 +32,6 @@ function scrollTargetFor(item: DockItem): number {
   if (!item.section) return 0;
   const el = document.getElementById(item.section);
   if (!el) return 0;
-  /* the climb publishes where a section starts; the emptiness check is because Number('') is a finite 0 */
-  const published = Number(el.dataset.scrollY);
-  if (el.dataset.scrollY && Number.isFinite(published)) return published;
 
   return el.getBoundingClientRect().top + window.scrollY - SECTION_SCROLL_OFFSET_PX;
 }
@@ -111,12 +108,12 @@ export function Dock() {
   };
 
   return (
-    <div className='rounded-dock border-line shadow-dock bg-card/96 touch:p-1 fixed bottom-4 left-1/2 z-[90] flex max-w-[calc(100vw-20px)] -translate-x-1/2 items-center border p-1.5'>
+    <div className='rounded-dock border-line shadow-dock bg-card/96 touch:p-1 fixed bottom-4 left-1/2 z-[90] flex max-w-[calc(100vw-20px)] -translate-x-1/2 items-center border p-1.5 print:hidden'>
       <nav aria-label='Sections' className='touch:gap-0 flex items-center gap-0.5'>
         {DOCK_ITEMS.map(item => {
           const Icon = ICONS[item.id];
           const isHome = item.id === 'home';
-          const isOn = Boolean(item.section) && item.section === active;
+          const isOn = item.section ? item.section === active : !isHome && item.page === pathname;
 
           return (
             <Link

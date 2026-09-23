@@ -24,6 +24,8 @@ const instrumentSans = Instrument_Sans({
 });
 
 export const metadata: Metadata = {
+  /* every relative URL below — canonicals and the generated share card — resolves against this */
+  metadataBase: new URL(SITE.url),
   title: `${SITE.name} | ${SITE.title}`,
   description:
     'The Ascent — ten years of frontend engineering drawn as one long climb. Senior Frontend Software Engineer at DeepSea.ai, previously Frontend Lead at Geekbot.',
@@ -38,11 +40,20 @@ export const metadata: Metadata = {
     'Web Development',
   ],
   authors: [{ name: SITE.name }],
+  alternates: { canonical: '/' },
+  /*
+   * Next does not merge `openGraph` field by field: a route that sets its own replaces this whole object. So each
+   * page states its own title and description, or it would be shared as the home page (see /cv and /about).
+   */
   openGraph: {
     title: `${SITE.name} | ${SITE.title}`,
     description: 'Ten years of frontend engineering, drawn as one long climb',
     type: 'website',
+    url: '/',
+    siteName: SITE.name,
+    locale: 'en_US',
   },
+  twitter: { card: 'summary_large_image' },
   icons: {
     icon: [
       {

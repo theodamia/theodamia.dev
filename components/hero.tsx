@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { SocialLinks } from '@/components/social-links';
 import { Eyebrow, Heading, Lede } from '@/components/ui/text';
 import { SITE } from '@/lib/site';
@@ -13,10 +14,19 @@ export function Hero() {
         {SITE.name}
       </Heading>
       <Lede>
-        Ten years of frontend work, drawn as one long climb. Every stop on the trail is a job, and
-        the summit is still ahead.
+        Ten years of frontend work, drawn as one long climb: a camp for every job, and the summit
+        still ahead.
       </Lede>
       <SocialLinks />
+      {/* the climb is a lot of movement; for anyone who asked for less of it, the plain list is one line away */}
+      <p className='mt-6 hidden motion-reduce:block'>
+        <Link
+          href='/cv'
+          className='text-ink-3 hover:text-ink text-[15px] font-semibold underline decoration-dotted underline-offset-4'
+        >
+          Would you rather have it still? Read the plain list
+        </Link>
+      </p>
     </section>
   );
 }

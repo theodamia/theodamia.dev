@@ -750,3 +750,54 @@
     display: none;
   }
 }
+
+/*
+ * Printing. The Experience page is the one that gets saved as a PDF, and browsers keep text colour while dropping
+ * background colours: a night page would print as pale grey on nothing. So the interface tokens go back to the day
+ * (the scene's own are never needed — the valley is `print:hidden`, like the dock), shadows are cast in nothing,
+ * and no card is broken across two sheets.
+ */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  /*
+   * On paper a link is only ink, so it has to say where it goes: the company sites, LinkedIn and GitHub all keep
+   * their address. Relative links are left alone — `/` means nothing once the page is a sheet.
+   */
+  a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.82em;
+    font-weight: 400;
+    color: var(--color-ink-3);
+    word-break: break-all;
+  }
+
+  :root[data-theme='dark'] {
+    --color-page: #f4f7fa;
+    --color-card: #ffffff;
+    --color-tint: #f5f8fb;
+    --color-ice: #e8eef3;
+    --color-line: #d5dee6;
+
+    --color-ink: #1e2b37;
+    --color-ink-2: #465868;
+    --color-ink-3: #5f7284;
+    --color-on-ink: #ffffff;
+
+    --color-accent-text: #b93e14;
+    --color-accent-wash: rgb(207 67 24 / 0.1);
+  }
+
+  :root,
+  :root[data-theme='dark'] {
+    --shadow-cast-card: transparent;
+    --shadow-cast-soft: transparent;
+    --shadow-cast-dock: transparent;
+  }
+
+  body {
+    background: #ffffff;
+  }
+}

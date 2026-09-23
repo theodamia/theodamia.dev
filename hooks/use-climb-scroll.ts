@@ -1,21 +1,20 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import {
-  CAMP_ANCHORS,
-  CARD_LEAD,
   CUE_HIDE_AFTER_PX,
   STOP_LEFT_AT,
   STOP_REACHED_AT,
   STOP_SCROLL_NUDGE_PX,
   WIDE_QUERY,
 } from '@/constants';
+import { anchorsFor, stopPositions } from '@/lib/climb-stops';
 import { JOBS, TRAILHEAD } from '@/lib/jobs';
 import { CAMP_COUNT, cameraKnot, campAnchor, WORLD, type SceneHandle } from '@/lib/scene/world';
 
 type ClimbScrollRefs = {
   scene: RefObject<SceneHandle | null>;
-  /** The column of cards. Its `[data-card]` children are the stops. */
+  /** Everything in normal flow over the stage; the climb re-measures when its height changes. */
   track: RefObject<HTMLElement | null>;
-  /** The list of stops; the first stop's scroll position is published on it for the dock. */
+  /** The list of stops: its `[data-card]` children are where each camp is reached. */
   climb: RefObject<HTMLElement | null>;
   rail: RefObject<HTMLElement | null>;
   needle: RefObject<HTMLElement | null>;
@@ -36,8 +35,6 @@ type ClimbScroll = {
 const LAST_STOP = CAMP_COUNT - 1;
 /** The year at each camp: the trailhead's, then each job's start. */
 const CAMP_YEARS = [TRAILHEAD.year, ...JOBS.map(job => job.start)];
-/** Camp 0 is the trailhead, which has no card; the first job is camp 1. */
-const FIRST_JOB_STOP = 1;
 
 /**
  * Drives the climb from the page scroll. Everything that needs layout is read in `measure()` (on resize and
@@ -108,58 +105,36 @@ export function useClimbScroll({
       if (!raf) raf = requestAnimationFrame(frame);
     };
 
-    const measure = () => {
+    const measure = (paint: () => void = onScroll) => {
       const wide = window.matchMedia(WIDE_QUERY).matches;
-      const anchors = wide ? CAMP_ANCHORS.WIDE : CAMP_ANCHORS.PHONE;
-      const lead = wide ? CARD_LEAD.WIDE : CARD_LEAD.PHONE;
-      const anchorFor = (i: number) => campAnchor(i, anchors);
-      knots.current = CAMP_YEARS.map((_, i) => cameraKnot(i, anchorFor(i)));
-      const cards = Array.from(track.current?.querySelectorAll<HTMLElement>('[data-card]') ?? []);
+      const anchors = anchorsFor(wide);
+      knots.current = CAMP_YEARS.map((_, i) => cameraKnot(i, campAnchor(i, anchors)));
       /* the trailhead is the top of the page; every other camp is reached when its card arrives */
-      let previous = 0;
-      const cardStops = cards.map((card, i) => {
-        const top = card.getBoundingClientRect().top + window.scrollY;
-        /* `previous + 1` keeps the stops strictly increasing, so the progress within a leg never divides by zero */
-        previous = Math.max(previous + 1, top - (anchorFor(i + 1) + lead) * window.innerHeight);
-
-        return previous;
-      });
-      stops.current = [0, ...cardStops];
+      stops.current = stopPositions(
+        Array.from(climb.current?.querySelectorAll<HTMLElement>('[data-card]') ?? []),
+        { wide, innerHeight: window.innerHeight, scrollY: window.scrollY }
+      );
       railHeight.current = rail.current?.clientHeight ?? 0;
       scene.current?.resize();
 
-      /* the dock reads this to send "Experience" to the first job rather than the top of the list */
-      if (stops.current.length > FIRST_JOB_STOP) {
-        climb.current?.setAttribute(
-          'data-scroll-y',
-          String(stops.current[FIRST_JOB_STOP] + STOP_SCROLL_NUDGE_PX)
-        );
-      }
-
-      onScroll();
+      paint();
     };
 
-    measure();
+    /* the first pose is painted in this frame rather than the next, so the mountain is never a frame behind */
+    measure(frame);
 
-    /* arriving from the other page's dock: land on the first stop, not on the top of the list */
-    if (window.location.hash === '#climb' && stops.current.length > FIRST_JOB_STOP) {
-      window.scrollTo({
-        top: stops.current[FIRST_JOB_STOP] + STOP_SCROLL_NUDGE_PX,
-        behavior: 'instant',
-      });
-    }
-
+    const remeasure = () => measure();
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', measure);
-    window.addEventListener('load', measure);
-    const observer = new ResizeObserver(measure);
+    window.addEventListener('resize', remeasure);
+    window.addEventListener('load', remeasure);
+    const observer = new ResizeObserver(remeasure);
     if (track.current) observer.observe(track.current);
 
     return () => {
       if (raf) cancelAnimationFrame(raf);
       window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', measure);
-      window.removeEventListener('load', measure);
+      window.removeEventListener('resize', remeasure);
+      window.removeEventListener('load', remeasure);
       observer.disconnect();
     };
   }, [scene, track, climb, rail, needle, walked]);

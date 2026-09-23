@@ -35,14 +35,6 @@ describe('Climb', () => {
     expect(heights[2]).toBeLessThan(heights[3]);
   });
 
-  it('publishes the first stop for the dock once it has measured', () => {
-    render(<Climb hero={null}>after</Climb>);
-
-    expect(screen.getByRole('list', { name: 'Experience, oldest first' })).toHaveAttribute(
-      'data-scroll-y'
-    );
-  });
-
   it('shows what I did for every job without a click', () => {
     render(<Climb hero={null}>after</Climb>);
 

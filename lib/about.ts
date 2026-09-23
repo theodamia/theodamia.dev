@@ -17,6 +17,21 @@ export const FACTS: Fact[] = [
   { label: 'Education', value: 'BSc Computer Science, TEI of Central Macedonia' },
 ];
 
+/**
+ * The three facts the Experience page carries under its title: the ones a CV is scanned for. Taken from FACTS by
+ * label rather than written again, so the two pages can never drift. "Currently" is left out (the first card on
+ * that page says it) and "Education" stays on /about. A test pins the count, so a rename here cannot go quiet.
+ */
+export const SUMMARY_FACTS: Fact[] = ['Experience', 'Based in', 'Languages'].flatMap(label =>
+  FACTS.filter(fact => fact.label === label)
+);
+
+/**
+ * The degree. It reads as background on /about, so it stays out of the Experience page on screen — but a printed
+ * CV with no education looks like it is hiding one, so the print sheet carries it under the jobs.
+ */
+export const EDUCATION: Fact | undefined = FACTS.find(fact => fact.label === 'Education');
+
 export type Opinion = {
   name: string;
   /** How often it holds, 0 ("it depends") to 1 ("every time"). */

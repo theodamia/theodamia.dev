@@ -1,19 +1,19 @@
-export type DockItemId = 'home' | 'climb' | 'about' | 'skills' | 'contact';
+export type DockItemId = 'home' | 'cv' | 'about' | 'skills' | 'contact';
 
 export type DockItem = {
   id: DockItemId;
   /** Shown in the bubble, spelled out on touch screens and used as the accessible name. */
   label: string;
   /** Route the target lives on. */
-  page: '/' | '/about';
+  page: '/' | '/cv' | '/about';
   /** Element id on that page; none means the top of the page. */
   section?: string;
 };
 
-/** The dock is the only navigation and works across both pages. */
+/** The dock is the only navigation and works across all three pages. */
 export const DOCK_ITEMS: DockItem[] = [
   { id: 'home', label: 'Home', page: '/' },
-  { id: 'climb', label: 'Experience', page: '/', section: 'climb' },
+  { id: 'cv', label: 'Experience', page: '/cv' },
   { id: 'about', label: 'About', page: '/about', section: 'about' },
   { id: 'skills', label: 'Skills', page: '/about', section: 'skills' },
   { id: 'contact', label: 'Contact', page: '/about', section: 'contact' },

@@ -11,6 +11,7 @@ import { useClimbScroll } from '@/hooks/use-climb-scroll';
 import { useReducedMotion } from '@/hooks/use-reduced-motion';
 import { JOBS } from '@/lib/jobs';
 import { LEG_WEIGHTS, SIDES, type SceneHandle } from '@/lib/scene/world';
+import { cn } from '@/utils/cn';
 
 type ClimbProps = {
   hero: React.ReactNode;
@@ -31,6 +32,7 @@ const legLvhOf = (job: number) => {
 /**
  * The main page: a sticky stage with the mountain, and over it (same grid cell, normal flow) the hero and one
  * card per job. Cards never live inside the moving world, so focus and scrolling behave like any other page.
+ * The same jobs, read plainly and newest first, are a page of their own at /cv.
  */
 export function Climb({ hero, children }: ClimbProps) {
   const scene = useRef<SceneHandle>(null);
@@ -65,13 +67,16 @@ export function Climb({ hero, children }: ClimbProps) {
           className='clear-of-altimeter'
         >
           {JOBS.map((job, i) => (
-            <JobCard
+            <li
               key={job.start}
-              job={job}
-              index={i}
-              side={SIDES[campOf(i)] > 0 ? 'left' : 'right'}
-              legLvh={legLvhOf(i)}
-            />
+              className={cn(
+                'max-wide:justify-center flex items-start',
+                SIDES[campOf(i)] > 0 ? 'justify-start' : 'justify-end'
+              )}
+              style={{ minHeight: `${legLvhOf(i)}lvh` }}
+            >
+              <JobCard job={job} index={i} />
+            </li>
           ))}
         </ol>
         {children}

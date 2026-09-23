@@ -1,5 +1,7 @@
 /** Who the site is: the metadata, the hero, the contact rows and the social links all read from here. */
 export const SITE = {
+  /* the canonical origin: `metadataBase`, so every share card and canonical link resolves to one address */
+  url: 'https://theodamia.dev',
   name: 'Theodore Damianidis',
   title: 'Senior Frontend Software Engineer',
   location: 'Thessaloniki, Greece',
