@@ -1,6 +1,5 @@
 import { SocialLinks } from '@/components/social-links';
 import { Eyebrow, Heading, Lede } from '@/components/ui/text';
-import { ViewLink } from '@/components/view-link';
 import { SITE } from '@/lib/site';
 
 /** The top of the climb page: who this is, what the page is, and the three ways to reach me. */
@@ -17,10 +16,6 @@ export function Hero() {
         Ten years of frontend work, drawn as one long climb. Every stop on the trail is a job, and
         the summit is still ahead.
       </Lede>
-      {/* the offer, put once and quietly, to whoever would rather have the facts than the walk */}
-      <p className='mt-3.5'>
-        <ViewLink className='text-shadow-halo'>Or read it as a plain timeline</ViewLink>
-      </p>
       <SocialLinks />
     </section>
   );
