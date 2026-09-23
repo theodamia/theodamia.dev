@@ -4,26 +4,23 @@ import { cn } from '@/utils/cn';
 
 type JobCardProps = {
   job: Job;
-  /** Its place in `JOBS`: the number on the card, and what the view switch matches on. */
+  /** Its place in `JOBS`: the number the card wears. */
   index: number;
-  /** Which list this copy belongs to, so the two views never share an element id. */
-  idPrefix: string;
   className?: string;
 };
 
 /**
  * One job. Everything is on the card at once, nothing behind a button: what the job was (role, period, a
- * one-sentence summary) on top, and what I did in its own pale panel below, so each is instant to find. Both
- * views render the same card; each owns the `<li>` around it, because the climb sizes its stops by tenure and
- * the timeline does not.
+ * one-sentence summary) on top, and what I did in its own pale panel below, so each is instant to find. The
+ * climb and the plain list on /cv render the same card; each owns the `<li>` around it, because the climb
+ * sizes its stops by tenure and the list does not.
  */
-export function JobCard({ job, index, idPrefix, className }: JobCardProps) {
-  const pointsId = `${idPrefix}-job-${job.start}-did`;
+export function JobCard({ job, index, className }: JobCardProps) {
+  const pointsId = `job-${job.start}-did`;
 
   return (
     <article
       data-card
-      data-job={index}
       className={cn(
         'rounded-card border-line bg-card shadow-card max-wide:w-[min(480px,100%)] w-[min(420px,100%)] overflow-hidden border',
         className

@@ -188,25 +188,12 @@
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 /*
- * `timeline:` is the climb read plainly: the same jobs in one column, newest first, with the mountain put away.
- * The climb is the base state and this is the only override, so a page that never gets `data-view` (a blocked
- * script, storage that throws) is the climb rather than both views at once.
- */
-@custom-variant timeline (&:where([data-view='timeline'], [data-view='timeline'] *));
-
-/*
  * Screens that cannot hover: the dock spells out its lit item there instead of showing bubbles. Below 400px there
- * is no room for that label, Home, the view switch and the day/night switch at once, so Home steps aside (the
- * page's own top is a scroll away) and the view switch with it (the page offers that one in words).
+ * is no room for that label, Home and the day/night switch at once, so Home steps aside (the page's own top is a
+ * scroll away).
  */
 @custom-variant touch (@media (hover: none));
 @custom-variant touch-xs (@media (max-width: 399px) and (hover: none));
-
-/*
- * A narrow window that still has a pointer: the dock keeps Home there, so the view switch is the one that steps
- * aside. On a touch screen of the same width Home has already gone and the switch fits.
- */
-@custom-variant narrow-hover (@media (max-width: 374px) and (hover: hover));
 
 /*
  * The page's own defaults: where an anchor lands (clear of the card's top corner, the same 28px as the page
@@ -254,11 +241,6 @@
   height: calc(100lvh + var(--d) * 500lvh);
   transform: translate3d(-50%, calc(var(--cam) * (100vh - 100%)), 0);
   transform: translate3d(-50%, calc(var(--cam) * (100lvh - 100%)), 0);
-}
-
-/* The timeline puts the mountain away. The rule lives here, not in components/scene/, which knows no views. */
-[data-view='timeline'] .scene-stage {
-  display: none;
 }
 
 /* Only the climb writes transforms; the still strip on /about renders the same layers and never moves them. */

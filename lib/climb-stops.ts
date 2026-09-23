@@ -35,19 +35,3 @@ export function stopPositions(
 
   return [0, ...cardStops];
 }
-
-/**
- * The job the reader is on: the last card in the list whose top has passed the probe line. Null means they are
- * above the first card, in the hero, which both views share.
- */
-export function anchorJobIndex(list: HTMLElement | null, probeRatio: number): number | null {
-  if (!list) return null;
-  const probe = window.innerHeight * probeRatio;
-  let job: number | null = null;
-
-  list.querySelectorAll<HTMLElement>('[data-job]').forEach(card => {
-    if (card.getBoundingClientRect().top <= probe) job = Number(card.dataset.job);
-  });
-
-  return job;
-}

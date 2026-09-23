@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { usePathname } from 'next/navigation';
 import { Dock } from '@/components/dock';
 
 /* test/setup.ts mocks usePathname to '/' */
@@ -11,27 +12,31 @@ describe('Dock', () => {
   });
 
   afterEach(() => {
+    vi.mocked(usePathname).mockReturnValue('/');
     document.body.innerHTML = '';
   });
 
-  it('names its five icon links and points them across both pages', () => {
+  it('lights Experience on its own page, which has no sections to watch', () => {
+    vi.mocked(usePathname).mockReturnValue('/cv');
+
+    render(<Dock />);
+
+    expect(screen.getByRole('link', { name: 'Experience' })).toHaveAttribute(
+      'aria-current',
+      'true'
+    );
+  });
+
+  it('names its five icon links and points them across all three pages', () => {
     render(<Dock />);
 
     const nav = screen.getByRole('navigation', { name: 'Sections' });
     expect(nav.querySelectorAll('a')).toHaveLength(5);
     expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/');
-    expect(screen.getByRole('link', { name: 'Experience' })).toHaveAttribute('href', '/#climb');
+    expect(screen.getByRole('link', { name: 'Experience' })).toHaveAttribute('href', '/cv');
     expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about#about');
     expect(screen.getByRole('link', { name: 'Skills' })).toHaveAttribute('href', '/about#skills');
     expect(screen.getByRole('link', { name: 'Contact' })).toHaveAttribute('href', '/about#contact');
-  });
-
-  it('offers the view switch on the climb page, also outside the Sections landmark', () => {
-    render(<Dock />);
-
-    const nav = screen.getByRole('navigation', { name: 'Sections' });
-    const toggle = screen.getByRole('button', { name: /^Show the (plain timeline|climb)$/ });
-    expect(nav).not.toContainElement(toggle);
   });
 
   it('ends with the day and night switch, a setting kept outside the Sections landmark', () => {
@@ -50,18 +55,6 @@ describe('Dock', () => {
     expect(skills.querySelector('span[aria-hidden="true"]')).toHaveTextContent('Skills');
   });
 
-  it('scrolls to the first stop the climb published instead of navigating', async () => {
-    const climb = document.createElement('ol');
-    climb.id = 'climb';
-    climb.dataset.scrollY = '452';
-    document.body.append(climb);
-    render(<Dock />);
-
-    await userEvent.click(screen.getByRole('link', { name: 'Experience' }));
-
-    expect(window.scrollTo).toHaveBeenCalledWith({ top: 452 });
-  });
-
   it('goes back to the top from Home', async () => {
     render(<Dock />);
 
@@ -71,10 +64,11 @@ describe('Dock', () => {
   });
 
   it('lights the section under the middle of the screen', () => {
-    const climb = document.createElement('ol');
-    climb.id = 'climb';
-    climb.getBoundingClientRect = () => ({ top: -100 }) as DOMRect;
-    document.body.append(climb);
+    vi.mocked(usePathname).mockReturnValue('/about');
+    const about = document.createElement('section');
+    about.id = 'about';
+    about.getBoundingClientRect = () => ({ top: -100 }) as DOMRect;
+    document.body.append(about);
     vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => {
       callback(0);
 
@@ -83,10 +77,7 @@ describe('Dock', () => {
 
     render(<Dock />);
 
-    expect(screen.getByRole('link', { name: 'Experience' })).toHaveAttribute(
-      'aria-current',
-      'true'
-    );
+    expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('aria-current', 'true');
     expect(screen.getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current');
   });
 });

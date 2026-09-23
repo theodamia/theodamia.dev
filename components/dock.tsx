@@ -9,7 +9,6 @@ import { Map, NotebookPen, RadioTower, Tent } from 'lucide-react';
 import { DockBubble } from '@/components/dock-bubble';
 import { IceAxeIcon } from '@/components/icons/ice-axe-icon';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { ViewToggle } from '@/components/view-toggle';
 import { DOCK_ITEMS, dockHref, type DockItem, type DockItemId } from '@/lib/dock-items';
 import { cn } from '@/utils/cn';
 
@@ -22,7 +21,7 @@ type DockIconComponent = React.ComponentType<{
 /** Lucide icons, except Skills: Lucide has no ice axe, so that one is drawn to match its 24px grid and stroke. */
 const ICONS: Record<DockItemId, DockIconComponent> = {
   home: Tent,
-  climb: Map,
+  cv: Map,
   about: NotebookPen,
   skills: IceAxeIcon,
   contact: RadioTower,
@@ -33,9 +32,6 @@ function scrollTargetFor(item: DockItem): number {
   if (!item.section) return 0;
   const el = document.getElementById(item.section);
   if (!el) return 0;
-  /* the climb publishes where a section starts; the emptiness check is because Number('') is a finite 0 */
-  const published = Number(el.dataset.scrollY);
-  if (el.dataset.scrollY && Number.isFinite(published)) return published;
 
   return el.getBoundingClientRect().top + window.scrollY - SECTION_SCROLL_OFFSET_PX;
 }
@@ -102,7 +98,6 @@ function useActiveSection(pathname: string): string | null {
 export function Dock() {
   const pathname = usePathname();
   const active = useActiveSection(pathname);
-  const onClimb = pathname === '/';
 
   const onClick = (event: React.MouseEvent<HTMLAnchorElement>, item: DockItem) => {
     const plainClick = !(event.metaKey || event.ctrlKey || event.shiftKey || event.altKey);
@@ -118,7 +113,7 @@ export function Dock() {
         {DOCK_ITEMS.map(item => {
           const Icon = ICONS[item.id];
           const isHome = item.id === 'home';
-          const isOn = Boolean(item.section) && item.section === active;
+          const isOn = item.section ? item.section === active : !isHome && item.page === pathname;
 
           return (
             <Link
@@ -144,27 +139,15 @@ export function Dock() {
         })}
       </nav>
       {/*
-        the night needs light-dark() (the scene's colours use it); without it the site stays in daylight and the
-        switch goes with it, so the hairline goes too — unless the climb page's view switch is keeping it company.
-        The hairline sits further from Contact than from the switches: Contact's outline is at the edge of its box,
-        an icon 10px inside its own, so this is what centres it between the two things you see.
+        the night needs light-dark() (the scene's colours use it); without it the site stays in daylight.
+        The hairline sits further from Contact than from the switch: Contact's outline is at the edge of its box,
+        the switch's icon 10px inside its own, so this is what centres it between the two things you see.
       */}
       <span
         aria-hidden='true'
-        className={cn(
-          'bg-line touch:ml-2 touch:mr-0 mr-0.5 ml-3 h-6 w-px shrink-0',
-          !onClimb && 'not-supports-[color:light-dark(#000,#fff)]:hidden'
-        )}
+        className='bg-line touch:ml-2 touch:mr-0 mr-0.5 ml-3 h-6 w-px shrink-0 not-supports-[color:light-dark(#000,#fff)]:hidden'
       />
-      <div className='flex items-center gap-0.5'>
-        {/*
-          the climb is the only page with a view to switch, and it is the control that steps aside when the dock
-          runs out of room: below 400px on a touch screen (where the lit item spells itself out) and in a narrow
-          window with a pointer. The page carries its own links to the other view either way.
-        */}
-        {onClimb && <ViewToggle className='touch-xs:hidden narrow-hover:hidden' />}
-        <ThemeToggle className='not-supports-[color:light-dark(#000,#fff)]:hidden' />
-      </div>
+      <ThemeToggle className='not-supports-[color:light-dark(#000,#fff)]:hidden' />
     </div>
   );
 }

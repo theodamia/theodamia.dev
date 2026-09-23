@@ -64,10 +64,10 @@ describe('about', () => {
 });
 
 describe('dock items', () => {
-  it('links sections with a hash and the home item without one', () => {
+  it('links sections with a hash, and whole pages without one', () => {
     expect(DOCK_ITEMS.map(dockHref)).toEqual([
       '/',
-      '/#climb',
+      '/cv',
       '/about#about',
       '/about#skills',
       '/about#contact',

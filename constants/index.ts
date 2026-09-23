@@ -66,12 +66,6 @@ export const DARK_SCHEME_QUERY = '(prefers-color-scheme: dark)';
 export const THEME_STORAGE_KEY = 'theme';
 
 /**
- * Where an explicit choice of climb or timeline is kept. Until there is one, the climb is the page, unless the
- * visitor asked for less motion.
- */
-export const VIEW_STORAGE_KEY = 'view';
-
-/**
  * The night (or the day) spreads from the toggle as a soft-edged circle. The radius eases out: the circle's area
  * grows with its square, so an ease-out covers the screen at a roughly even rate and starts right under the finger.
  * The feather is the width of the soft edge, as a share of the radius, within limits.

@@ -1,12 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { DOCK_PROBE_RATIO } from '@/constants';
-import { anchorJobIndex, stopPositions } from '@/lib/climb-stops';
+import { stopPositions } from '@/lib/climb-stops';
 import { JOBS } from '@/lib/jobs';
 
 /** A card standing `top` pixels below the top of the viewport. */
-function card(top: number, job?: number): HTMLElement {
+function card(top: number): HTMLElement {
   const el = document.createElement('div');
-  if (job !== undefined) el.dataset.job = String(job);
   el.getBoundingClientRect = () => ({ top }) as DOMRect;
 
   return el;
@@ -43,23 +41,5 @@ describe('stopPositions', () => {
     const [, scrolled] = stopPositions([card(1400)], { ...viewport, scrollY: 600 });
 
     expect(scrolled).toBe(resting);
-  });
-});
-
-describe('anchorJobIndex', () => {
-  const list = (tops: number[]) => {
-    const el = document.createElement('div');
-    tops.forEach((top, job) => el.append(card(top, job)));
-
-    return el;
-  };
-
-  it('is the last card that has passed the probe line', () => {
-    expect(anchorJobIndex(list([-500, -100, 600]), DOCK_PROBE_RATIO)).toBe(1);
-  });
-
-  it('is nothing while the reader is still above the first card', () => {
-    expect(anchorJobIndex(list([900, 1600]), DOCK_PROBE_RATIO)).toBeNull();
-    expect(anchorJobIndex(null, DOCK_PROBE_RATIO)).toBeNull();
   });
 });
