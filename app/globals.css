@@ -51,6 +51,11 @@
   --color-halo: rgb(255 255 255 / 0.8);
   /* the foreground mist */
   --color-wisp: oklch(0.985 0.008 85);
+  /* what falls: snow, a turning leaf, a blossom petal */
+  --color-flake: oklch(0.99 0.008 250);
+  --color-leaf: oklch(0.7 0.145 58);
+  --color-petal: oklch(0.91 0.055 12);
+
   /* only ever seen at night: the stars, and the moon's dark side */
   --color-star: oklch(0.97 0.025 95);
   --color-moon-shadow: oklch(0.3 0.035 258);
@@ -177,6 +182,10 @@
   --color-cloud: oklch(0.4 0.035 265);
   --color-halo: rgb(10 16 24 / 0.75);
   --color-wisp: oklch(0.4 0.03 255);
+  /* by moonlight the snow still catches the light; leaf and petal sink towards the dark they fall through */
+  --color-flake: oklch(0.93 0.012 250);
+  --color-leaf: oklch(0.45 0.08 55);
+  --color-petal: oklch(0.6 0.04 12);
 
   /* by night the light is behind you: the same shadows, cast in black */
   --shadow-cast-card: rgb(0 0 0 / 0.8);
@@ -728,6 +737,75 @@
  * (opacity only, a few of the brightest, only at night) never fights the fade.
  */
 /*
+ * The weather. Every season's is in the page at once and CSS shows one kind, so nothing but the current weather is
+ * ever animated. Two properties move: `translate` carries the fall and the sideways drift, `rotate` turns the
+ * leaves over. Both are their own properties rather than one `transform`, which keeps them on the compositor and
+ * out of the way of the transforms the stage writes on the layers either side of this one.
+ *
+ * A negative `--phase` starts each bit part way down its fall, so the sky is full from the first frame instead of
+ * filling up over the first fifteen seconds.
+ */
+.weather-bit {
+  display: none;
+  position: absolute;
+  top: 0;
+  width: var(--size);
+  height: var(--size);
+  opacity: var(--alpha);
+  will-change: translate;
+  animation: weather-fall var(--fall) linear var(--phase) infinite;
+}
+
+:root[data-season='winter'] .weather-bit[data-kind='snow'],
+:root[data-season='autumn'] .weather-bit[data-kind='leaf'],
+:root[data-season='spring'] .weather-bit[data-kind='petal'] {
+  display: block;
+}
+
+.weather-bit[data-kind='snow'] {
+  background: var(--color-flake);
+  border-radius: 50%;
+  /*
+   * Everything in this scene is drawn with an ink outline, and a white flake without one disappears into a white
+   * mountain — which is exactly the sky it falls through in winter. This is that outline, at the weight the rest
+   * of the drawing would give something this small.
+   */
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-ink) 17%, transparent);
+}
+
+/* a leaf: round at one end, pointed at the other, and turning as it goes */
+.weather-bit[data-kind='leaf'] {
+  background: var(--color-leaf);
+  border-radius: 60% 0 60% 0;
+  animation:
+    weather-fall var(--fall) linear var(--phase) infinite,
+    weather-turn var(--fall) linear var(--phase) infinite;
+}
+
+.weather-bit[data-kind='petal'] {
+  background: var(--color-petal);
+  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+  animation:
+    weather-fall var(--fall) linear var(--phase) infinite,
+    weather-turn var(--fall) linear var(--phase) infinite;
+}
+
+@keyframes weather-fall {
+  from {
+    translate: 0 -14vh;
+  }
+  to {
+    translate: var(--drift) 114vh;
+  }
+}
+
+@keyframes weather-turn {
+  to {
+    rotate: var(--spin);
+  }
+}
+
+/*
  * The season dial. Its depth is built, not painted: the card it floats on, a hairline rim, and a well the wedges
  * sit down inside, so the lit one reads as filled rather than merely coloured. The seams drawn over the wedges are
  * wide enough to cover the stepped edges a clipped triangle leaves on its diagonals, which is what made the first
@@ -851,6 +929,11 @@
 
   .star[data-twinkle]::before {
     animation: none;
+  }
+
+  /* weather that cannot fall is just litter hanging in the sky, so there is none */
+  .weather-bit {
+    display: none;
   }
 
   .camp-pennant,

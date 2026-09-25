@@ -4,6 +4,7 @@ import type React from 'react';
 import { useImperativeHandle, useRef } from 'react';
 import { CampMark, tentFor } from '@/components/scene/camp-mark';
 import { Village } from '@/components/scene/village';
+import { WeatherLayer } from '@/components/scene/weather-layer';
 import {
   Celestial,
   Daylight,
@@ -208,6 +209,9 @@ export function AscentStage({ reducedMotion, stop, ref }: AscentStageProps) {
       >
         <span className='border-ink bg-card absolute -top-2.5 -left-2.5 size-5 rounded-full border-[3.5px] shadow-[0_0_0_8px_color-mix(in_oklab,var(--color-ink)_16%,transparent)]' />
       </div>
+
+      {/* in front of the mountain and the camps, behind the framing pines the foreground layer carries */}
+      <WeatherLayer />
 
       {Array.from({ length: SCENE_LAYERS.length - TRAIL_INDEX - 1 }, (_, i) =>
         renderLayer(TRAIL_INDEX + 1 + i)
