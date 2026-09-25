@@ -5,20 +5,15 @@ import { weatherField } from '@/scene/weather';
 const BITS = weatherField();
 
 /**
- * What falls out of the sky, for all four seasons at once: CSS shows the season's own and leaves the rest
- * `display: none`, so nothing but the current weather is ever animated and the whole lot is in the served HTML
- * without needing JavaScript to begin.
+ * Every season's weather at once; CSS shows one kind and leaves the rest `display: none`, so only the current
+ * weather animates and it all arrives in the served HTML without JavaScript.
  *
- * It mounts inside the stage between the near slopes and the foreground, so snow falls in front of the mountain
- * and behind the framing pines. That is the one thing a canvas laid over the page could not do, and the reason
- * this is a few dozen spans rather than a particle library.
+ * Mounted between the near slopes and the foreground, so it falls in front of the mountain and behind the framing
+ * pines — the thing a canvas over the page could not do, and why this is spans rather than a particle library.
+ * Each bit moves on `translate` and `rotate`, never `transform`, which the stage writes on the layers either side.
  *
- * Each bit moves on `translate` and `rotate` — never `transform` — because those are separate properties the
- * compositor carries on its own, and because the stage writes `transform` on the layers around it.
- *
- * `belowFirstCamp` is what stops leaves and blossom above the treeline: they come off trees, and the trees are
- * down at the trailhead. Snow ignores it and falls the whole way up. It changes when a camp is reached, not every
- * frame, so the fade costs one opacity on one element and the bits underneath simply pause.
+ * `belowFirstCamp` stops the leaves and blossom above the treeline; snow ignores it. It follows the camp reached,
+ * not the scroll, so crossing it costs one opacity and the bits underneath pause rather than restart.
  */
 export function WeatherLayer({ belowFirstCamp }: { belowFirstCamp: boolean }) {
   return (

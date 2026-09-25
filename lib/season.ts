@@ -28,6 +28,7 @@ export const SEASON_BY_MONTH: Season[] = [
   'winter', // December
 ];
 
+/** Which season a month falls in; half a year round for the southern hemisphere. */
 export function seasonOfMonth(month: number, southern: boolean): Season {
   return SEASON_BY_MONTH[(month + (southern ? 6 : 0)) % 12];
 }
@@ -48,6 +49,7 @@ export function seasonNow(date: Date = new Date()): Season {
   return seasonOfMonth(date.getMonth(), southernHemisphere(date));
 }
 
+/** The season the page is showing, read from <html> rather than state, which may not exist yet. */
 export function readSeason(): Season {
   const value = document.documentElement.dataset.season;
 

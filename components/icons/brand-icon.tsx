@@ -22,7 +22,6 @@ export function BrandIcon({ d, ...props }: BrandIconProps & { d: string }) {
   );
 }
 
-/** LinkedIn's glyph. */
 export function LinkedInIcon(props: BrandIconProps) {
   return (
     <BrandIcon
@@ -32,7 +31,6 @@ export function LinkedInIcon(props: BrandIconProps) {
   );
 }
 
-/** GitHub's glyph. */
 export function GitHubIcon(props: BrandIconProps) {
   return (
     <BrandIcon

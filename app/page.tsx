@@ -6,6 +6,7 @@ import { SectionCard } from '@/components/section-card';
 import { buttonVariants } from '@/components/ui/button';
 import { personSchema } from '@/lib/person-schema';
 
+/** The climb: the hero, one card per job up the mountain, and the summit that is never reached. */
 export default function Home() {
   return (
     <Climb hero={<Hero />}>

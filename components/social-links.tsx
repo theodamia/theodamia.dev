@@ -9,12 +9,12 @@ const LINKS = [
 ];
 
 /**
- * Three white tiles, one glyph each. The glyph turns to the accent on hover.
+ * Three white tiles, one glyph each, turning to the accent on hover.
  *
- * The new-tab warning is part of `aria-label`, not an `sr-only` span inside the link. These tiles have no visible
- * text, so the label has to carry the name — and `aria-label` *replaces* an element's contents when a screen
- * reader works out its name, which would leave such a span announced by nobody. Elsewhere (`job-card`,
- * `contact-rows`) the link has real text and no `aria-label`, so there the span is read and belongs.
+ * The new-tab warning belongs in `aria-label` here, not an `sr-only` span: these tiles have no visible text, so
+ * the label carries the name — and `aria-label` *replaces* an element's contents in the accessible name, leaving
+ * such a span announced by nobody. Where a link has real text and no `aria-label` (`job-card`, `contact-rows`)
+ * the span is read and belongs.
  */
 export function SocialLinks({ className }: { className?: string }) {
   return (

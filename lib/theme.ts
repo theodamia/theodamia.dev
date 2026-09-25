@@ -91,16 +91,13 @@ function track(transition: ViewTransition, cleanUp?: () => void) {
 /**
  * Changes the world from a button: the theme, the season, anything that is one attribute on <html>.
  *
- * The new look spreads from the button's centre as a soft-edged circle: a view transition keeps the old page
- * still and shows the new one through a radial mask whose radius (`--reveal-r`) grows from 0 to past the farthest
- * corner. The new view is the live page, so anything that transitions in it shows through the circle. Before
- * switching, every `[data-wave]` element gets a `--wave-delay`: when the edge will be half way across it. The sun
- * turns into the moon, and each star comes out, just as the night reaches it.
+ * The new look spreads from the button as a soft-edged circle — a view transition holds the old page still and
+ * masks the new one behind a radius (`--reveal-r`) growing past the farthest corner. The new view is the *live*
+ * page, so anything transitioning in it shows through. Each `[data-wave]` element first gets a `--wave-delay` for
+ * when the edge will reach it, which is how the sun turns to the moon and the stars come out in order.
  *
- * With reduced motion it is the browser's own short cross-fade and no wave. Without view transitions the colours
- * switch at once, but the sky still changes on the wave.
- *
- * `flip` is called inside the transition and must do nothing but set the attribute.
+ * Reduced motion gets the browser's own cross-fade and no wave; without view transitions the colours switch at
+ * once but the sky still waves. `flip` runs inside the transition and must only set the attribute.
  */
 export function reveal(from: HTMLElement, flip: () => void): void {
   const root = document.documentElement;

@@ -47,13 +47,13 @@ const STOPS = [
 const NOW = JOBS.length - 1;
 
 /**
- * The trail in miniature, fixed on the right: the summit it leads to at the top, the start at the bottom, and a mark
- * for every stop that says when and where it was: plain right-aligned text with a soft halo, and an ink pill only
- * for the stop you are at. It speaks the scene's language: walked is solid ink, still to
- * climb is dotted. The needle and the walked bar are moved by the scroll controller (transforms only); the lit mark
- * and the filled nodes change only when a new stop is reached. Only the marks take pointer events.
+ * The trail in miniature, fixed on the right: the summit at the top, the start at the bottom, and a mark per stop
+ * saying when and where. Quiet right-aligned text with a soft halo, an ink pill only for the stop you are at, and
+ * the scene's own language — walked is solid ink, still to climb is dotted.
  *
- * On narrow screens a small pill with the year being passed and where you are replaces the rail.
+ * The scroll controller moves the needle and the walked bar, transforms only; the lit mark and the filled nodes
+ * change just when a stop is reached. Only the marks take pointer events. Below the wide breakpoint a small pill
+ * with the year and place replaces the rail.
  */
 export function Altimeter({
   job: reached,

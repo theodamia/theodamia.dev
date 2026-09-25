@@ -16,33 +16,23 @@ import { campArtKey } from '@/scene/camp-layout';
 
 const NEAR_DEPTH = 1;
 
-/**
- * Only the layers the foot of the world actually draws. The others are silhouettes on a horizon this view never
- * reaches: they would be paid for and never seen. `SCENE_LAYERS` is plain data, so the choice is made here and
- * the scene itself stays untouched.
- */
+/** Only the layers this view draws. The rest sit on a horizon it never reaches, so they would be bytes for nothing. */
 const VALLEY_LAYERS = ['near', 'trail', 'front'];
 
 /**
- * How far down the world the band looks. `.scene-layer` (globals.css) maps 10 world units to 1lvh at every depth,
- * so a band `S` vh tall shows world Y `[5000 · depth · cam, + 10 · S]`. The trail starts at 5620 and the village
- * stands at 5622: at `--cam: 1` a 58vh band ends at 5580 and both sit just below its edge, unseen. 1.05 puts the
- * window at 5250–5830, which lands the village two thirds down with ground below it. Past 1.084 the world runs
- * out and the band shows through.
+ * How far down the world the band looks. `.scene-layer` maps 10 world units to 1lvh, so a band `S` vh tall shows
+ * world Y `[5000 · depth · cam, + 10 · S]`. The trailhead is at 5620, so `--cam: 1` ends a 58vh band at 5580 and
+ * misses it; 1.05 lands the village two thirds down. Past 1.084 the world runs out and the band shows through.
  */
 const VALLEY_CAM = 1.05;
 
 /**
- * The foot of the world, at the foot of the Experience page: the village where the trail starts, the signpost and
- * the dotted first steps of the climb. The counterpart to the summit strip on /about, and the other end of the
- * same mountain — that page is where the climb is going, this is where it began.
+ * The foot of the world at the foot of /cv: the village, the signpost, the first dotted steps. The counterpart to
+ * the summit strip on /about — the other end of the same mountain.
  *
- * It is a band in the page's flow rather than a backdrop behind it: the Contact card above is opaque, and a
- * backdrop tall enough to be worth drawing would run up behind it and be cut in half. Whatever it is given
- * (the way back to the climb) sits over the faded top, where the page is still the page.
- *
- * Nothing here moves. The band's height stays in `vh` on purpose: `S` is what the window above is measured in, so
- * a pixel `min-height` on a short screen would widen it past the bottom of the world.
+ * A band in the page's flow, not a backdrop: the opaque Contact card above would cut a backdrop in half. Its
+ * height stays in `vh`, since that is what the window above is measured in — a pixel `min-height` on a short
+ * screen widens it past the bottom of the world. Nothing here moves.
  */
 export function ValleyStrip({ children }: { children?: React.ReactNode }) {
   return (

@@ -42,26 +42,15 @@ const SEAM = 5;
 const HUB = 6;
 
 /**
- * The season, as a circle with an X through it: four wedges, one per season, the one you are in filled with the
- * site's one warm colour — the same accent that marks Contact in the dock and "Now" on the altimeter, which is
- * what keeps a control this small from reading as another grey instrument.
+ * The season, as a circle with an X through it: one wedge each, the chosen one filled. It only appears on the
+ * climb, but the choice is kept and followed wherever the world appears — the strips on /about and /cv too.
  *
- * It sits by the dock, at the same distance from the same edge, because the two of them are the whole of this
- * site's settings and splitting them between opposite corners meant finding one told you nothing about the other.
+ * Keep it by the dock. In the top corner, left-hand job cards slid under it between about 900px and 1300px,
+ * covering a card's company and role; down here what passes beneath is a card's foot, as with the dock.
  *
- * It was in the top corner first, mirroring the altimeter, and that was wrong for a reason worth writing down:
- * between about 900px and 1300px the left-hand job cards start at the page gutter, so they slid *under* it as
- * they scrolled — covering a card's company and role, which is the worst thing on the card to cover. Down here a
- * card passes beneath it the way it already passes beneath the dock, and what gets covered is a card's foot.
- *
- * It lives on the climb, where the mountain is, but the choice it makes is kept and followed everywhere the world
- * appears — the summit strip on /about and the valley band on /cv change with it.
- *
- * The wedges are ordinary buttons clipped to triangles, not SVG paths, so each one has a real hit area and a real
- * focus ring; the round container is what cuts their outer edges into arcs, and the seams are drawn over the top
- * so the four meet cleanly at a hub instead of in a pinch. They are toggle buttons rather than radios: four are
- * visible at once with one pressed, which `aria-pressed` says plainly and without the roving focus a radio group
- * would owe its reader.
+ * The wedges are buttons clipped to triangles rather than SVG paths, so each has a real hit area and focus ring,
+ * and toggle buttons rather than radios: four are visible at once with one `aria-pressed`, which needs no roving
+ * focus to explain itself.
  */
 export function SeasonDial({ className }: { className?: string }) {
   const season = useSeason();
