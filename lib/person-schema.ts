@@ -18,13 +18,12 @@ const LANGUAGES = (FACTS.find(fact => fact.label === 'Languages')?.value ?? '')
   .filter(Boolean);
 
 /**
- * The site's own identity, in the vocabulary search engines and recruiter sourcing tools read. Everything a human
- * reader gets from the hero and /about is in the prose, where a machine has to infer it; this states it outright,
- * and `sameAs` is the part that matters most — it is what ties this domain to the LinkedIn and GitHub accounts
- * rather than leaving three unconnected profiles of a common-enough name.
+ * The site's identity in the vocabulary search engines and sourcing tools read, since everything a person gets
+ * from the prose a machine has to infer. `sameAs` matters most: it ties this domain to the LinkedIn and GitHub
+ * accounts rather than leaving three unconnected profiles of a common name.
  *
- * Every value is derived from `content/`, so it cannot drift from the page it describes. A test pins the
- * derivations, because two of them read a shape out of a sentence that someone may one day reword.
+ * Derived from `content/` so it cannot drift. Tests pin the derivations, two of which read a shape out of a
+ * sentence someone may one day reword.
  */
 export function personSchema() {
   return {

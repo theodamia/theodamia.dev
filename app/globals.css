@@ -740,13 +740,9 @@
  * (opacity only, a few of the brightest, only at night) never fights the fade.
  */
 /*
- * The weather. Every season's is in the page at once and CSS shows one kind, so nothing but the current weather is
- * ever animated. Two properties move: `translate` carries the fall and the sideways drift, `rotate` turns the
- * leaves over. Both are their own properties rather than one `transform`, which keeps them on the compositor and
- * out of the way of the transforms the stage writes on the layers either side of this one.
- *
- * A negative `--phase` starts each bit part way down its fall, so the sky is full from the first frame instead of
- * filling up over the first fifteen seconds.
+ * The weather (see `weather-layer.tsx` for why it is spans). `translate` carries the fall and the drift, `rotate`
+ * turns the leaves; a negative `--phase` starts each bit part way down, so the sky is full from the first frame
+ * rather than filling over the first fifteen seconds.
  */
 .weather-bit {
   display: none;

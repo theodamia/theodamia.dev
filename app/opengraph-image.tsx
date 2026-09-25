@@ -7,16 +7,7 @@ export const alt = `${SITE.name} — ${SITE.title}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
-/**
- * The card a recruiter sees when the link is pasted into LinkedIn, Slack or a mail client — for most of them it is
- * the first thing they see of this site, so it says the same four facts the hero does over the same dawn and the
- * same green hills. Drawn here rather than exported by hand, so it can never fall out of step with `content/site.ts`.
- *
- * Satori (what `ImageResponse` draws with) is not a browser: no `oklch`, no CSS variables, no `clip-path`, and
- * every box with more than one child needs an explicit `display: flex`. Hence the plain hex below, close to the
- * tokens in `globals.css`, and the hills as one `<svg>`. The fonts are committed under `lib/og/fonts` (OFL) so a
- * build never has to reach the network for them.
- */
+/** Committed rather than fetched (OFL), so a build never reaches the network for them. */
 const FONT_DIR = join(process.cwd(), 'lib/og/fonts');
 
 /* the interface tokens, as Satori can read them */
@@ -24,6 +15,13 @@ const INK = '#1e2b37';
 const INK_2 = '#465868';
 const ACCENT = '#cf4318';
 
+/**
+ * The card a pasted link shows in LinkedIn or Slack: the hero's four facts over the same dawn and hills, drawn
+ * from `content/site.ts` so it cannot fall out of step with the site.
+ *
+ * Satori is not a browser — no `oklch`, no CSS variables, no `clip-path`, and every box with more than one child
+ * needs an explicit `display: flex`. Hence the plain hex below, and the hills as one `<svg>`.
+ */
 export default async function Image() {
   const [display, text] = await Promise.all([
     readFile(join(FONT_DIR, 'bricolage-700.ttf')),

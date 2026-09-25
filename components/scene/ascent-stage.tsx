@@ -48,17 +48,15 @@ type AscentStageProps = {
 };
 
 /**
- * The SVG renderer of the scene: a sticky, screen-sized stage with parallax layers behind the page content.
- * It implements `SceneHandle`, so the rest of the app only ever hands it a frame.
+ * The scene's renderer: a sticky, screen-sized stage of parallax layers behind the page. It implements
+ * `SceneHandle`, so the rest of the app only hands it a frame.
  *
- * Resting poses below use the `transform` property on purpose: Tailwind's translate utilities set `translate`,
- * which would add to the transforms written per frame instead of being replaced by them.
+ * A frame writes device-pixel-snapped transforms and one opacity, on whole layers — no CSS variables, no layout
+ * reads, no SVG changes. That is what keeps the scroll smooth. Resting poses use the `transform` property rather
+ * than Tailwind's translate utilities, which set `translate` and would add to those transforms instead of being
+ * replaced by them.
  *
- * One frame writes transforms (pixels, snapped to the device pixel grid) and one opacity on whole layers.
- * No CSS variables, no layout reads, no SVG changes: that is what keeps the scroll smooth.
- *
- * The camps are small SVGs of their own in a layer that moves with the mountain, not part of the big drawing:
- * when one is reached its flag runs up the pole and its name brightens, and only that small element repaints.
+ * Camps are small SVGs of their own in a layer that moves with the mountain, so an arrival repaints only the camp.
  */
 export function AscentStage({ reducedMotion, stop, ref }: AscentStageProps) {
   const stage = useRef<HTMLDivElement>(null);

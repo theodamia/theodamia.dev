@@ -377,12 +377,11 @@ const HAS_TREE_PICTURES = TREE_PICTURES.every(tree => ART[tree.key]);
 /** Share of the trees that are spruces; the rest are firs. */
 const SPRUCE_SHARE = 0.6;
 /**
- * A tree picture needs ground under it. A silhouette could stand on the corner of a steep flank and melt into the
- * slope; an outlined tree there hangs half over empty air and reads as floating. So on a slope (where, a little way
- * either side of its trunk, `LEVEL_REACH` of its size, the ground falls more steeply than `LEVEL_MAX_SLOPE`) the tree
- * steps down onto the face of the hill: its foot goes `FACE_SINK` below the ground on both sides, so the hill is
- * always behind its trunk, never the sky. Only where the hill's body is still (nearly) opaque: it fades out over its
- * reach, and by `SOLID_REACH` of it is still about three quarters there, mostly behind the next ridge anyway.
+ * A tree picture needs ground under it. A flat silhouette can sit on the corner of a steep flank; an outlined tree
+ * there hangs over empty air and reads as floating. So where the ground either side of the trunk falls more
+ * steeply than `LEVEL_MAX_SLOPE`, the tree steps down onto the hill's face — its foot `FACE_SINK` below the ground
+ * on both sides, so the hill is behind the trunk rather than the sky. Only while the body is still near-opaque,
+ * which it is up to `SOLID_REACH`.
  */
 const LEVEL_REACH = 0.45;
 const LEVEL_MAX_SLOPE = 0.55;
