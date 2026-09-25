@@ -1,3 +1,5 @@
+import { remember, reveal } from '@/lib/theme';
+
 export type Season = 'winter' | 'spring' | 'summer' | 'autumn';
 
 /** In the order they come round, so a list of them reads like a year. */
@@ -69,3 +71,15 @@ export function storedSeason(): Season | null {
  * string has to stand alone in the document; a test asserts the copy still agrees with the module.
  */
 export const SEASON_SCRIPT = `(function(){var d=document.documentElement;var T=${JSON.stringify(SEASON_BY_MONTH)};try{var s=localStorage.getItem('${SEASON_STORAGE_KEY}');if(T.indexOf(s)<0){var n=new Date(),y=n.getFullYear();var south=new Date(y,0,1).getTimezoneOffset()<new Date(y,6,1).getTimezoneOffset();s=T[(n.getMonth()+(south?6:0))%12]}d.dataset.season=s}catch(e){d.dataset.season='summer'}})()`;
+
+/**
+ * Changes the season from a wedge of the dial, and remembers the choice — which also stops the mountain
+ * following the calendar from then on. It sweeps out from the wedge exactly as the night does, because it is
+ * the same reveal.
+ */
+export function switchSeason(from: HTMLElement, season: Season) {
+  remember(SEASON_STORAGE_KEY, season);
+  reveal(from, () => {
+    document.documentElement.dataset.season = season;
+  });
+}
