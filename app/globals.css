@@ -750,6 +750,23 @@
     inset 0 7px 14px -9px color-mix(in oklab, var(--color-ink) 50%, transparent);
 }
 
+/*
+ * The one filled wedge, turned to whichever season is chosen. It rides under the buttons, so a wedge's hover wash
+ * tints over it and the icons stay on top.
+ */
+.season-marker {
+  position: absolute;
+  inset: 0;
+  background: var(--color-accent);
+  transition: rotate 520ms var(--ease-pop);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .season-marker {
+    transition: none;
+  }
+}
+
 /* the wedge you are in: sunk a little into the dial, so it reads as pressed rather than stuck on */
 .season-wedge[aria-pressed='true'] {
   box-shadow: inset 0 1px 6px -2px color-mix(in oklab, var(--color-shade) 55%, transparent);

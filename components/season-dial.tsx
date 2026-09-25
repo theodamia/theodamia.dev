@@ -2,9 +2,11 @@
 
 import type React from 'react';
 import { Leaf, Snowflake, Sprout, Sun } from 'lucide-react';
+import { useState } from 'react';
 import { useFollowCalendar, useSeason } from '@/hooks/use-season';
 import { switchSeason, type Season } from '@/lib/season';
 import { cn } from '@/utils/cn';
+import { turnToward } from '@/utils/turn-toward';
 
 type Wedge = {
   season: Season;
@@ -18,6 +20,9 @@ type Wedge = {
    */
   at: string;
 };
+
+/** A quarter turn per season, clockwise from the top: the marker rides round to whichever is chosen. */
+const TURN = 90;
 
 /** Clockwise from the top, the way a year goes. */
 const WEDGES: Wedge[] = [
@@ -55,7 +60,22 @@ const HUB = 5.5;
  */
 export function SeasonDial({ className }: { className?: string }) {
   const season = useSeason();
+  const facing = WEDGES.findIndex(wedge => wedge.season === season) * TURN;
+  const [angle, setAngle] = useState(facing);
+  const [turned, setTurned] = useState(season);
   useFollowCalendar();
+
+  /*
+   * Adjusted while rendering rather than in an effect, which is what React asks for when state has to follow
+   * something that changed: it re-renders before painting, so the marker never shows at the old angle first.
+   *
+   * The angle is a running total rather than one of four fixed values, so the marker always takes the short way
+   * round: from autumn back to winter it turns a quarter forward, not three quarters back.
+   */
+  if (turned !== season) {
+    setTurned(season);
+    setAngle(from => turnToward(from, facing));
+  }
 
   return (
     <div
@@ -66,6 +86,17 @@ export function SeasonDial({ className }: { className?: string }) {
         className
       )}
     >
+      {/*
+        One filled wedge for all four seasons, turned to the chosen one. Rotating a single marker is what makes the
+        change read as a dial rather than as one square going out and another coming on — and a rotation is a
+        transform, so it costs the compositor nothing.
+      */}
+      <div
+        aria-hidden='true'
+        className='season-marker'
+        style={{ rotate: `${angle}deg`, clipPath: `polygon(${WEDGES[0].clip})` }}
+      />
+
       {WEDGES.map(({ season: which, icon: Icon, clip, at }) => {
         const on = which === season;
 
@@ -79,8 +110,8 @@ export function SeasonDial({ className }: { className?: string }) {
             onClick={event => switchSeason(event.currentTarget, which)}
             style={{ clipPath: `polygon(${clip})` }}
             className={cn(
-              'season-wedge group ease-soft absolute inset-0 cursor-pointer transition-colors duration-300 motion-reduce:transition-none',
-              on ? 'bg-accent' : 'hover:bg-accent-wash'
+              'season-wedge group absolute inset-0 cursor-pointer',
+              !on && 'hover:bg-accent-wash'
             )}
           >
             <Icon
