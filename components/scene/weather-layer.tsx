@@ -15,10 +15,18 @@ const BITS = weatherField();
  *
  * Each bit moves on `translate` and `rotate` — never `transform` — because those are separate properties the
  * compositor carries on its own, and because the stage writes `transform` on the layers around it.
+ *
+ * `belowFirstCamp` is what stops leaves and blossom above the treeline: they come off trees, and the trees are
+ * down at the trailhead. Snow ignores it and falls the whole way up. It changes when a camp is reached, not every
+ * frame, so the fade costs one opacity on one element and the bits underneath simply pause.
  */
-export function WeatherLayer() {
+export function WeatherLayer({ belowFirstCamp }: { belowFirstCamp: boolean }) {
   return (
-    <div aria-hidden='true' className='pointer-events-none absolute inset-0 overflow-clip'>
+    <div
+      aria-hidden='true'
+      data-low={belowFirstCamp ? '' : undefined}
+      className='weather-layer pointer-events-none absolute inset-0 overflow-clip'
+    >
       {BITS.map(bit => (
         <span
           key={bit.key}

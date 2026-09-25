@@ -24,6 +24,8 @@ const WALKED_PATH = walkedPathMarkup();
 /** The trail layer and everything after it paint above the walked path. */
 const TRAIL_INDEX = SCENE_LAYERS.findIndex(layer => layer.key === 'trail');
 const NEAR_DEPTH = 1;
+/* camp 0 is the trailhead, so the first job's camp is 1: past it, the trees are behind you */
+const FIRST_CAMP = 1;
 
 /** A cloud from three pills: the body and two bumps that inherit its colour. */
 function Cloud({ className }: { className: string }) {
@@ -211,7 +213,7 @@ export function AscentStage({ reducedMotion, stop, ref }: AscentStageProps) {
       </div>
 
       {/* in front of the mountain and the camps, behind the framing pines the foreground layer carries */}
-      <WeatherLayer />
+      <WeatherLayer belowFirstCamp={stop < FIRST_CAMP} />
 
       {Array.from({ length: SCENE_LAYERS.length - TRAIL_INDEX - 1 }, (_, i) =>
         renderLayer(TRAIL_INDEX + 1 + i)

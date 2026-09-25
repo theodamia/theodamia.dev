@@ -790,6 +790,31 @@
     weather-turn var(--fall) linear var(--phase) infinite;
 }
 
+/*
+ * Leaves and blossom come off trees, and the trees stop at the first camp: past it they fade out and the bits
+ * underneath pause where they are, so nothing is animated above the treeline and nothing restarts on the way back
+ * down. Snow says nothing about trees and falls the whole way up.
+ */
+.weather-layer {
+  transition: opacity 700ms ease-out;
+}
+
+:root[data-season='autumn'] .weather-layer:not([data-low]),
+:root[data-season='spring'] .weather-layer:not([data-low]) {
+  opacity: 0;
+}
+
+:root[data-season='autumn'] .weather-layer:not([data-low]) .weather-bit,
+:root[data-season='spring'] .weather-layer:not([data-low]) .weather-bit {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .weather-layer {
+    transition: none;
+  }
+}
+
 @keyframes weather-fall {
   from {
     translate: 0 -14vh;
