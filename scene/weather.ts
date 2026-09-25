@@ -58,11 +58,11 @@ const FALLS: Record<WeatherKind, Fall> = {
     spin: [200, 620],
     alpha: [0.72, 1],
   },
-  /* the lightest things here: slow, wide and barely turning */
+  /* blossom: the lightest things here, slow and wide, and thick enough in the air to read as a tree letting go */
   petal: {
     seed: 8500,
-    count: 30,
-    size: [5.5, 9],
+    count: 40,
+    size: [7, 12],
     fall: [10, 18],
     drift: [-95, 95],
     spin: [60, 300],

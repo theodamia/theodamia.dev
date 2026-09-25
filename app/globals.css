@@ -54,7 +54,9 @@
   /* what falls: snow, a turning leaf, a blossom petal */
   --color-flake: oklch(0.99 0.008 250);
   --color-leaf: oklch(0.7 0.145 58);
-  --color-petal: oklch(0.91 0.055 12);
+  --color-petal: oklch(0.92 0.05 8);
+  /* the deeper pink toward a petal's base, which is what stops it reading as a pink snowflake */
+  --color-petal-edge: oklch(0.84 0.095 5);
 
   /* only ever seen at night: the stars, and the moon's dark side */
   --color-star: oklch(0.97 0.025 95);
@@ -185,7 +187,8 @@
   /* by moonlight the snow still catches the light; leaf and petal sink towards the dark they fall through */
   --color-flake: oklch(0.93 0.012 250);
   --color-leaf: oklch(0.45 0.08 55);
-  --color-petal: oklch(0.6 0.04 12);
+  --color-petal: oklch(0.62 0.035 8);
+  --color-petal-edge: oklch(0.5 0.055 5);
 
   /* by night the light is behind you: the same shadows, cast in black */
   --shadow-cast-card: rgb(0 0 0 / 0.8);
@@ -782,9 +785,17 @@
     weather-turn var(--fall) linear var(--phase) infinite;
 }
 
+/*
+ * A blossom petal, not a pink flake: wider than it is long, rounded at three corners and drawn to a point at the
+ * fourth, and shaded from a deeper pink at the base out to almost white at the rim. The gradient turns with it,
+ * so a petal on its edge catches the light differently from one face on — which is most of what sells it at this
+ * size, where no amount of outline would read as a notch.
+ */
 .weather-bit[data-kind='petal'] {
-  background: var(--color-petal);
-  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+  height: calc(var(--size) * 0.74);
+  background: linear-gradient(205deg, var(--color-petal-edge), var(--color-petal) 68%);
+  border-radius: 100% 0 100% 100%;
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-ink) 9%, transparent);
   animation:
     weather-fall var(--fall) linear var(--phase) infinite,
     weather-turn var(--fall) linear var(--phase) infinite;
