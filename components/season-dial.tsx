@@ -26,9 +26,13 @@ const WEDGES: Wedge[] = [
   { season: 'autumn', icon: Leaf, clip: '50% 50%, 0 100%, 0 0', at: 'top-1/2 left-[24%]' },
 ];
 
-/** Thin enough to read as a seam rather than a frame, drawn in the dial's own surface colour. */
-const SEAM = 3;
-const HUB = 4.5;
+/*
+ * In the 72-unit box below. The seam has to be wide enough to cover the stepped edge a clipped triangle leaves
+ * along its diagonal — that step is what made the first dial look ragged — and the hub gives the four wedges
+ * somewhere to meet other than a pinch.
+ */
+const SEAM = 4.5;
+const HUB = 5.5;
 
 /**
  * The season, as a circle with an X through it: four wedges, one per season, the one you are in filled.
@@ -55,7 +59,7 @@ export function SeasonDial({ className }: { className?: string }) {
       role='group'
       aria-label='Season'
       className={cn(
-        'border-line shadow-soft bg-card/90 max-wide:hidden fixed top-[22px] left-[22px] z-[85] size-16 overflow-hidden rounded-full border backdrop-blur-sm print:hidden',
+        'season-dial border-line bg-card/92 max-wide:hidden fixed top-4 left-4 z-[85] size-[72px] overflow-hidden rounded-full border backdrop-blur-md print:hidden',
         className
       )}
     >
@@ -72,14 +76,14 @@ export function SeasonDial({ className }: { className?: string }) {
             onClick={event => switchSeason(event.currentTarget, which)}
             style={{ clipPath: `polygon(${clip})` }}
             className={cn(
-              'group ease-soft absolute inset-0 cursor-pointer transition-colors duration-300 motion-reduce:transition-none',
+              'season-wedge group ease-soft absolute inset-0 cursor-pointer transition-colors duration-300 motion-reduce:transition-none',
               on ? 'bg-ink' : 'hover:bg-ice'
             )}
           >
             <Icon
-              strokeWidth={1.9}
+              strokeWidth={1.85}
               className={cn(
-                'ease-pop absolute size-[15px] -translate-x-1/2 -translate-y-1/2 transition-transform duration-300 group-hover:scale-115 motion-reduce:transition-none',
+                'ease-pop absolute size-[17px] -translate-x-1/2 -translate-y-1/2 transition-transform duration-300 group-hover:scale-115 motion-reduce:transition-none',
                 at,
                 on ? 'text-on-ink' : 'text-ink-2 group-hover:text-ink'
               )}
@@ -95,13 +99,13 @@ export function SeasonDial({ className }: { className?: string }) {
       */}
       <svg
         aria-hidden='true'
-        viewBox='0 0 64 64'
+        viewBox='0 0 72 72'
         fill='none'
         className='pointer-events-none absolute inset-0 size-full'
       >
-        <path d='M0,0 L64,64 M64,0 L0,64' className='stroke-card' strokeWidth={SEAM} />
-        <path d='M0,0 L64,64 M64,0 L0,64' className='stroke-line' strokeWidth={1} />
-        <circle cx='32' cy='32' r={HUB} className='fill-card stroke-line' strokeWidth={1} />
+        <path d='M0,0 L72,72 M72,0 L0,72' className='stroke-card' strokeWidth={SEAM} />
+        <path d='M0,0 L72,72 M72,0 L0,72' className='stroke-line' strokeWidth={1} />
+        <circle cx='36' cy='36' r={HUB} className='fill-card stroke-line' strokeWidth={1} />
       </svg>
     </div>
   );

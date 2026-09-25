@@ -727,6 +727,34 @@
  * first and the faintest a moment later, like eyes adjusting to the dark. The dot is the ::before, so a twinkle
  * (opacity only, a few of the brightest, only at night) never fights the fade.
  */
+/*
+ * The season dial. Its depth is built, not painted: the card it floats on, a hairline rim, and a well the wedges
+ * sit down inside, so the lit one reads as filled rather than merely coloured. The seams drawn over the wedges are
+ * wide enough to cover the stepped edges a clipped triangle leaves on its diagonals, which is what made the first
+ * version look ragged.
+ */
+.season-dial {
+  box-shadow:
+    0 14px 30px -16px var(--shadow-cast-dock),
+    0 3px 8px -3px var(--shadow-cast-soft);
+}
+
+.season-dial::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--color-ink) 8%, transparent),
+    inset 0 7px 14px -9px color-mix(in oklab, var(--color-ink) 50%, transparent);
+}
+
+/* the wedge you are in: sunk a little into the dial, so it reads as pressed rather than stuck on */
+.season-wedge[aria-pressed='true'] {
+  box-shadow: inset 0 1px 6px -2px color-mix(in oklab, var(--color-shade) 55%, transparent);
+}
+
 .star {
   position: absolute;
   width: var(--size);
