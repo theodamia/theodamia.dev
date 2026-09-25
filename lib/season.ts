@@ -1,4 +1,4 @@
-import { remember, reveal } from '@/lib/theme';
+import { isRevealing, remember, reveal } from '@/lib/theme';
 
 export type Season = 'winter' | 'spring' | 'summer' | 'autumn';
 
@@ -79,7 +79,22 @@ export const SEASON_SCRIPT = `(function(){var d=document.documentElement;var T=$
  */
 export function switchSeason(from: HTMLElement, season: Season) {
   remember(SEASON_STORAGE_KEY, season);
-  reveal(from, () => {
+
+  const flip = () => {
     document.documentElement.dataset.season = season;
-  });
+  };
+
+  /*
+   * Changing again while a sweep is still running joins it rather than replacing it. Starting a second reveal
+   * would skip the first, which finishes it instantly — the mountain snapping to the season you just left before
+   * setting off for the new one. The sweep shows the live page, so it simply reveals whichever season is chosen
+   * by the time its edge arrives.
+   */
+  if (isRevealing()) {
+    flip();
+
+    return;
+  }
+
+  reveal(from, flip);
 }

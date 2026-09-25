@@ -1,10 +1,19 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { isRevealing, reveal } from '@/lib/theme';
+
+/* the reveal itself belongs to the theme and is tested there; what matters here is which of the two paths is taken */
+vi.mock('@/lib/theme', () => ({
+  isRevealing: vi.fn(() => false),
+  reveal: vi.fn(),
+  remember: vi.fn((key: string, value: string) => localStorage.setItem(key, value)),
+}));
 import {
   SEASON_BY_MONTH,
   SEASON_SCRIPT,
   SEASONS,
   seasonOfMonth,
   southernHemisphere,
+  switchSeason,
 } from '@/lib/season';
 
 describe('seasonOfMonth', () => {
@@ -53,5 +62,47 @@ describe('SEASON_SCRIPT', () => {
   it('falls back to a season rather than leaving the mountain with none', () => {
     expect(SEASON_SCRIPT).toContain("dataset.season='summer'");
     expect(SEASON_SCRIPT).toContain('catch');
+  });
+});
+
+describe('switchSeason', () => {
+  const wedge = () => document.createElement('button');
+
+  beforeEach(() => {
+    vi.mocked(isRevealing).mockReturnValue(false);
+    vi.mocked(reveal).mockReset();
+  });
+
+  afterEach(() => {
+    delete document.documentElement.dataset.season;
+  });
+
+  it('sweeps the page when nothing else is', () => {
+    switchSeason(wedge(), 'winter');
+
+    expect(reveal).toHaveBeenCalledTimes(1);
+    /* the reveal sets the attribute from inside the transition, so run what it was handed */
+    vi.mocked(reveal).mock.calls[0][1]();
+    expect(document.documentElement.dataset.season).toBe('winter');
+  });
+
+  /*
+   * A second choice mid-sweep must not start another. Starting one skips the first, which finishes it at once and
+   * snaps the mountain to the season just left; the sweep shows the live page, so it carries the new one instead.
+   */
+  it('joins a sweep already running instead of cutting it short', () => {
+    vi.mocked(isRevealing).mockReturnValue(true);
+
+    switchSeason(wedge(), 'autumn');
+
+    expect(reveal).not.toHaveBeenCalled();
+    expect(document.documentElement.dataset.season).toBe('autumn');
+  });
+
+  it('remembers the choice either way, so the calendar stops deciding', () => {
+    vi.mocked(isRevealing).mockReturnValue(true);
+    switchSeason(wedge(), 'spring');
+
+    expect(localStorage.getItem('season')).toBe('spring');
   });
 });

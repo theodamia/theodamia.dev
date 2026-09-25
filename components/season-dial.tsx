@@ -5,6 +5,7 @@ import { Leaf, Snowflake, Sprout, Sun } from 'lucide-react';
 import { useState } from 'react';
 import { useFollowCalendar, useSeason } from '@/hooks/use-season';
 import { switchSeason, type Season } from '@/lib/season';
+import { THEME_REVEAL } from '@/lib/theme';
 import { cn } from '@/utils/cn';
 import { turnToward } from '@/utils/turn-toward';
 
@@ -98,7 +99,14 @@ export function SeasonDial({ className }: { className?: string }) {
       <div
         aria-hidden='true'
         className='season-marker'
-        style={{ rotate: `${angle}deg`, clipPath: `polygon(${WEDGES[0].clip})` }}
+        style={
+          {
+            rotate: `${angle}deg`,
+            clipPath: `polygon(${WEDGES[0].clip})`,
+            /* the same length as the sweep across the mountain, so the two finish together */
+            '--turn': `${THEME_REVEAL.DURATION_MS}ms`,
+          } as React.CSSProperties
+        }
       />
 
       {WEDGES.map(({ season: which, icon: Icon, clip, at }) => {

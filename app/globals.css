@@ -878,7 +878,8 @@
    * top of its pole. This glides in and settles, which is what the rest of the interface does, and at 640ms it
    * finishes well inside the reveal sweeping the mountain behind it.
    */
-  transition: rotate 640ms var(--ease-soft);
+  /* `--turn` is THEME_REVEAL.DURATION_MS, set by the dial: the turn and the sweep have to end on the same beat */
+  transition: rotate var(--turn, 640ms) var(--ease-soft);
 }
 
 @media (prefers-reduced-motion: reduce) {

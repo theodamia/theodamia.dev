@@ -182,6 +182,15 @@ export function reveal(from: HTMLElement, flip: () => void): void {
   });
 }
 
+/**
+ * Whether a reveal is sweeping the page right now. The new view a reveal shows is the live page, not a snapshot,
+ * so something changed while one is running is carried by that sweep — a caller can use this to change the world
+ * again without cutting the sweep short and starting another.
+ */
+export function isRevealing(): boolean {
+  return running !== null;
+}
+
 /** Remembers a choice, where the browser allows it. In private mode it lasts until the page is left. */
 export function remember(key: string, value: string) {
   try {
