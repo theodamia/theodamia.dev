@@ -101,8 +101,12 @@ export function switchTheme(from: HTMLElement): Theme {
 
   if (window.matchMedia(REDUCED_MOTION_QUERY).matches) {
     clearWave(root);
-    if (canReveal) track(document.startViewTransition(flip));
-    else flip();
+
+    if (canReveal) {
+      track(document.startViewTransition(flip));
+    } else {
+      flip();
+    }
 
     return next;
   }

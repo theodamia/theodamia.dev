@@ -76,7 +76,9 @@ export const CAMP_Y: number[] = (() => {
   let walked = 0;
 
   return Array.from({ length: CAMP_COUNT }, (_, i) => {
-    if (i) walked += LEG_WEIGHTS[i - 1];
+    if (i) {
+      walked += LEG_WEIGHTS[i - 1];
+    }
 
     return TRAILHEAD_Y - (walked / TOTAL_WEIGHT) * CLIMB_HEIGHT;
   });

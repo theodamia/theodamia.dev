@@ -136,7 +136,10 @@ function crestLine(b: Band): { d: string; x0: number; x1: number } | null {
 
   for (let x = BAND_X0; x <= BAND_X1; x += BAND_STEP) {
     const y = crestY(b, x);
-    if (b.solid || y - b.y < b.reach * 0.5) points.push([x, y]);
+
+    if (b.solid || y - b.y < b.reach * 0.5) {
+      points.push([x, y]);
+    }
   }
 
   if (points.length < 3) return null;

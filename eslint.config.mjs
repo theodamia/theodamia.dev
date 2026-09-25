@@ -69,6 +69,45 @@ const eslintConfig = defineConfig([
     },
   },
 
+  /*
+   * Braces. A branch that does work gets braces and its own lines; only a guard that *leaves* — return, throw,
+   * continue, break — may sit on one line with its `if`. An `else` always takes braces.
+   *
+   * This cannot be the `curly` rule. `curly` only counts statements and measures lines, never the kind of
+   * statement in the body: "all" would flag every `if (!el) return;` in the codebase, and "multi", "multi-line"
+   * and "multi-or-nest" all wave `if (x) doThing();` through exactly as readily as the guard. The selectors below
+   * say the actual rule. Don't swap them for `curly` later — it cannot express this.
+   *
+   * TS and TSX only: `scripts/` is a build-time image tool whose pixel loops are a wall of `continue` guards, and
+   * bracing those (which the padding rule would then ring with blank lines) would cost more than it buys.
+   */
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    ignores: ['scripts/**'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            'IfStatement > *.consequent:not(BlockStatement, ReturnStatement, ThrowStatement, ContinueStatement, BreakStatement)',
+          message:
+            'Give the if braces. Only a guard that leaves — return, throw, continue, break — may share its line.',
+        },
+        {
+          selector: 'IfStatement > *.alternate:not(BlockStatement, IfStatement)',
+          message: 'An else always takes braces.',
+        },
+        {
+          selector:
+            'IfStatement[alternate][alternate.type!="IfStatement"] > *.consequent:not(BlockStatement)',
+          message: 'An if that has an else takes braces on both branches.',
+        },
+      ],
+      /* the other half: a brace-less guard stays on the `if`'s own line. @stylistic is registered above. */
+      '@stylistic/nonblock-statement-body-position': ['error', 'beside'],
+    },
+  },
+
   // Disable ESLint rules that conflict with Prettier
   prettierConfig,
   // Add Prettier plugin and rules

@@ -102,7 +102,9 @@ export function useClimbScroll({
     };
 
     const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(frame);
+      if (!raf) {
+        raf = requestAnimationFrame(frame);
+      }
     };
 
     const measure = (paint: () => void = onScroll) => {
@@ -128,10 +130,16 @@ export function useClimbScroll({
     window.addEventListener('resize', remeasure);
     window.addEventListener('load', remeasure);
     const observer = new ResizeObserver(remeasure);
-    if (track.current) observer.observe(track.current);
+
+    if (track.current) {
+      observer.observe(track.current);
+    }
 
     return () => {
-      if (raf) cancelAnimationFrame(raf);
+      if (raf) {
+        cancelAnimationFrame(raf);
+      }
+
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', remeasure);
       window.removeEventListener('load', remeasure);
@@ -141,8 +149,11 @@ export function useClimbScroll({
 
   const scrollToStop = useCallback((index: number) => {
     const top = stops.current[index];
+
     /* smooth or instant is decided by `scroll-behavior` in globals.css, which follows reduced motion */
-    if (top !== undefined) window.scrollTo({ top: top + STOP_SCROLL_NUDGE_PX });
+    if (top !== undefined) {
+      window.scrollTo({ top: top + STOP_SCROLL_NUDGE_PX });
+    }
   }, []);
 
   return { stop, year, moving, scrollToStop };

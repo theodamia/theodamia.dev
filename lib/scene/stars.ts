@@ -50,8 +50,13 @@ export function starField(): Star[] {
       if (r(0) > DENSITY) continue;
       const pick = r(1);
       let tier: StarTier = 'faint';
-      if (pick < BRIGHT_SHARE) tier = 'bright';
-      else if (pick < BRIGHT_SHARE + MID_SHARE) tier = 'mid';
+
+      if (pick < BRIGHT_SHARE) {
+        tier = 'bright';
+      } else if (pick < BRIGHT_SHARE + MID_SHARE) {
+        tier = 'mid';
+      }
+
       const look = TIERS[tier];
       const down = (row + (1 - JITTER) / 2 + r(3) * JITTER) / ROWS;
       const twinkles = tier === 'bright' || (tier === 'mid' && r(5) < STAR_FIELD.MID_TWINKLE_SHARE);

@@ -47,7 +47,10 @@ describe('about', () => {
     OPINIONS.forEach((opinion, i) => {
       expect(opinion.holds).toBeGreaterThan(0);
       expect(opinion.holds).toBeLessThanOrEqual(1);
-      if (i) expect(opinion.holds).toBeLessThanOrEqual(OPINIONS[i - 1].holds);
+
+      if (i) {
+        expect(opinion.holds).toBeLessThanOrEqual(OPINIONS[i - 1].holds);
+      }
     });
   });
 

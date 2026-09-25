@@ -53,13 +53,17 @@ function useActiveSection(pathname: string): string | null {
       const probe = window.scrollY + probeOffset;
       let current: string | null = null;
       ids.forEach((id, i) => {
-        if (probe >= tops[i]) current = id;
+        if (probe >= tops[i]) {
+          current = id;
+        }
       });
       setActive(current);
     };
 
     const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(update);
+      if (!raf) {
+        raf = requestAnimationFrame(update);
+      }
     };
 
     const measure = () => {
@@ -79,7 +83,10 @@ function useActiveSection(pathname: string): string | null {
     observer.observe(document.body);
 
     return () => {
-      if (raf) cancelAnimationFrame(raf);
+      if (raf) {
+        cancelAnimationFrame(raf);
+      }
+
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', measure);
       observer.disconnect();

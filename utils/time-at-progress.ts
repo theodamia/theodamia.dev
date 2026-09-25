@@ -21,8 +21,12 @@ export function timeAtProgress(
 
   for (let i = 0; i < STEPS; i++) {
     const mid = (low + high) / 2;
-    if (bezier(y1, y2, mid) < target) low = mid;
-    else high = mid;
+
+    if (bezier(y1, y2, mid) < target) {
+      low = mid;
+    } else {
+      high = mid;
+    }
   }
 
   return bezier(x1, x2, (low + high) / 2);
