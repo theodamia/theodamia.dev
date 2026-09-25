@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { moonlit, sceneLayers, walkedPathMarkup } from '@/scene/scenery';
+import { moonlit, sceneLayers, scenePalette, seasonal, walkedPathMarkup } from '@/scene/scenery';
+import { SEASONS } from '@/lib/season';
 import { CAMP_ANCHORS } from '@/constants';
 import { ART, VILLAGE } from '@/scene/camp-layout';
 import { cameraKnot, campAnchor, CAMP_Y, LEGS, WORLD } from '@/scene/world';
@@ -51,20 +52,69 @@ describe('scenery', () => {
     });
   });
 
-  it('pairs every generated colour with its moonlit twin, keeping the day as the fallback', () => {
-    const PAIR =
-      /(fill|stop-color)="(oklch\([^)]*\))" style="\1:light-dark\(\2,oklch\(([\d.]+) [^)]*\)\)"/g;
-    sceneLayers('Summit').forEach(layer => {
-      const pairs = [...layer.markup.matchAll(PAIR)];
+  it('names every generated colour, and defines every name it uses', () => {
+    const layers = sceneLayers('Summit');
+    const palette = scenePalette();
+    const defined = new Set([...palette.matchAll(/(--m-\d+):/g)].map(([, name]) => name));
+    const used = new Set(
+      layers
+        .flatMap(layer => [...layer.markup.matchAll(/(?:fill|stop-color):var\((--m-\d+)\)/g)])
+        .map(([, name]) => name)
+    );
+
+    expect(used.size).toBeGreaterThan(0);
+    /* a drawing that asked for a colour nobody defined would paint black, and only in some seasons */
+    [...used].forEach(name => expect(defined).toContain(name));
+
+    layers.forEach(layer => {
+      /* the colour itself is written once, as the daylight fallback; the rest is the variable's name */
+      const PAINT = /(fill|stop-color)="(oklch\([^)]*\))" style="\1:var\(--m-\d+\)"/g;
+      const painted = [...layer.markup.matchAll(PAINT)].length;
       const oklchCount = layer.markup.match(/oklch\(/g)?.length ?? 0;
-      /* every oklch() in the markup is one of a pair: the fallback, the day and the night */
-      expect(oklchCount).toBe(pairs.length * 3);
+      expect(oklchCount).toBe(painted);
       expect(layer.markup).not.toMatch(/rgb\(/);
-      pairs.forEach(([, , day, nightL]) => {
-        const dayL = Number(day.match(/oklch\(([\d.]+)/)?.[1]);
-        expect(Number(nightL)).toBeLessThan(dayL);
-      });
     });
+  });
+
+  it('defines every colour in every season, so no season paints a hole', () => {
+    const palette = scenePalette();
+    const names = new Set([
+      ...sceneLayers('Summit')
+        .flatMap(layer => [...layer.markup.matchAll(/var\((--m-\d+)\)/g)])
+        .map(([, name]) => name),
+    ]);
+
+    SEASONS.forEach(season => {
+      const block = new RegExp(`\\[data-season='${season}'\\]\\{([^}]*)\\}`).exec(palette);
+      expect(block, `no block for ${season}`).not.toBeNull();
+      const defined = new Set([...(block?.[1] ?? '').matchAll(/(--m-\d+):/g)].map(([, n]) => n));
+      [...names].forEach(name => expect(defined, `${season} is missing ${name}`).toContain(name));
+    });
+  });
+
+  it('leaves summer exactly as the mountain was drawn', () => {
+    const green: [number, number, number] = [0.6, 0.055, 152];
+    expect(seasonal(green, 'summer')).toEqual(green);
+  });
+
+  it('turns the forest without moving the snowline', () => {
+    const forest: [number, number, number] = [0.6, 0.055, 152];
+    const snow: [number, number, number] = [0.95, 0.018, 240];
+
+    /* autumn hauls the forest round to amber; the snow keeps its hue to within a few degrees */
+    expect(seasonal(forest, 'autumn')[2]).toBeLessThan(110);
+    expect(Math.abs(seasonal(snow, 'autumn')[2] - snow[2])).toBeLessThan(30);
+    /* winter pales the forest most of the way to the snow it already is */
+    expect(seasonal(forest, 'winter')[0]).toBeGreaterThan(forest[0] + 0.15);
+    expect(seasonal(forest, 'winter')[1]).toBeLessThan(forest[1]);
+  });
+
+  it('pairs every colour in the palette with its moonlit twin, which is darker', () => {
+    const PAIR = /--m-\d+:light-dark\(oklch\(([\d.]+)[^)]*\),oklch\(([\d.]+)[^)]*\)\)/g;
+    const pairs = [...scenePalette().matchAll(PAIR)];
+
+    expect(pairs.length).toBeGreaterThan(0);
+    pairs.forEach(([, dayL, nightL]) => expect(Number(nightL)).toBeLessThan(Number(dayL)));
   });
 
   it('keeps snow the brightest thing on the mountain by moonlight', () => {

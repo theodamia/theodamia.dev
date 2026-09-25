@@ -4,11 +4,13 @@ import type React from 'react';
 import { useImperativeHandle, useRef } from 'react';
 import { CampMark, tentFor } from '@/components/scene/camp-mark';
 import { Village } from '@/components/scene/village';
+import { WeatherLayer } from '@/components/scene/weather-layer';
 import {
   Celestial,
   Daylight,
   SCENE_LAYERS,
   SceneLayerSvg,
+  ScenePalette,
   Sky,
   Stars,
 } from '@/components/scene/scene-layer';
@@ -22,6 +24,8 @@ const WALKED_PATH = walkedPathMarkup();
 /** The trail layer and everything after it paint above the walked path. */
 const TRAIL_INDEX = SCENE_LAYERS.findIndex(layer => layer.key === 'trail');
 const NEAR_DEPTH = 1;
+/* camp 0 is the trailhead, so the first job's camp is 1: past it, the trees are behind you */
+const FIRST_CAMP = 1;
 
 /** A cloud from three pills: the body and two bumps that inherit its colour. */
 function Cloud({ className }: { className: string }) {
@@ -158,6 +162,7 @@ export function AscentStage({ reducedMotion, stop, ref }: AscentStageProps) {
       className='scene-stage sticky top-0 col-start-1 row-start-1 h-lvh self-start overflow-clip contain-[layout_paint]'
       style={{ '--cam': 1 } as React.CSSProperties}
     >
+      <ScenePalette />
       <Sky />
       <Daylight ref={day} className='opacity-0 will-change-[opacity]' />
       <Stars />
@@ -206,6 +211,9 @@ export function AscentStage({ reducedMotion, stop, ref }: AscentStageProps) {
       >
         <span className='border-ink bg-card absolute -top-2.5 -left-2.5 size-5 rounded-full border-[3.5px] shadow-[0_0_0_8px_color-mix(in_oklab,var(--color-ink)_16%,transparent)]' />
       </div>
+
+      {/* in front of the mountain and the camps, behind the framing pines the foreground layer carries */}
+      <WeatherLayer belowFirstCamp={stop < FIRST_CAMP} />
 
       {Array.from({ length: SCENE_LAYERS.length - TRAIL_INDEX - 1 }, (_, i) =>
         renderLayer(TRAIL_INDEX + 1 + i)

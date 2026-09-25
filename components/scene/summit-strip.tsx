@@ -6,6 +6,7 @@ import {
   Daylight,
   SCENE_LAYERS,
   SceneLayerSvg,
+  ScenePalette,
   Sky,
   Stars,
 } from '@/components/scene/scene-layer';
@@ -19,6 +20,7 @@ export function SummitStrip() {
       className='absolute inset-x-0 top-0 h-[58vh] min-h-[360px] overflow-clip [&_text]:hidden'
       style={{ '--cam': 0 } as React.CSSProperties}
     >
+      <ScenePalette />
       <Sky />
       <Daylight />
       <Stars />
