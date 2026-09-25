@@ -208,6 +208,10 @@ const NIGHT = {
   HUE_PULL: 0.6,
 };
 
+/**
+ * The same colour under moonlight: darker, much less saturated and pulled towards blue. Every generated colour
+ * is written as a `light-dark()` pair of its daylight self and this, so the night needs no second drawing.
+ */
 export function moonlit([l, c, h]: Oklch): Oklch {
   return [
     NIGHT.L_FLOOR + NIGHT.L_GAIN * l * (1 - NIGHT.L_CURVE + NIGHT.L_CURVE * l),

@@ -22,6 +22,7 @@ export function BrandIcon({ d, ...props }: BrandIconProps & { d: string }) {
   );
 }
 
+/** LinkedIn's glyph. */
 export function LinkedInIcon(props: BrandIconProps) {
   return (
     <BrandIcon
@@ -31,6 +32,7 @@ export function LinkedInIcon(props: BrandIconProps) {
   );
 }
 
+/** GitHub's glyph. */
 export function GitHubIcon(props: BrandIconProps) {
   return (
     <BrandIcon
@@ -40,6 +42,7 @@ export function GitHubIcon(props: BrandIconProps) {
   );
 }
 
+/** Gmail's glyph: the envelope stands for e-mail generally, not for the address being a Gmail one. */
 export function GmailIcon(props: BrandIconProps) {
   return (
     <BrandIcon

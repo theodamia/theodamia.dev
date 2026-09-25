@@ -26,7 +26,9 @@ export const ART: Record<string, CampArt | undefined> = campArt;
 
 /** Camps and houses are placed in the layer that moves with the mountain, as shares of its size. */
 const LAYER_HEIGHT = WORLD.VIEW + WORLD.TRAVEL;
+/** A world X as a percentage of the layer's width, for an element positioned inside it. */
 export const layerX = (value: number) => `${((value / WORLD.WIDTH) * 100).toFixed(4)}%`;
+/** A world Y as a percentage of the layer's height. Percentages, so the layer scales without re-measuring. */
 export const layerY = (value: number) => `${((value / LAYER_HEIGHT) * 100).toFixed(4)}%`;
 
 /**

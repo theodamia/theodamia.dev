@@ -26,10 +26,12 @@ const REVEAL_EASING = `cubic-bezier(${THEME_REVEAL.EASE.join(', ')})`;
 
 let running: ViewTransition | null = null;
 
+/** What the page is showing right now, read from <html> rather than from state, which may not exist yet. */
 export function readTheme(): Theme {
   return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
 }
 
+/** The choice someone made here before, or null if they never picked and the system still decides. */
 export function storedTheme(): Theme | null {
   try {
     const value = localStorage.getItem(THEME_STORAGE_KEY);
@@ -40,6 +42,11 @@ export function storedTheme(): Theme | null {
   }
 }
 
+/**
+ * Whether this browser can show the night at all. The scene's generated colours are written as `light-dark()`
+ * pairs, so without it the mountain would keep its daylight while the interface went dark: the switch hides
+ * instead (see the `not-supports-` classes on the dock) and the site stays in daylight.
+ */
 export function supportsNight(): boolean {
   return typeof CSS !== 'undefined' && CSS.supports('color', 'light-dark(#000,#fff)');
 }

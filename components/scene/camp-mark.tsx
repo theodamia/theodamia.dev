@@ -46,6 +46,7 @@ export type TentKind = 'ridge' | 'dome';
 type CampKind = TentKind | 'signpost';
 const DOME_FROM_LEVEL = 5;
 
+/** Which shelter a job's seniority earns, used where a camp has no artwork yet. */
 export function tentFor(level: number): TentKind {
   return level >= DOME_FROM_LEVEL ? 'dome' : 'ridge';
 }

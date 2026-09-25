@@ -8,8 +8,9 @@ type Viewport = {
   scrollY: number;
 };
 
-/** Where the camera rests at each camp, and how far ahead of it a card arrives. */
+/** Where the camera rests at each camp: a phone holds the trail lower, since the massif fills more of it. */
 export const anchorsFor = (wide: boolean) => (wide ? CAMP_ANCHORS.WIDE : CAMP_ANCHORS.PHONE);
+/** How far ahead of its camp a card arrives, as a share of the leg. Negative means the card is already there. */
 export const leadFor = (wide: boolean) => (wide ? CARD_LEAD.WIDE : CARD_LEAD.PHONE);
 
 /**
