@@ -3,10 +3,16 @@ import { Climb } from '@/components/climb';
 import { Hero } from '@/components/hero';
 import { SectionCard } from '@/components/section-card';
 import { buttonVariants } from '@/components/ui/button';
+import { personSchema } from '@/lib/person-schema';
 
 export default function Home() {
   return (
     <Climb hero={<Hero />}>
+      {/* who this is, stated for machines: only on `/`, which is the page that stands for the person */}
+      <script
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema()) }}
+      />
       <SectionCard
         eyebrow='Today'
         title='The ascent never stops'
