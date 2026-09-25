@@ -6,7 +6,11 @@ import { Altimeter } from '@/components/altimeter';
 import { JobCard } from '@/components/job-card';
 import { AscentStage } from '@/components/scene/ascent-stage';
 import { ScrollCue } from '@/components/scroll-cue';
-import { LAST_CARD_LVH, LEG_SCROLL_LVH } from '@/constants';
+
+/** Scroll length of a leg of weight 1, in large viewport heights. */
+const LEG_SCROLL_LVH = 140;
+/** Room under the last card before the page's closing section. */
+const LAST_CARD_LVH = 110;
 import { useClimbScroll } from '@/hooks/use-climb-scroll';
 import { useReducedMotion } from '@/hooks/use-reduced-motion';
 import { JOBS } from '@/content/jobs';

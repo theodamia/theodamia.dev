@@ -1,4 +1,17 @@
-import { LEG_WEIGHT } from '@/constants';
+/**
+ * Legs are sized by tenure, compressed: weight = BASE + GAIN * sqrt(years / REFERENCE_YEARS), clamped. Strictly
+ * proportional legs would make a six-month job a sliver no card fits in. The same weight sets how much height a
+ * leg gains and how long it takes to scroll, so the camera keeps one speed all the way up.
+ */
+export const LEG_WEIGHT = {
+  BASE: 0.45,
+  GAIN: 0.6,
+  REFERENCE_YEARS: 4,
+  MIN: 0.62,
+  MAX: 1.08,
+  /** The walk from the trailhead to the first job. */
+  INTRO: 0.55,
+} as const;
 import { JOBS } from '@/content/jobs';
 
 /**

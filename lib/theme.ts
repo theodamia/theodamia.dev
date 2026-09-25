@@ -1,9 +1,20 @@
-import {
-  DARK_SCHEME_QUERY,
-  REDUCED_MOTION_QUERY,
-  THEME_REVEAL,
-  THEME_STORAGE_KEY,
-} from '@/constants';
+import { DARK_SCHEME_QUERY, REDUCED_MOTION_QUERY } from '@/constants';
+
+/** Where an explicit day or night choice is kept. Until there is one, the site follows the system. */
+export const THEME_STORAGE_KEY = 'theme';
+
+/**
+ * The night (or the day) spreads from the toggle as a soft-edged circle. The radius eases out: the circle's area
+ * grows with its square, so an ease-out covers the screen at a roughly even rate and starts right under the finger.
+ * The feather is the width of the soft edge, as a share of the radius, within limits.
+ */
+export const THEME_REVEAL = {
+  DURATION_MS: 1000,
+  EASE: [0.3, 0.55, 0.35, 1],
+  FEATHER_SHARE: 0.16,
+  FEATHER_MIN_PX: 96,
+  FEATHER_MAX_PX: 200,
+} as const;
 import { timeAtProgress } from '@/utils/time-at-progress';
 
 export type Theme = 'light' | 'dark';

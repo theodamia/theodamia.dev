@@ -4,7 +4,10 @@ import type React from 'react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { DOCK_ICON_STROKE, DOCK_PROBE_RATIO, SECTION_SCROLL_OFFSET_PX } from '@/constants';
+import { DOCK_ICON_STROKE, SECTION_SCROLL_OFFSET_PX } from '@/constants';
+
+/** The dock lights the section under this share of the screen height. */
+const DOCK_PROBE_RATIO = 0.5;
 import { Map, NotebookPen, RadioTower, Tent } from 'lucide-react';
 import { DockBubble } from '@/components/dock-bubble';
 import { IceAxeIcon } from '@/components/icons/ice-axe-icon';

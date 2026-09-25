@@ -1,4 +1,10 @@
-import { CAMP_ANCHORS, CARD_LEAD } from '@/constants';
+import { CAMP_ANCHORS } from '@/constants';
+
+/**
+ * How far (in screen heights) a card's top is from its anchor when the climber reaches the camp. Negative on
+ * wide screens because the card sits beside the tent, positive on phones where it sits below it.
+ */
+const CARD_LEAD = { WIDE: -0.12, PHONE: 0.07 } as const;
 import { campAnchor } from '@/scene/world';
 
 type Viewport = {

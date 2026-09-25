@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { JOBS } from '@/content/jobs';
-import { LEG_WEIGHT } from '@/constants';
 import {
   CAMP_COUNT,
   cameraKnot,
@@ -8,6 +7,7 @@ import {
   CAMP_Y,
   climberAt,
   LEGS,
+  LEG_WEIGHT,
   LEG_WEIGHTS,
   legWeight,
   SIDES,
