@@ -12,18 +12,19 @@ type Wedge = {
   /** The triangle from the middle out to one side of the square; the round clip turns it into a wedge. */
   clip: string;
   /**
-   * Where the icon sits. A quarter-circle's centre of area is about six tenths of the way out along its bisector,
-   * which on this box is 30% from the middle — so 20% and 80%, nudged in a little to keep it off the rim.
+   * Where the icon sits: a quarter-circle's centre of area, six tenths of the way out along its bisector, which on
+   * this box is 30% from the middle — so 20% and 80%. Do not nudge it inward to "centre" it better. The wedge
+   * narrows toward the hub, and an icon moved in there has its lower corners eaten by the seam.
    */
   at: string;
 };
 
 /** Clockwise from the top, the way a year goes. */
 const WEDGES: Wedge[] = [
-  { season: 'winter', icon: Snowflake, clip: '50% 50%, 0 0, 100% 0', at: 'top-[24%] left-1/2' },
-  { season: 'spring', icon: Sprout, clip: '50% 50%, 100% 0, 100% 100%', at: 'top-1/2 left-[76%]' },
-  { season: 'summer', icon: Sun, clip: '50% 50%, 100% 100%, 0 100%', at: 'top-[76%] left-1/2' },
-  { season: 'autumn', icon: Leaf, clip: '50% 50%, 0 100%, 0 0', at: 'top-1/2 left-[24%]' },
+  { season: 'winter', icon: Snowflake, clip: '50% 50%, 0 0, 100% 0', at: 'top-[20%] left-1/2' },
+  { season: 'spring', icon: Sprout, clip: '50% 50%, 100% 0, 100% 100%', at: 'top-1/2 left-[80%]' },
+  { season: 'summer', icon: Sun, clip: '50% 50%, 100% 100%, 0 100%', at: 'top-[80%] left-1/2' },
+  { season: 'autumn', icon: Leaf, clip: '50% 50%, 0 100%, 0 0', at: 'top-1/2 left-[20%]' },
 ];
 
 /*
@@ -35,7 +36,9 @@ const SEAM = 4.5;
 const HUB = 5.5;
 
 /**
- * The season, as a circle with an X through it: four wedges, one per season, the one you are in filled.
+ * The season, as a circle with an X through it: four wedges, one per season, the one you are in filled with the
+ * site's one warm colour — the same accent that marks Contact in the dock and "Now" on the altimeter, which is
+ * what keeps a control this small from reading as another grey instrument.
  *
  * It mirrors the altimeter — same inset from the same top corner, on the opposite side — and stops above the
  * hero's first line, which is what keeps it clear of the name at every width it is shown at. Below the wide
@@ -77,15 +80,15 @@ export function SeasonDial({ className }: { className?: string }) {
             style={{ clipPath: `polygon(${clip})` }}
             className={cn(
               'season-wedge group ease-soft absolute inset-0 cursor-pointer transition-colors duration-300 motion-reduce:transition-none',
-              on ? 'bg-ink' : 'hover:bg-ice'
+              on ? 'bg-accent' : 'hover:bg-accent-wash'
             )}
           >
             <Icon
               strokeWidth={1.85}
               className={cn(
-                'ease-pop absolute size-[17px] -translate-x-1/2 -translate-y-1/2 transition-transform duration-300 group-hover:scale-115 motion-reduce:transition-none',
+                'ease-pop absolute size-4 -translate-x-1/2 -translate-y-1/2 transition-transform duration-300 group-hover:scale-[1.08] motion-reduce:transition-none',
                 at,
-                on ? 'text-on-ink' : 'text-ink-2 group-hover:text-ink'
+                on ? 'text-on-ink' : 'text-ink-2 group-hover:text-accent-text'
               )}
             />
           </button>
