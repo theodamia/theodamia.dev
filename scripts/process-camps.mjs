@@ -171,6 +171,34 @@ const FLAME_OUTLINE = 0.012;
 const isWarm = (r, g, b) => r > 140 && b < 170 && r - b > 60 && g < r;
 const isCore = (r, g, b) => r > 205 && g > 150 && g - b > 40;
 
+/**
+ * The pixels orthogonally touching `i`, minus any that would fall off the edge. Left, right, up, then down: the
+ * order is part of the contract, because the flood fill below uses the returned list as a stack.
+ */
+function neighboursOf(i, width, height) {
+  const x = i % width;
+  const y = (i / width) | 0;
+  const list = [];
+
+  if (x > 0) {
+    list.push(i - 1);
+  }
+
+  if (x < width - 1) {
+    list.push(i + 1);
+  }
+
+  if (y > 0) {
+    list.push(i - width);
+  }
+
+  if (y < height - 1) {
+    list.push(i + width);
+  }
+
+  return list;
+}
+
 /** The flame's pixels: flood-fill warm colours from the seed (its dark outline walls it in), then grow to cover the outline. */
 function flameMask(data, width, height, seeds) {
   const fill = new Uint8Array(width * height);
@@ -180,23 +208,7 @@ function flameMask(data, width, height, seeds) {
     const i = queue.pop();
     if (fill[i] || !isWarm(data[i * 3], data[i * 3 + 1], data[i * 3 + 2])) continue;
     fill[i] = 1;
-    const [x, y] = [i % width, (i / width) | 0];
-
-    if (x > 0) {
-      queue.push(i - 1);
-    }
-
-    if (x < width - 1) {
-      queue.push(i + 1);
-    }
-
-    if (y > 0) {
-      queue.push(i - width);
-    }
-
-    if (y < height - 1) {
-      queue.push(i + width);
-    }
+    queue.push(...neighboursOf(i, width, height));
   }
 
   const reach = Math.round(width * FLAME_OUTLINE);
@@ -266,28 +278,7 @@ function inpaint(data, width, height, mask) {
   const known = new Uint8Array(width * height);
   const queued = new Uint8Array(width * height);
 
-  const neighbours = i => {
-    const [x, y] = [i % width, (i / width) | 0];
-    const list = [];
-
-    if (x > 0) {
-      list.push(i - 1);
-    }
-
-    if (x < width - 1) {
-      list.push(i + 1);
-    }
-
-    if (y > 0) {
-      list.push(i - width);
-    }
-
-    if (y < height - 1) {
-      list.push(i + width);
-    }
-
-    return list;
-  };
+  const neighbours = i => neighboursOf(i, width, height);
 
   for (let i = 0; i < mask.length; i++) known[i] = mask[i] ? 0 : 1;
   /* the first ring: masked pixels that touch a known one */
