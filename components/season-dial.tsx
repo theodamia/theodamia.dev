@@ -33,21 +33,25 @@ const WEDGES: Wedge[] = [
 ];
 
 /*
- * In the 72-unit box below. The seam has to be wide enough to cover the stepped edge a clipped triangle leaves
+ * In the 80-unit box below. The seam has to be wide enough to cover the stepped edge a clipped triangle leaves
  * along its diagonal — that step is what made the first dial look ragged — and the hub gives the four wedges
  * somewhere to meet other than a pinch.
  */
-const SEAM = 4.5;
-const HUB = 5.5;
+const SEAM = 5;
+const HUB = 6;
 
 /**
  * The season, as a circle with an X through it: four wedges, one per season, the one you are in filled with the
  * site's one warm colour — the same accent that marks Contact in the dock and "Now" on the altimeter, which is
  * what keeps a control this small from reading as another grey instrument.
  *
- * It mirrors the altimeter — same inset from the same top corner, on the opposite side — and stops above the
- * hero's first line, which is what keeps it clear of the name at every width it is shown at. Below the wide
- * breakpoint it is not shown: there is no room beside the text, and the mountain is mostly off screen anyway.
+ * It sits by the dock, at the same distance from the same edge, because the two of them are the whole of this
+ * site's settings and splitting them between opposite corners meant finding one told you nothing about the other.
+ *
+ * It was in the top corner first, mirroring the altimeter, and that was wrong for a reason worth writing down:
+ * between about 900px and 1300px the left-hand job cards start at the page gutter, so they slid *under* it as
+ * they scrolled — covering a card's company and role, which is the worst thing on the card to cover. Down here a
+ * card passes beneath it the way it already passes beneath the dock, and what gets covered is a card's foot.
  *
  * It lives on the climb, where the mountain is, but the choice it makes is kept and followed everywhere the world
  * appears — the summit strip on /about and the valley band on /cv change with it.
@@ -82,7 +86,7 @@ export function SeasonDial({ className }: { className?: string }) {
       role='group'
       aria-label='Season'
       className={cn(
-        'season-dial border-line bg-card/92 max-wide:hidden fixed top-4 left-4 z-[85] size-[72px] overflow-hidden rounded-full border backdrop-blur-md print:hidden',
+        'season-dial border-line bg-card/92 fixed bottom-4 left-4 z-[85] size-20 overflow-hidden rounded-full border backdrop-blur-md max-sm:hidden print:hidden',
         className
       )}
     >
@@ -117,7 +121,7 @@ export function SeasonDial({ className }: { className?: string }) {
             <Icon
               strokeWidth={1.85}
               className={cn(
-                'ease-pop absolute size-4 -translate-x-1/2 -translate-y-1/2 transition-transform duration-300 group-hover:scale-[1.08] motion-reduce:transition-none',
+                'ease-pop absolute size-[18px] -translate-x-1/2 -translate-y-1/2 transition-transform duration-300 group-hover:scale-[1.08] motion-reduce:transition-none',
                 at,
                 on ? 'text-on-ink' : 'text-ink-2 group-hover:text-accent-text'
               )}
@@ -133,13 +137,13 @@ export function SeasonDial({ className }: { className?: string }) {
       */}
       <svg
         aria-hidden='true'
-        viewBox='0 0 72 72'
+        viewBox='0 0 80 80'
         fill='none'
         className='pointer-events-none absolute inset-0 size-full'
       >
-        <path d='M0,0 L72,72 M72,0 L0,72' className='stroke-card' strokeWidth={SEAM} />
-        <path d='M0,0 L72,72 M72,0 L0,72' className='stroke-line' strokeWidth={1} />
-        <circle cx='36' cy='36' r={HUB} className='fill-card stroke-line' strokeWidth={1} />
+        <path d='M0,0 L80,80 M80,0 L0,80' className='stroke-card' strokeWidth={SEAM} />
+        <path d='M0,0 L80,80 M80,0 L0,80' className='stroke-line' strokeWidth={1} />
+        <circle cx='40' cy='40' r={HUB} className='fill-card stroke-line' strokeWidth={1} />
       </svg>
     </div>
   );
