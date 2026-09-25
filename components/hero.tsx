@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { SocialLinks } from '@/components/social-links';
 import { Eyebrow, Heading, Lede } from '@/components/ui/text';
-import { SITE } from '@/lib/site';
+import { SITE } from '@/content/site';
 
 /** The top of the climb page: who this is, what the page is, and the three ways to reach me. */
 export function Hero() {
@@ -18,13 +18,17 @@ export function Hero() {
         still ahead.
       </Lede>
       <SocialLinks />
-      {/* the climb is a lot of movement; for anyone who asked for less of it, the plain list is one line away */}
-      <p className='mt-6 hidden motion-reduce:block'>
+      {/*
+       * A signpost, not an apology: the climb is worth the time it asks for, but the reader who has ninety seconds
+       * and a shortlist should not have to find the way out behind an icon. The same quiet dotted line that points
+       * back here from /cv, pointing the other way.
+       */}
+      <p className='mt-6'>
         <Link
           href='/cv'
           className='text-ink-3 hover:text-ink text-[15px] font-semibold underline decoration-dotted underline-offset-4'
         >
-          Would you rather have it still? Read the plain list
+          Every role, on one page
         </Link>
       </p>
     </section>

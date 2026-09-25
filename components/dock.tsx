@@ -4,12 +4,15 @@ import type React from 'react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { DOCK_ICON_STROKE, DOCK_PROBE_RATIO, SECTION_SCROLL_OFFSET_PX } from '@/constants';
+import { DOCK_ICON_STROKE, SECTION_SCROLL_OFFSET_PX } from '@/constants';
+
+/** The dock lights the section under this share of the screen height. */
+const DOCK_PROBE_RATIO = 0.5;
 import { Map, NotebookPen, RadioTower, Tent } from 'lucide-react';
 import { DockBubble } from '@/components/dock-bubble';
 import { IceAxeIcon } from '@/components/icons/ice-axe-icon';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { DOCK_ITEMS, dockHref, type DockItem, type DockItemId } from '@/lib/dock-items';
+import { DOCK_ITEMS, dockHref, type DockItem, type DockItemId } from '@/content/dock-items';
 import { cn } from '@/utils/cn';
 
 type DockIconComponent = React.ComponentType<{
@@ -53,13 +56,17 @@ function useActiveSection(pathname: string): string | null {
       const probe = window.scrollY + probeOffset;
       let current: string | null = null;
       ids.forEach((id, i) => {
-        if (probe >= tops[i]) current = id;
+        if (probe >= tops[i]) {
+          current = id;
+        }
       });
       setActive(current);
     };
 
     const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(update);
+      if (!raf) {
+        raf = requestAnimationFrame(update);
+      }
     };
 
     const measure = () => {
@@ -79,7 +86,10 @@ function useActiveSection(pathname: string): string | null {
     observer.observe(document.body);
 
     return () => {
-      if (raf) cancelAnimationFrame(raf);
+      if (raf) {
+        cancelAnimationFrame(raf);
+      }
+
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', measure);
       observer.disconnect();

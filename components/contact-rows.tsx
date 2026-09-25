@@ -3,7 +3,7 @@ import { CopyEmailButton } from '@/components/copy-email-button';
 import { GitHubIcon, GmailIcon, LinkedInIcon } from '@/components/icons/brand-icon';
 import { buttonVariants } from '@/components/ui/button';
 import { Eyebrow } from '@/components/ui/text';
-import { SITE } from '@/lib/site';
+import { SITE } from '@/content/site';
 import { cn } from '@/utils/cn';
 
 const ARROW_SIZE = 18;

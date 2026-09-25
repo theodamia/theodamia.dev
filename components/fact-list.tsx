@@ -1,5 +1,5 @@
 import { Eyebrow } from '@/components/ui/text';
-import type { Fact } from '@/lib/about';
+import type { Fact } from '@/content/about';
 
 /** The short answers beside the About text: a label over its value, one hairline between each. */
 export function FactList({ facts }: { facts: Fact[] }) {

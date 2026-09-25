@@ -2,8 +2,8 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { Altimeter } from '@/components/altimeter';
-import { JOBS, TRAILHEAD } from '@/lib/jobs';
-import { SUMMIT_LINE } from '@/lib/site';
+import { JOBS, TRAILHEAD } from '@/content/jobs';
+import { SUMMIT_LINE } from '@/content/site';
 
 function renderAltimeter(job: number, onJump = vi.fn()) {
   const { container } = render(

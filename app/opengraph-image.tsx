@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { ImageResponse } from 'next/og';
-import { SITE } from '@/lib/site';
+import { SITE } from '@/content/site';
 
 export const alt = `${SITE.name} — ${SITE.title}`;
 export const size = { width: 1200, height: 630 };
@@ -10,7 +10,7 @@ export const contentType = 'image/png';
 /**
  * The card a recruiter sees when the link is pasted into LinkedIn, Slack or a mail client — for most of them it is
  * the first thing they see of this site, so it says the same four facts the hero does over the same dawn and the
- * same green hills. Drawn here rather than exported by hand, so it can never fall out of step with `lib/site.ts`.
+ * same green hills. Drawn here rather than exported by hand, so it can never fall out of step with `content/site.ts`.
  *
  * Satori (what `ImageResponse` draws with) is not a browser: no `oklch`, no CSS variables, no `clip-path`, and
  * every box with more than one child needs an explicit `display: flex`. Hence the plain hex below, close to the

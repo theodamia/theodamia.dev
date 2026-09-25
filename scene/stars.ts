@@ -1,5 +1,22 @@
-import { STAR_FIELD } from '@/constants';
-import { rnd } from '@/lib/scene/noise';
+/**
+ * The night sky: a jittered grid over the upper part of the sky, one chance of a star per cell. Tiers are faint,
+ * mid and bright; the brightest come out first, the faintest up to `LAG_MAX_MS` later, like at dusk.
+ */
+export const STAR_FIELD = {
+  COLUMNS: 13,
+  ROWS: 6,
+  /** Share of the sky's height the stars cover, from the top. */
+  SKY_SHARE: 0.64,
+  /** Chance that a cell holds a star. */
+  DENSITY: 0.86,
+  /** Share of stars in the mid and bright tiers; the rest are faint. */
+  MID_SHARE: 0.3,
+  BRIGHT_SHARE: 0.1,
+  LAG_MAX_MS: 600,
+  /** Of the mid tier, this share twinkles too; every bright star does. */
+  MID_TWINKLE_SHARE: 0.2,
+} as const;
+import { rnd } from '@/scene/noise';
 
 export type StarTier = 'faint' | 'mid' | 'bright';
 
@@ -50,8 +67,13 @@ export function starField(): Star[] {
       if (r(0) > DENSITY) continue;
       const pick = r(1);
       let tier: StarTier = 'faint';
-      if (pick < BRIGHT_SHARE) tier = 'bright';
-      else if (pick < BRIGHT_SHARE + MID_SHARE) tier = 'mid';
+
+      if (pick < BRIGHT_SHARE) {
+        tier = 'bright';
+      } else if (pick < BRIGHT_SHARE + MID_SHARE) {
+        tier = 'mid';
+      }
+
       const look = TIERS[tier];
       const down = (row + (1 - JITTER) / 2 + r(3) * JITTER) / ROWS;
       const twinkles = tier === 'bright' || (tier === 'mid' && r(5) < STAR_FIELD.MID_TWINKLE_SHARE);

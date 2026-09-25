@@ -1,5 +1,5 @@
-import { ART, campGround, VILLAGE, VILLAGE_GROUND_Y } from '@/lib/scene/camp-layout';
-import { rnd, rough } from '@/lib/scene/noise';
+import { ART, campGround, VILLAGE, VILLAGE_GROUND_Y } from '@/scene/camp-layout';
+import { rnd, rough } from '@/scene/noise';
 import { CAMP_ANCHORS } from '@/constants';
 import {
   cameraKnot,
@@ -12,7 +12,7 @@ import {
   SUMMIT,
   SUMMIT_PITCH_D,
   WORLD,
-} from '@/lib/scene/world';
+} from '@/scene/world';
 
 /**
  * Scenery generator for the SVG stage. Everything is deterministic (integer-hash noise, no Math.random and
@@ -136,7 +136,10 @@ function crestLine(b: Band): { d: string; x0: number; x1: number } | null {
 
   for (let x = BAND_X0; x <= BAND_X1; x += BAND_STEP) {
     const y = crestY(b, x);
-    if (b.solid || y - b.y < b.reach * 0.5) points.push([x, y]);
+
+    if (b.solid || y - b.y < b.reach * 0.5) {
+      points.push([x, y]);
+    }
   }
 
   if (points.length < 3) return null;
@@ -205,6 +208,10 @@ const NIGHT = {
   HUE_PULL: 0.6,
 };
 
+/**
+ * The same colour under moonlight: darker, much less saturated and pulled towards blue. Every generated colour
+ * is written as a `light-dark()` pair of its daylight self and this, so the night needs no second drawing.
+ */
 export function moonlit([l, c, h]: Oklch): Oklch {
   return [
     NIGHT.L_FLOOR + NIGHT.L_GAIN * l * (1 - NIGHT.L_CURVE + NIGHT.L_CURVE * l),

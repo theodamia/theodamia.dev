@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { AscentStage } from '@/components/scene/ascent-stage';
 import { tentFor } from '@/components/scene/camp-mark';
-import { JOBS, TRAILHEAD } from '@/lib/jobs';
+import { JOBS, TRAILHEAD } from '@/content/jobs';
 
 function reachedFlags(container: HTMLElement) {
   return [...container.querySelectorAll('svg.camp')].map(camp => camp.getAttribute('data-reached'));

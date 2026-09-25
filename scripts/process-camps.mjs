@@ -7,7 +7,7 @@
  * `-spinner`, the village's `village-<n>`, the `flag`, the near slopes' `tree-<n>`): crop the outer margin (where a generator's corner mark would sit), remove the flat
  * magenta background, trim to the subject so every camp stands on its own bottom edge, then write
  * public/camps/camp-<start year>.webp at twice the display size (the camp is an SVG <image>, which takes one
- * source, and WebP is supported everywhere the site runs). The sizes go into lib/scene/camp-art.json so the
+ * source, and WebP is supported everywhere the site runs). The sizes go into scene/camp-art.json so the
  * page can reserve the right box for each camp. A camp listed in LIGHTS also gets its lit part as separate
  * layers, and is itself saved with the fire out, so the page can light it on arrival.
  */
@@ -22,7 +22,7 @@ process.stdout.on('error', () => {});
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const RAW_DIR = path.join(ROOT, 'art/camps/raw');
 const OUT_DIR = path.join(ROOT, 'public/camps');
-const MANIFEST = path.join(ROOT, 'lib/scene/camp-art.json');
+const MANIFEST = path.join(ROOT, 'scene/camp-art.json');
 
 /** Share of each edge thrown away before anything else: the subject is centred, a watermark is not. */
 const EDGE_CROP = 0.06;

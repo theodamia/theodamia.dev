@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { SITE } from '@/lib/site';
+import { SITE } from '@/content/site';
 
 type PageMeta = {
   title: string;

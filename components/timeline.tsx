@@ -1,6 +1,6 @@
 import { JobCard } from '@/components/job-card';
-import { JOBS, TRAILHEAD } from '@/lib/jobs';
-import { SUMMIT_LINE } from '@/lib/site';
+import { JOBS, TRAILHEAD } from '@/content/jobs';
+import { SUMMIT_LINE } from '@/content/site';
 import { cn } from '@/utils/cn';
 
 /** Newest first, the way a CV is read, while the climb keeps telling it from the beginning. */

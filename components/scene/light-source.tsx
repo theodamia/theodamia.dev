@@ -1,4 +1,4 @@
-import { layerX, layerY, type CampLight } from '@/lib/scene/camp-layout';
+import { layerX, layerY, type CampLight } from '@/scene/camp-layout';
 
 /**
  * How far the glow reaches, in widths of the lit shape: a fire throws light wide, a lantern keeps it close, a window

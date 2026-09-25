@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { stopPositions } from '@/lib/climb-stops';
-import { JOBS } from '@/lib/jobs';
+import { stopPositions } from '@/utils/climb-stops';
+import { JOBS } from '@/content/jobs';
 
 /** A card standing `top` pixels below the top of the viewport. */
 function card(top: number): HTMLElement {

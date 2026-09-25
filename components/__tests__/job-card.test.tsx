@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { JobCard } from '@/components/job-card';
-import { JOBS, type Job } from '@/lib/jobs';
+import { JOBS, type Job } from '@/content/jobs';
 
 const job = JOBS[2];
 

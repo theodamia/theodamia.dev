@@ -1,6 +1,13 @@
-import { SERIES_COLORS } from '@/constants';
+/** Series colours for the two small charts on /about, in slice order. */
+const SERIES_COLORS = [
+  'var(--color-accent)',
+  'var(--color-lake-fill)',
+  'var(--color-ink-2)',
+  'var(--color-sun)',
+  'var(--color-mist)',
+] as const;
 import { Heading } from '@/components/ui/text';
-import type { WeekSlice } from '@/lib/about';
+import type { WeekSlice } from '@/content/about';
 
 const colorFor = (index: number) => SERIES_COLORS[index % SERIES_COLORS.length];
 

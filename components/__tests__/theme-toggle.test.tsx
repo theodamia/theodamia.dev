@@ -1,7 +1,8 @@
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { DARK_SCHEME_QUERY, REDUCED_MOTION_QUERY, THEME_STORAGE_KEY } from '@/constants';
+import { DARK_SCHEME_QUERY, REDUCED_MOTION_QUERY } from '@/constants';
+import { THEME_STORAGE_KEY } from '@/lib/theme';
 import { ThemeToggle } from '@/components/theme-toggle';
 
 const root = document.documentElement;

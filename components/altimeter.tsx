@@ -1,9 +1,9 @@
 import type React from 'react';
 import { CAMP_ANCHORS } from '@/constants';
 import { Eyebrow } from '@/components/ui/text';
-import { JOBS, TRAILHEAD } from '@/lib/jobs';
-import { SUMMIT_LINE } from '@/lib/site';
-import { cameraKnot, campAnchor, WORLD } from '@/lib/scene/world';
+import { JOBS, TRAILHEAD } from '@/content/jobs';
+import { SUMMIT_LINE } from '@/content/site';
+import { cameraKnot, campAnchor, WORLD } from '@/scene/world';
 import { cn } from '@/utils/cn';
 
 type AltimeterProps = {
@@ -43,7 +43,7 @@ const STOPS = [
     top: stopTop(i),
   })),
 ];
-/** The last job in `lib/jobs.ts` is the present one: its mark says "Now". */
+/** The last job in `content/jobs.ts` is the present one: its mark says "Now". */
 const NOW = JOBS.length - 1;
 
 /**

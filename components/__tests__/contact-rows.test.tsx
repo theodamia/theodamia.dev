@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { ContactRows } from '@/components/contact-rows';
-import { SITE } from '@/lib/site';
+import { SITE } from '@/content/site';
 
 describe('ContactRows', () => {
   it('puts email first, with a way to write straight away', () => {

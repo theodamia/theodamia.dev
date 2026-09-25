@@ -7,9 +7,9 @@ import { SocialLinks } from '@/components/social-links';
 import { Timeline } from '@/components/timeline';
 import { buttonVariants } from '@/components/ui/button';
 import { Eyebrow, Heading } from '@/components/ui/text';
-import { EDUCATION, SUMMARY_FACTS } from '@/lib/about';
+import { EDUCATION, SUMMARY_FACTS } from '@/content/about';
 import { pageMetadata } from '@/lib/page-metadata';
-import { SITE } from '@/lib/site';
+import { SITE } from '@/content/site';
 import { bareUrl } from '@/utils/bare-url';
 
 export const metadata: Metadata = pageMetadata({

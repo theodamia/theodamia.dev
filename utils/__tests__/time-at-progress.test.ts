@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { THEME_REVEAL } from '@/constants';
+import { THEME_REVEAL } from '@/lib/theme';
 import { timeAtProgress } from '@/utils/time-at-progress';
 
 const EASE = THEME_REVEAL.EASE;

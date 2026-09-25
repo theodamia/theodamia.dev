@@ -1,8 +1,8 @@
 import type React from 'react';
-import { sceneLayers, type SceneLayer } from '@/lib/scene/scenery';
-import { SUMMIT_LINE } from '@/lib/site';
-import { starField } from '@/lib/scene/stars';
-import { WORLD } from '@/lib/scene/world';
+import { sceneLayers, type SceneLayer } from '@/scene/scenery';
+import { SUMMIT_LINE } from '@/content/site';
+import { starField } from '@/scene/stars';
+import { WORLD } from '@/scene/world';
 import { cn } from '@/utils/cn';
 
 /**

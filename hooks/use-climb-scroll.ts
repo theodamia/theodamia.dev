@@ -1,14 +1,20 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
-import {
-  CUE_HIDE_AFTER_PX,
-  STOP_LEFT_AT,
-  STOP_REACHED_AT,
-  STOP_SCROLL_NUDGE_PX,
-  WIDE_QUERY,
-} from '@/constants';
-import { anchorsFor, stopPositions } from '@/lib/climb-stops';
-import { JOBS, TRAILHEAD } from '@/lib/jobs';
-import { CAMP_COUNT, cameraKnot, campAnchor, WORLD, type SceneHandle } from '@/lib/scene/world';
+import { WIDE_QUERY } from '@/constants';
+
+/** Share of a leg after which the next stop counts as reached. */
+const STOP_REACHED_AT = 0.97;
+/**
+ * Once reached, a stop stays reached until the climber has gone back below this share of the leg. Without the gap
+ * a camp flips on and off while someone hovers around it, and everything that comes alive there restarts.
+ */
+const STOP_LEFT_AT = 0.8;
+/** The "Scroll to climb" cue fades once the page has moved this far. */
+const CUE_HIDE_AFTER_PX = 60;
+/** A stop's scroll position is nudged past its knot so the frame lands on the stop, not just before it. */
+const STOP_SCROLL_NUDGE_PX = 2;
+import { anchorsFor, stopPositions } from '@/utils/climb-stops';
+import { JOBS, TRAILHEAD } from '@/content/jobs';
+import { CAMP_COUNT, cameraKnot, campAnchor, WORLD, type SceneHandle } from '@/scene/world';
 
 type ClimbScrollRefs = {
   scene: RefObject<SceneHandle | null>;
@@ -102,7 +108,9 @@ export function useClimbScroll({
     };
 
     const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(frame);
+      if (!raf) {
+        raf = requestAnimationFrame(frame);
+      }
     };
 
     const measure = (paint: () => void = onScroll) => {
@@ -128,10 +136,16 @@ export function useClimbScroll({
     window.addEventListener('resize', remeasure);
     window.addEventListener('load', remeasure);
     const observer = new ResizeObserver(remeasure);
-    if (track.current) observer.observe(track.current);
+
+    if (track.current) {
+      observer.observe(track.current);
+    }
 
     return () => {
-      if (raf) cancelAnimationFrame(raf);
+      if (raf) {
+        cancelAnimationFrame(raf);
+      }
+
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', remeasure);
       window.removeEventListener('load', remeasure);
@@ -141,8 +155,11 @@ export function useClimbScroll({
 
   const scrollToStop = useCallback((index: number) => {
     const top = stops.current[index];
+
     /* smooth or instant is decided by `scroll-behavior` in globals.css, which follows reduced motion */
-    if (top !== undefined) window.scrollTo({ top: top + STOP_SCROLL_NUDGE_PX });
+    if (top !== undefined) {
+      window.scrollTo({ top: top + STOP_SCROLL_NUDGE_PX });
+    }
   }, []);
 
   return { stop, year, moving, scrollToStop };

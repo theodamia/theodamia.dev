@@ -12,11 +12,11 @@ import {
   Sky,
   Stars,
 } from '@/components/scene/scene-layer';
-import { walkedPathMarkup } from '@/lib/scene/scenery';
+import { walkedPathMarkup } from '@/scene/scenery';
 import { cn } from '@/utils/cn';
-import { JOBS, TRAILHEAD } from '@/lib/jobs';
-import { campArtKey } from '@/lib/scene/camp-layout';
-import { CAMP_Y, climberAt, WORLD, type SceneFrame, type SceneHandle } from '@/lib/scene/world';
+import { JOBS, TRAILHEAD } from '@/content/jobs';
+import { campArtKey } from '@/scene/camp-layout';
+import { CAMP_Y, climberAt, WORLD, type SceneFrame, type SceneHandle } from '@/scene/world';
 
 const WALKED_PATH = walkedPathMarkup();
 /** The trail layer and everything after it paint above the walked path. */
@@ -91,7 +91,11 @@ export function AscentStage({ reducedMotion, stop, ref }: AscentStageProps) {
       let near = 0;
       SCENE_LAYERS.forEach((layer, i) => {
         const y = snap(-yTop * layer.depth * scale);
-        if (layer.depth === NEAR_DEPTH) near = y;
+
+        if (layer.depth === NEAR_DEPTH) {
+          near = y;
+        }
+
         const el = layers.current[i];
 
         if (el && written.current[i] !== y) {
@@ -100,24 +104,34 @@ export function AscentStage({ reducedMotion, stop, ref }: AscentStageProps) {
         }
       });
 
-      if (camps.current) camps.current.style.transform = `translate3d(-50%,${near}px,0)`;
+      if (camps.current) {
+        camps.current.style.transform = `translate3d(-50%,${near}px,0)`;
+      }
 
-      /* the climber, from points sampled once in lib/scene/world */
+      /* the climber, from points sampled once in scene/world */
       const [px, py] = climberAt(leg, f);
       const cx = snap(width / 2 + (px - WORLD.CENTER_X) * scale);
       const cy = snap(near + py * scale);
-      if (climber.current) climber.current.style.transform = `translate3d(${cx}px,${cy}px,0)`;
+
+      if (climber.current) {
+        climber.current.style.transform = `translate3d(${cx}px,${cy}px,0)`;
+      }
 
       /* the walked path: the window's top edge sits at the climber, and the drawing inside is shifted back by the same amount */
       const edge = reducedMotion ? snap(near + CAMP_Y[CAMP_Y.length - 1] * scale) : cy;
-      if (clip.current) clip.current.style.transform = `translate3d(0,${edge}px,0)`;
+
+      if (clip.current) {
+        clip.current.style.transform = `translate3d(0,${edge}px,0)`;
+      }
 
       if (path.current) {
         path.current.style.transform = `translate3d(-50%,${snap(near - edge)}px,0)`;
       }
 
       /* dawn turns to day as you climb (by night, dusk to midnight) */
-      if (day.current) day.current.style.opacity = (1 - yTop / WORLD.TRAVEL).toFixed(3);
+      if (day.current) {
+        day.current.style.opacity = (1 - yTop / WORLD.TRAVEL).toFixed(3);
+      }
     },
   }));
 

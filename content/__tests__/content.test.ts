@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { WEEK, OPINIONS, EDUCATION, SUMMARY_FACTS } from '@/lib/about';
-import { DOCK_ITEMS, dockHref } from '@/lib/dock-items';
-import { JOBS } from '@/lib/jobs';
-import { SKILL_GROUPS } from '@/lib/skill-groups';
+import { WEEK, OPINIONS, EDUCATION, SUMMARY_FACTS } from '@/content/about';
+import { DOCK_ITEMS, dockHref } from '@/content/dock-items';
+import { JOBS } from '@/content/jobs';
+import { SKILL_GROUPS } from '@/content/skill-groups';
 
 /* everything is on the card at once, so the words have to stay short */
 const MAX_SUMMARY = 150;
@@ -47,7 +47,10 @@ describe('about', () => {
     OPINIONS.forEach((opinion, i) => {
       expect(opinion.holds).toBeGreaterThan(0);
       expect(opinion.holds).toBeLessThanOrEqual(1);
-      if (i) expect(opinion.holds).toBeLessThanOrEqual(OPINIONS[i - 1].holds);
+
+      if (i) {
+        expect(opinion.holds).toBeLessThanOrEqual(OPINIONS[i - 1].holds);
+      }
     });
   });
 

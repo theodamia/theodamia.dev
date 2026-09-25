@@ -1,7 +1,7 @@
 import type React from 'react';
 import { LightSource } from '@/components/scene/light-source';
-import { ART, ART_LEFT, artExtrasFor, artWidthFor, layerX, layerY } from '@/lib/scene/camp-layout';
-import { CAMP_X, CAMP_Y } from '@/lib/scene/world';
+import { ART, ART_LEFT, artExtrasFor, artWidthFor, layerX, layerY } from '@/scene/camp-layout';
+import { CAMP_X, CAMP_Y } from '@/scene/world';
 
 /** The camp's own little canvas, in world units around the camp point: wide enough for the longest name. */
 const BOX = { left: -170, top: -132, width: 340, height: 148 };
@@ -46,6 +46,7 @@ export type TentKind = 'ridge' | 'dome';
 type CampKind = TentKind | 'signpost';
 const DOME_FROM_LEVEL = 5;
 
+/** Which shelter a job's seniority earns, used where a camp has no artwork yet. */
 export function tentFor(level: number): TentKind {
   return level >= DOME_FROM_LEVEL ? 'dome' : 'ridge';
 }

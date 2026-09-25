@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { JOBS } from '@/lib/jobs';
-import { LEG_WEIGHT } from '@/constants';
+import { JOBS } from '@/content/jobs';
 import {
   CAMP_COUNT,
   cameraKnot,
@@ -8,12 +7,13 @@ import {
   CAMP_Y,
   climberAt,
   LEGS,
+  LEG_WEIGHT,
   LEG_WEIGHTS,
   legWeight,
   SIDES,
   SUMMIT,
   WORLD,
-} from '@/lib/scene/world';
+} from '@/scene/world';
 
 describe('world', () => {
   it('places the trailhead and one camp per job, each higher than the last and below the summit', () => {

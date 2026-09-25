@@ -4,7 +4,7 @@ import { Bricolage_Grotesque, Instrument_Sans } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Dock } from '@/components/dock';
-import { SITE } from '@/lib/site';
+import { SITE } from '@/content/site';
 import { THEME_SCRIPT } from '@/lib/theme';
 import './globals.css';
 

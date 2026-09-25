@@ -1,9 +1,20 @@
-import {
-  DARK_SCHEME_QUERY,
-  REDUCED_MOTION_QUERY,
-  THEME_REVEAL,
-  THEME_STORAGE_KEY,
-} from '@/constants';
+import { DARK_SCHEME_QUERY, REDUCED_MOTION_QUERY } from '@/constants';
+
+/** Where an explicit day or night choice is kept. Until there is one, the site follows the system. */
+export const THEME_STORAGE_KEY = 'theme';
+
+/**
+ * The night (or the day) spreads from the toggle as a soft-edged circle. The radius eases out: the circle's area
+ * grows with its square, so an ease-out covers the screen at a roughly even rate and starts right under the finger.
+ * The feather is the width of the soft edge, as a share of the radius, within limits.
+ */
+export const THEME_REVEAL = {
+  DURATION_MS: 1000,
+  EASE: [0.3, 0.55, 0.35, 1],
+  FEATHER_SHARE: 0.16,
+  FEATHER_MIN_PX: 96,
+  FEATHER_MAX_PX: 200,
+} as const;
 import { timeAtProgress } from '@/utils/time-at-progress';
 
 export type Theme = 'light' | 'dark';
@@ -26,10 +37,12 @@ const REVEAL_EASING = `cubic-bezier(${THEME_REVEAL.EASE.join(', ')})`;
 
 let running: ViewTransition | null = null;
 
+/** What the page is showing right now, read from <html> rather than from state, which may not exist yet. */
 export function readTheme(): Theme {
   return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
 }
 
+/** The choice someone made here before, or null if they never picked and the system still decides. */
 export function storedTheme(): Theme | null {
   try {
     const value = localStorage.getItem(THEME_STORAGE_KEY);
@@ -40,6 +53,11 @@ export function storedTheme(): Theme | null {
   }
 }
 
+/**
+ * Whether this browser can show the night at all. The scene's generated colours are written as `light-dark()`
+ * pairs, so without it the mountain would keep its daylight while the interface went dark: the switch hides
+ * instead (see the `not-supports-` classes on the dock) and the site stays in daylight.
+ */
 export function supportsNight(): boolean {
   return typeof CSS !== 'undefined' && CSS.supports('color', 'light-dark(#000,#fff)');
 }
@@ -101,8 +119,12 @@ export function switchTheme(from: HTMLElement): Theme {
 
   if (window.matchMedia(REDUCED_MOTION_QUERY).matches) {
     clearWave(root);
-    if (canReveal) track(document.startViewTransition(flip));
-    else flip();
+
+    if (canReveal) {
+      track(document.startViewTransition(flip));
+    } else {
+      flip();
+    }
 
     return next;
   }
