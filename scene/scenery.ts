@@ -1,5 +1,6 @@
 import { ART, campGround, VILLAGE, VILLAGE_GROUND_Y } from '@/scene/camp-layout';
 import { rnd, rough } from '@/scene/noise';
+import { SEASONS, type Season } from '@/lib/season';
 import { CAMP_ANCHORS } from '@/constants';
 import {
   cameraKnot,
@@ -258,18 +259,69 @@ function paint(prop: 'fill' | 'stop-color', c: Oklch, alpha?: number): string {
 }
 
 /**
- * Every generated colour as a CSS variable, each a `light-dark()` pair of its daylight self and its moonlit one.
- * Rendered once per page that draws the scene.
+ * How much of a colour is living things rather than rock or snow. The ramp puts the forest around hue 150 and
+ * carries its chroma with it, while snow sits near 240 with almost none — so a season can turn the trees without
+ * turning the peaks, which stay peaks in any weather.
+ */
+function leafiness([, c, h]: Oklch): number {
+  const away = Math.abs(h - 150) / 70;
+
+  return Math.max(0, 1 - away) * Math.min(1, c / 0.03);
+}
+
+/**
+ * What a season does to a colour: toward white or dark (`lift`), a chroma multiplier, and a hue to pull toward.
+ * `bare` is the share of all that which rock and snow take; growing things always take the whole of it.
+ */
+type SeasonShift = { lift: number; chroma: number; hue: number; pull: number; bare: number };
+
+const SHIFTS: Record<Season, SeasonShift> = {
+  /* the mountain as drawn: every other season is measured from here */
+  summer: { lift: 0, chroma: 1, hue: 0, pull: 0, bare: 0 },
+  /* snow comes down the mountain: everything paler, greyer and pulled toward the blue the peaks already are */
+  winter: { lift: 0.58, chroma: 0.3, hue: 235, pull: 0.72, bare: 0.8 },
+  /* new growth: a little brighter and yellower than the deep green of high summer */
+  spring: { lift: 0.14, chroma: 1.18, hue: 132, pull: 0.5, bare: 0.22 },
+  /* the forest turns: hue hauled round to amber and the colour let up, while the snow barely warms */
+  autumn: { lift: -0.07, chroma: 1.4, hue: 70, pull: 0.85, bare: 0.18 },
+};
+
+/**
+ * The same colour in another season. The shape follows `moonlit()` — one pure function of one colour, products
+ * only, so the server and the browser round it identically — but weighted by `leafiness()`, so the change lands
+ * on the slopes and the trees and leaves the snowline where it is.
+ */
+export function seasonal(c: Oklch, season: Season): Oklch {
+  const shift = SHIFTS[season];
+  const [l, chroma, h] = c;
+  const take = shift.bare + (1 - shift.bare) * leafiness(c);
+  const lifted = shift.lift >= 0 ? l + (1 - l) * shift.lift * take : l * (1 + shift.lift * take);
+
+  return [
+    lifted,
+    chroma * (1 + (shift.chroma - 1) * take),
+    h + (shift.hue - h) * shift.pull * take,
+  ];
+}
+
+/**
+ * Every generated colour as a CSS variable, once per season, each a `light-dark()` pair of its daylight self and
+ * its moonlit one — so four seasons and two skies are eight looks out of one drawing. Rendered once per page
+ * that draws the scene.
  *
- * It reads what `sceneLayers()` registered, so it has to be called after it — which is what both callers do, at
+ * It reads what `sceneLayers()` registered, so it has to be called after it — which is what the caller does, at
  * module scope, one line apart. A test asserts the block defines every variable the markup asks for.
  */
 export function scenePalette(): string {
-  const vars = PALETTE.map(
-    ({ c, alpha }, i) => `--m-${i}:light-dark(${col(c, alpha)},${col(moonlit(c), alpha)})`
-  ).join(';');
+  return SEASONS.map(season => {
+    const vars = PALETTE.map(({ c, alpha }, i) => {
+      const day = seasonal(c, season);
 
-  return `:root{${vars}}`;
+      return `--m-${i}:light-dark(${col(day, alpha)},${col(moonlit(day), alpha)})`;
+    }).join(';');
+
+    return `:root[data-season='${season}']{${vars}}`;
+  }).join('');
 }
 
 /** A gradient stop in the scene's ink, at some strength. */

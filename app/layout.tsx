@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Dock } from '@/components/dock';
 import { SITE } from '@/content/site';
+import { SEASON_SCRIPT } from '@/lib/season';
 import { THEME_SCRIPT } from '@/lib/theme';
 import './globals.css';
 
@@ -86,8 +87,9 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        {/* before the first paint: day or night, so the page never flashes the wrong sky */}
+        {/* before the first paint: day or night, and which season, so the page never flashes the wrong sky */}
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: SEASON_SCRIPT }} />
       </head>
       {/* overflow-x: clip, not hidden — hidden would make the body a scroll container and break the sticky stage */}
       <body className='overflow-x-clip'>

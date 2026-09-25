@@ -540,14 +540,91 @@
  * At night the painted camps sink into the dark; their lights are separate layers, so they stay bright and glow.
  * The flag's cloth is a layer too, but it gives no light: it dims with the picture it belongs to.
  */
+/*
+ * The camps and the trees are photographs, so no CSS variable can repaint them the way it repaints the mountain:
+ * they are filtered instead. Night and season each set their own half of the chain and filters compose in order,
+ * so the two stack without either knowing about the other. Summer by day sets neither and gets no filter at all,
+ * which is why the selector lists the cases rather than filtering everything always.
+ */
 :root[data-theme='dark'] .camp-art,
-:root[data-theme='dark'] .camp-light-source[data-kind='flag'] {
-  filter: brightness(0.68) saturate(0.8);
+:root[data-theme='dark'] .camp-light-source[data-kind='flag'],
+:root[data-season='winter'] .camp-art,
+:root[data-season='winter'] .camp-light-source[data-kind='flag'] {
+  filter: brightness(var(--art-night-l, 1)) saturate(var(--art-night-s, 1))
+    brightness(var(--art-season-l, 1)) saturate(var(--art-season-s, 1));
 }
 
-/* The near slopes' trees are pictures in the mountain layers: by moonlight they sink darker still, into the forest. */
-:root[data-theme='dark'] .scene-tree {
-  filter: brightness(0.55) saturate(0.75);
+/* The near slopes' trees are pictures in the mountain layers: by moonlight they sink darker, into the forest. */
+:root[data-theme='dark'] .scene-tree,
+:root[data-season='winter'] .scene-tree,
+:root[data-season='spring'] .scene-tree,
+:root[data-season='autumn'] .scene-tree {
+  filter: brightness(var(--tree-night-l, 1)) saturate(var(--tree-night-s, 1))
+    brightness(var(--tree-season-l, 1)) saturate(var(--tree-season-s, 1))
+    hue-rotate(var(--tree-season-h, 0deg));
+}
+
+:root[data-theme='dark'] {
+  --art-night-l: 0.68;
+  --art-night-s: 0.8;
+  --tree-night-l: 0.55;
+  --tree-night-s: 0.75;
+}
+
+/*
+ * Winter frosts the evergreens almost white and takes the warmth out of the camps. Autumn and spring leave the
+ * camps alone — a tent is a tent in any weather — and only turn the needles, which are the one green thing a
+ * photograph cannot argue with.
+ */
+:root[data-season='winter'] {
+  --art-season-l: 1.06;
+  --art-season-s: 0.82;
+  --tree-season-l: 1.24;
+  --tree-season-s: 0.32;
+  --tree-season-h: -6deg;
+}
+
+:root[data-season='autumn'] {
+  --tree-season-l: 0.98;
+  --tree-season-s: 1.12;
+  --tree-season-h: -20deg;
+}
+
+:root[data-season='spring'] {
+  --tree-season-l: 1.1;
+  --tree-season-s: 1.12;
+  --tree-season-h: 8deg;
+}
+
+/*
+ * The sky is two CSS gradients, not part of the drawing, so each season states its own. Night is shared: at that
+ * lightness the seasons are indistinguishable, and four near-black skies would be four lies.
+ */
+:root[data-season='winter']:not([data-theme='dark']) {
+  --color-dawn-top: oklch(0.86 0.025 265);
+  --color-dawn-mid: oklch(0.925 0.018 250);
+  --color-dawn-low: oklch(0.955 0.012 240);
+  --color-day-top: oklch(0.8 0.045 248);
+  --color-day-mid: oklch(0.89 0.025 238);
+  --color-day-low: oklch(0.965 0.008 230);
+}
+
+:root[data-season='spring']:not([data-theme='dark']) {
+  --color-dawn-top: oklch(0.89 0.035 280);
+  --color-dawn-mid: oklch(0.94 0.04 72);
+  --color-dawn-low: oklch(0.96 0.028 95);
+  --color-day-top: oklch(0.85 0.055 233);
+  --color-day-mid: oklch(0.92 0.032 218);
+  --color-day-low: oklch(0.975 0.016 148);
+}
+
+:root[data-season='autumn']:not([data-theme='dark']) {
+  --color-dawn-top: oklch(0.86 0.04 300);
+  --color-dawn-mid: oklch(0.92 0.062 52);
+  --color-dawn-low: oklch(0.95 0.048 66);
+  --color-day-top: oklch(0.82 0.052 252);
+  --color-day-mid: oklch(0.9 0.042 72);
+  --color-day-low: oklch(0.965 0.028 80);
 }
 
 /*

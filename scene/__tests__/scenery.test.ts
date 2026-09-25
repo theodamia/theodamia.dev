@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { moonlit, sceneLayers, scenePalette, walkedPathMarkup } from '@/scene/scenery';
+import { moonlit, sceneLayers, scenePalette, seasonal, walkedPathMarkup } from '@/scene/scenery';
+import { SEASONS } from '@/lib/season';
 import { CAMP_ANCHORS } from '@/constants';
 import { ART, VILLAGE } from '@/scene/camp-layout';
 import { cameraKnot, campAnchor, CAMP_Y, LEGS, WORLD } from '@/scene/world';
@@ -73,6 +74,39 @@ describe('scenery', () => {
       expect(oklchCount).toBe(painted);
       expect(layer.markup).not.toMatch(/rgb\(/);
     });
+  });
+
+  it('defines every colour in every season, so no season paints a hole', () => {
+    const palette = scenePalette();
+    const names = new Set([
+      ...sceneLayers('Summit')
+        .flatMap(layer => [...layer.markup.matchAll(/var\((--m-\d+)\)/g)])
+        .map(([, name]) => name),
+    ]);
+
+    SEASONS.forEach(season => {
+      const block = new RegExp(`\\[data-season='${season}'\\]\\{([^}]*)\\}`).exec(palette);
+      expect(block, `no block for ${season}`).not.toBeNull();
+      const defined = new Set([...(block?.[1] ?? '').matchAll(/(--m-\d+):/g)].map(([, n]) => n));
+      [...names].forEach(name => expect(defined, `${season} is missing ${name}`).toContain(name));
+    });
+  });
+
+  it('leaves summer exactly as the mountain was drawn', () => {
+    const green: [number, number, number] = [0.6, 0.055, 152];
+    expect(seasonal(green, 'summer')).toEqual(green);
+  });
+
+  it('turns the forest without moving the snowline', () => {
+    const forest: [number, number, number] = [0.6, 0.055, 152];
+    const snow: [number, number, number] = [0.95, 0.018, 240];
+
+    /* autumn hauls the forest round to amber; the snow keeps its hue to within a few degrees */
+    expect(seasonal(forest, 'autumn')[2]).toBeLessThan(110);
+    expect(Math.abs(seasonal(snow, 'autumn')[2] - snow[2])).toBeLessThan(30);
+    /* winter pales the forest most of the way to the snow it already is */
+    expect(seasonal(forest, 'winter')[0]).toBeGreaterThan(forest[0] + 0.15);
+    expect(seasonal(forest, 'winter')[1]).toBeLessThan(forest[1]);
   });
 
   it('pairs every colour in the palette with its moonlit twin, which is darker', () => {
