@@ -114,14 +114,14 @@ export function SeasonDial({ className }: { className?: string }) {
             onClick={event => switchSeason(event.currentTarget, which)}
             style={{ clipPath: `polygon(${clip})` }}
             className={cn(
-              'season-wedge group absolute inset-0 cursor-pointer',
+              'season-wedge group ease-soft absolute inset-0 cursor-pointer transition-colors duration-300 motion-reduce:transition-none',
               !on && 'hover:bg-accent-wash'
             )}
           >
             <Icon
               strokeWidth={1.85}
               className={cn(
-                'ease-pop absolute size-[18px] -translate-x-1/2 -translate-y-1/2 transition-transform duration-300 group-hover:scale-[1.08] motion-reduce:transition-none',
+                'ease-soft absolute size-[18px] -translate-x-1/2 -translate-y-1/2 transition-transform duration-300 group-hover:scale-[1.06] motion-reduce:transition-none',
                 at,
                 on ? 'text-on-ink' : 'text-ink-2 group-hover:text-accent-text'
               )}

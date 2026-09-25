@@ -872,7 +872,13 @@
   position: absolute;
   inset: 0;
   background: var(--color-accent);
-  transition: rotate 520ms var(--ease-pop);
+  /*
+   * ease-soft, not ease-pop. Pop overshoots by about a tenth, which on a quarter turn is nine degrees past the
+   * wedge and back — a lot of movement for a setting, and it belongs to things that snap, like a flag reaching the
+   * top of its pole. This glides in and settles, which is what the rest of the interface does, and at 640ms it
+   * finishes well inside the reveal sweeping the mountain behind it.
+   */
+  transition: rotate 640ms var(--ease-soft);
 }
 
 @media (prefers-reduced-motion: reduce) {
