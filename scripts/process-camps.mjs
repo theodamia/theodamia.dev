@@ -181,10 +181,22 @@ function flameMask(data, width, height, seeds) {
     if (fill[i] || !isWarm(data[i * 3], data[i * 3 + 1], data[i * 3 + 2])) continue;
     fill[i] = 1;
     const [x, y] = [i % width, (i / width) | 0];
-    if (x > 0) queue.push(i - 1);
-    if (x < width - 1) queue.push(i + 1);
-    if (y > 0) queue.push(i - width);
-    if (y < height - 1) queue.push(i + width);
+
+    if (x > 0) {
+      queue.push(i - 1);
+    }
+
+    if (x < width - 1) {
+      queue.push(i + 1);
+    }
+
+    if (y > 0) {
+      queue.push(i - width);
+    }
+
+    if (y < height - 1) {
+      queue.push(i + width);
+    }
   }
 
   const reach = Math.round(width * FLAME_OUTLINE);
@@ -257,10 +269,22 @@ function inpaint(data, width, height, mask) {
   const neighbours = i => {
     const [x, y] = [i % width, (i / width) | 0];
     const list = [];
-    if (x > 0) list.push(i - 1);
-    if (x < width - 1) list.push(i + 1);
-    if (y > 0) list.push(i - width);
-    if (y < height - 1) list.push(i + width);
+
+    if (x > 0) {
+      list.push(i - 1);
+    }
+
+    if (x < width - 1) {
+      list.push(i + 1);
+    }
+
+    if (y > 0) {
+      list.push(i - width);
+    }
+
+    if (y < height - 1) {
+      list.push(i + width);
+    }
 
     return list;
   };
@@ -311,7 +335,10 @@ function inpaint(data, width, height, mask) {
   for (let i = 0; i < mask.length; i++) {
     if (!mask[i]) continue;
     const magenta = Math.min(out[i * 3], out[i * 3 + 2]) - out[i * 3 + 1];
-    if (magenta > BACKGROUND_TINT) out.set([255, 0, 255], i * 3);
+
+    if (magenta > BACKGROUND_TINT) {
+      out.set([255, 0, 255], i * 3);
+    }
   }
 
   return out;
@@ -371,8 +398,9 @@ function doorLight(data, width, height, seed, [x0, y0, x1, y1]) {
 
   for (let y = 0; y < box.height; y++) {
     for (let x = 0; x < box.width; x++) {
-      if (mask[(y + top) * width + x + left])
+      if (mask[(y + top) * width + x + left]) {
         pixels.set([...DOOR_LIGHT, 255], (y * box.width + x) * 4);
+      }
     }
   }
 
@@ -396,8 +424,11 @@ function darken(data, width, height, fill) {
         const [x, y] = [cx + dx, cy + dy];
         if (x < 0 || y < 0 || x >= width || y >= height) continue;
         const j = y * width + x;
+
         /* only pixels that carry some of the light's colour; the dark frame right next to it is left alone */
-        if (fill[j] || data[j * 3] > 110) out.set(DARK_GLASS, j * 3);
+        if (fill[j] || data[j * 3] > 110) {
+          out.set(DARK_GLASS, j * 3);
+        }
       }
     }
   }
@@ -412,7 +443,10 @@ function lanternLayer(rgba, width, { mask, box }) {
   for (let y = 0; y < box.height; y++) {
     for (let x = 0; x < box.width; x++) {
       const i = (y + box.top) * width + x + box.left;
-      if (mask[i]) glass.set(rgba.subarray(i * 4, i * 4 + 4), (y * box.width + x) * 4);
+
+      if (mask[i]) {
+        glass.set(rgba.subarray(i * 4, i * 4 + 4), (y * box.width + x) * 4);
+      }
     }
   }
 
@@ -445,7 +479,10 @@ function flameLayers(data, rgba, width, { fill, mask, box }) {
         ? [...body, 255]
         : [rgba[i * 4], rgba[i * 4 + 1], rgba[i * 4 + 2], rgba[i * 4 + 3]];
       flame.set(px, o);
-      if (hot) core.set([data[i * 3], data[i * 3 + 1], data[i * 3 + 2], 255], o);
+
+      if (hot) {
+        core.set([data[i * 3], data[i * 3 + 1], data[i * 3 + 2], 255], o);
+      }
     }
   }
 
@@ -552,7 +589,12 @@ async function processCamp(file) {
          that is not background, stopping at the hub and at what must stay (the mast) */
       const { mask } = light.lifted;
       let ring = [];
-      for (let i = 0; i < mask.length; i++) if (mask[i]) ring.push(i);
+
+      for (let i = 0; i < mask.length; i++) {
+        if (mask[i]) {
+          ring.push(i);
+        }
+      }
 
       for (let step = 0; step < OUTLINE_GROWTH && ring.length; step++) {
         const next = [];
@@ -600,8 +642,10 @@ async function processCamp(file) {
 
       for (let x = hx - light.hubRadius; x <= hx + light.hubRadius; x++) {
         if (x < 0 || x >= info.width) continue;
-        if ((x - hx) ** 2 + (y - hy) ** 2 <= light.hubRadius ** 2)
+
+        if ((x - hx) ** 2 + (y - hy) ** 2 <= light.hubRadius ** 2) {
           light.lifted.mask[y * info.width + x] = 0;
+        }
       }
     }
   }
@@ -620,7 +664,9 @@ async function processCamp(file) {
       unlit = Buffer.from(unlit);
 
       for (let i = 0; i < light.lifted.mask.length; i++) {
-        if (light.lifted.mask[i]) unlit.set([255, 0, 255], i * 3);
+        if (light.lifted.mask[i]) {
+          unlit.set([255, 0, 255], i * 3);
+        }
       }
     } else {
       unlit = inpaint(unlit, info.width, info.height, light.lifted.mask);
@@ -632,7 +678,10 @@ async function processCamp(file) {
       /* rectangles of the raw image to clear from the saved picture (the lifted layers are not touched) */
       const [left, top] = local([x0, y0]);
       const [right, bottom] = local([x1, y1]);
-      if (unlit === data) unlit = Buffer.from(data);
+
+      if (unlit === data) {
+        unlit = Buffer.from(data);
+      }
 
       for (let y = Math.max(0, top); y <= Math.min(info.height - 1, bottom); y++) {
         for (let x = Math.max(0, left); x <= Math.min(info.width - 1, right); x++) {
@@ -673,12 +722,15 @@ async function processCamp(file) {
     const area = made ? made.box : light.lifted.box;
     const flame = light.kind === 'fire' ? flameLayers(data, lit, info.width, light.lifted) : null;
     let layers = [[light.id, made ? made.pixels : null]];
+
     if (flame) {
       layers = [
         [light.id, flame.flame],
         [`${light.id}-core`, flame.core],
       ];
-    } else if (!made) layers = [[light.id, lanternLayer(lit, info.width, light.lifted)]];
+    } else if (!made) {
+      layers = [[light.id, lanternLayer(lit, info.width, light.lifted)]];
+    }
 
     for (const [suffix, pixels] of layers) {
       const layer = await sharp(pixels, {
@@ -709,8 +761,10 @@ async function processCamp(file) {
     }
 
     (entry.lights ??= []).push(placed);
-    if (light.pole !== undefined)
+
+    if (light.pole !== undefined) {
       entry.poleX = share((local([light.pole, 0])[0] - box.left) / box.width);
+    }
   }
 
   return [name, entry];

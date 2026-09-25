@@ -78,12 +78,11 @@ const eslintConfig = defineConfig([
    * and "multi-or-nest" all wave `if (x) doThing();` through exactly as readily as the guard. The selectors below
    * say the actual rule. Don't swap them for `curly` later — it cannot express this.
    *
-   * TS and TSX only: `scripts/` is a build-time image tool whose pixel loops are a wall of `continue` guards, and
-   * bracing those (which the padding rule would then ring with blank lines) would cost more than it buys.
+   * Everything we write, `scripts/` included. The pixel loops there are mostly `continue` guards, which the rule
+   * allows, so holding the build tool to the same standard costs far less than the raw count first suggested.
    */
   {
-    files: ['**/*.ts', '**/*.tsx'],
-    ignores: ['scripts/**'],
+    files: ['**/*.ts', '**/*.tsx', '**/*.mjs'],
     rules: {
       'no-restricted-syntax': [
         'error',
