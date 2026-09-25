@@ -9,7 +9,7 @@ import { Map, NotebookPen, RadioTower, Tent } from 'lucide-react';
 import { DockBubble } from '@/components/dock-bubble';
 import { IceAxeIcon } from '@/components/icons/ice-axe-icon';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { DOCK_ITEMS, dockHref, type DockItem, type DockItemId } from '@/lib/dock-items';
+import { DOCK_ITEMS, dockHref, type DockItem, type DockItemId } from '@/content/dock-items';
 import { cn } from '@/utils/cn';
 
 type DockIconComponent = React.ComponentType<{

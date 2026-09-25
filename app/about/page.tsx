@@ -10,10 +10,10 @@ import { SkillGrid } from '@/components/skill-grid';
 import { buttonVariants } from '@/components/ui/button';
 import { Eyebrow, Heading, Lede } from '@/components/ui/text';
 import { WeekSplit } from '@/components/week-split';
-import { ABOUT_PARAGRAPHS, FACTS, OPINIONS, WEEK } from '@/lib/about';
+import { ABOUT_PARAGRAPHS, FACTS, OPINIONS, WEEK } from '@/content/about';
 import { pageMetadata } from '@/lib/page-metadata';
-import { SITE } from '@/lib/site';
-import { SKILL_GROUPS } from '@/lib/skill-groups';
+import { SITE } from '@/content/site';
+import { SKILL_GROUPS } from '@/content/skill-groups';
 
 export const metadata: Metadata = pageMetadata({
   title: `About | ${SITE.name}`,

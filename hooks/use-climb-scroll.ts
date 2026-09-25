@@ -6,9 +6,9 @@ import {
   STOP_SCROLL_NUDGE_PX,
   WIDE_QUERY,
 } from '@/constants';
-import { anchorsFor, stopPositions } from '@/lib/climb-stops';
-import { JOBS, TRAILHEAD } from '@/lib/jobs';
-import { CAMP_COUNT, cameraKnot, campAnchor, WORLD, type SceneHandle } from '@/lib/scene/world';
+import { anchorsFor, stopPositions } from '@/utils/climb-stops';
+import { JOBS, TRAILHEAD } from '@/content/jobs';
+import { CAMP_COUNT, cameraKnot, campAnchor, WORLD, type SceneHandle } from '@/scene/world';
 
 type ClimbScrollRefs = {
   scene: RefObject<SceneHandle | null>;

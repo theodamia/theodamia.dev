@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Climb } from '@/components/climb';
-import { JOBS } from '@/lib/jobs';
+import { JOBS } from '@/content/jobs';
 
 describe('Climb', () => {
   beforeEach(() => {

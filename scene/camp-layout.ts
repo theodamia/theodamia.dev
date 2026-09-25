@@ -1,6 +1,6 @@
-import campArt from '@/lib/scene/camp-art.json';
-import { JOBS } from '@/lib/jobs';
-import { CAMP_Y, WORLD } from '@/lib/scene/world';
+import campArt from '@/scene/camp-art.json';
+import { JOBS } from '@/content/jobs';
+import { CAMP_Y, WORLD } from '@/scene/world';
 
 /**
  * Something in a picture that comes alive (a fire, a lantern, a window, a wind spinner, a flag's cloth), and where it sits as shares

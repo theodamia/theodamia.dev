@@ -1,5 +1,5 @@
 import { LEG_WEIGHT } from '@/constants';
-import { JOBS } from '@/lib/jobs';
+import { JOBS } from '@/content/jobs';
 
 /**
  * The mountain as numbers. This file and `SceneHandle` are everything the rest of the app knows about the

@@ -1,5 +1,5 @@
 import { STAR_FIELD } from '@/constants';
-import { rnd } from '@/lib/scene/noise';
+import { rnd } from '@/scene/noise';
 
 export type StarTier = 'faint' | 'mid' | 'bright';
 

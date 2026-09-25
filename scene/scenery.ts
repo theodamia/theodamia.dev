@@ -1,5 +1,5 @@
-import { ART, campGround, VILLAGE, VILLAGE_GROUND_Y } from '@/lib/scene/camp-layout';
-import { rnd, rough } from '@/lib/scene/noise';
+import { ART, campGround, VILLAGE, VILLAGE_GROUND_Y } from '@/scene/camp-layout';
+import { rnd, rough } from '@/scene/noise';
 import { CAMP_ANCHORS } from '@/constants';
 import {
   cameraKnot,
@@ -12,7 +12,7 @@ import {
   SUMMIT,
   SUMMIT_PITCH_D,
   WORLD,
-} from '@/lib/scene/world';
+} from '@/scene/world';
 
 /**
  * Scenery generator for the SVG stage. Everything is deterministic (integer-hash noise, no Math.random and

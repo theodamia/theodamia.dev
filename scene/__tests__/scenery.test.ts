@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { moonlit, sceneLayers, walkedPathMarkup } from '@/lib/scene/scenery';
+import { moonlit, sceneLayers, walkedPathMarkup } from '@/scene/scenery';
 import { CAMP_ANCHORS } from '@/constants';
-import { ART, VILLAGE } from '@/lib/scene/camp-layout';
-import { cameraKnot, campAnchor, CAMP_Y, LEGS, WORLD } from '@/lib/scene/world';
+import { ART, VILLAGE } from '@/scene/camp-layout';
+import { cameraKnot, campAnchor, CAMP_Y, LEGS, WORLD } from '@/scene/world';
 
 describe('scenery', () => {
   it('is deterministic, so server and browser paint the same mountain', () => {

@@ -1,6 +1,6 @@
 import { SERIES_COLORS } from '@/constants';
 import { Heading } from '@/components/ui/text';
-import type { WeekSlice } from '@/lib/about';
+import type { WeekSlice } from '@/content/about';
 
 const colorFor = (index: number) => SERIES_COLORS[index % SERIES_COLORS.length];
 

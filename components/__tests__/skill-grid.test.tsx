@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { SkillGrid } from '@/components/skill-grid';
-import { SKILL_GROUPS } from '@/lib/skill-groups';
+import { SKILL_GROUPS } from '@/content/skill-groups';
 
 describe('SkillGrid', () => {
   it('names every category and lists its skills under it', () => {

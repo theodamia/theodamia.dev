@@ -1,5 +1,5 @@
 import { Eyebrow, Heading } from '@/components/ui/text';
-import type { Opinion } from '@/lib/about';
+import type { Opinion } from '@/content/about';
 
 const percent = (share: number) => `${(share * 100).toFixed(1)}%`;
 

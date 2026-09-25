@@ -12,11 +12,11 @@ import {
   Sky,
   Stars,
 } from '@/components/scene/scene-layer';
-import { walkedPathMarkup } from '@/lib/scene/scenery';
+import { walkedPathMarkup } from '@/scene/scenery';
 import { cn } from '@/utils/cn';
-import { JOBS, TRAILHEAD } from '@/lib/jobs';
-import { campArtKey } from '@/lib/scene/camp-layout';
-import { CAMP_Y, climberAt, WORLD, type SceneFrame, type SceneHandle } from '@/lib/scene/world';
+import { JOBS, TRAILHEAD } from '@/content/jobs';
+import { campArtKey } from '@/scene/camp-layout';
+import { CAMP_Y, climberAt, WORLD, type SceneFrame, type SceneHandle } from '@/scene/world';
 
 const WALKED_PATH = walkedPathMarkup();
 /** The trail layer and everything after it paint above the walked path. */
@@ -108,7 +108,7 @@ export function AscentStage({ reducedMotion, stop, ref }: AscentStageProps) {
         camps.current.style.transform = `translate3d(-50%,${near}px,0)`;
       }
 
-      /* the climber, from points sampled once in lib/scene/world */
+      /* the climber, from points sampled once in scene/world */
       const [px, py] = climberAt(leg, f);
       const cx = snap(width / 2 + (px - WORLD.CENTER_X) * scale);
       const cy = snap(near + py * scale);

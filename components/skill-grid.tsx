@@ -1,7 +1,7 @@
 import { BrandIcon } from '@/components/icons/brand-icon';
 import { Pill } from '@/components/ui/pill';
 import { Heading } from '@/components/ui/text';
-import type { Skill, SkillGroup } from '@/lib/skill-groups';
+import type { Skill, SkillGroup } from '@/content/skill-groups';
 
 const SKILL_ICON_SIZE = 16;
 /* thicker than the dock's 1.75: at 16px that line looks faint beside the filled logos */

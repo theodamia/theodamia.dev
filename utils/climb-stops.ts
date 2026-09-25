@@ -1,5 +1,5 @@
 import { CAMP_ANCHORS, CARD_LEAD } from '@/constants';
-import { campAnchor } from '@/lib/scene/world';
+import { campAnchor } from '@/scene/world';
 
 type Viewport = {
   /** Wide screens put the cards beside the trail, so a camp is reached at a different point. */

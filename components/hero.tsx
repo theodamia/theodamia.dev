@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { SocialLinks } from '@/components/social-links';
 import { Eyebrow, Heading, Lede } from '@/components/ui/text';
-import { SITE } from '@/lib/site';
+import { SITE } from '@/content/site';
 
 /** The top of the climb page: who this is, what the page is, and the three ways to reach me. */
 export function Hero() {

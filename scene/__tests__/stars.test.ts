@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { STAR_FIELD } from '@/constants';
-import { starField, type StarTier } from '@/lib/scene/stars';
+import { starField, type StarTier } from '@/scene/stars';
 
 const stars = starField();
 const ofTier = (tier: StarTier) => stars.filter(star => star.tier === tier);

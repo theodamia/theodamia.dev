@@ -1,5 +1,5 @@
 import { Eyebrow, Heading } from '@/components/ui/text';
-import type { Job } from '@/lib/jobs';
+import type { Job } from '@/content/jobs';
 import { cn } from '@/utils/cn';
 
 type JobCardProps = {

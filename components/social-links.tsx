@@ -1,5 +1,5 @@
 import { GitHubIcon, GmailIcon, LinkedInIcon } from '@/components/icons/brand-icon';
-import { SITE } from '@/lib/site';
+import { SITE } from '@/content/site';
 import { cn } from '@/utils/cn';
 
 const LINKS = [

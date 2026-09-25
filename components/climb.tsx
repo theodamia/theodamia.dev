@@ -9,8 +9,8 @@ import { ScrollCue } from '@/components/scroll-cue';
 import { LAST_CARD_LVH, LEG_SCROLL_LVH } from '@/constants';
 import { useClimbScroll } from '@/hooks/use-climb-scroll';
 import { useReducedMotion } from '@/hooks/use-reduced-motion';
-import { JOBS } from '@/lib/jobs';
-import { LEG_WEIGHTS, SIDES, type SceneHandle } from '@/lib/scene/world';
+import { JOBS } from '@/content/jobs';
+import { LEG_WEIGHTS, SIDES, type SceneHandle } from '@/scene/world';
 import { cn } from '@/utils/cn';
 
 type ClimbProps = {

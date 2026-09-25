@@ -43,12 +43,15 @@ theodamia.dev/
 │   ├── altimeter.tsx      # Year rail, needle and the "Now" card
 │   └── dock.tsx           # The only navigation
 ├── hooks/                 # use-climb-scroll (scroll controller), use-reduced-motion
-├── lib/                   # All content, plus the scene maths
+├── content/               # Every word on the site
 │   ├── jobs.ts            # Career timeline (source of truth)
 │   ├── skill-groups.ts    # Skills by category
 │   ├── about.ts           # About copy, facts, opinions, week split
-│   └── scene/             # world.ts (geometry) and scenery.ts (generator)
-├── constants/             # Anchors, thresholds, breakpoints
+│   └── site.ts            # Name, title, links
+├── scene/                 # The mountain as numbers (world.ts, scenery.ts)
+├── lib/                   # Where our code meets someone else's
+├── utils/                 # Our own helpers, one per file
+├── constants/             # Values shared across modules
 └── public/                # Static assets
 ```
 

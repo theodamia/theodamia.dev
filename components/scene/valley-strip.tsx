@@ -4,8 +4,8 @@ import type React from 'react';
 import { CampMark } from '@/components/scene/camp-mark';
 import { Daylight, SCENE_LAYERS, SceneLayerSvg, Sky, Stars } from '@/components/scene/scene-layer';
 import { Village } from '@/components/scene/village';
-import { TRAILHEAD } from '@/lib/jobs';
-import { campArtKey } from '@/lib/scene/camp-layout';
+import { TRAILHEAD } from '@/content/jobs';
+import { campArtKey } from '@/scene/camp-layout';
 
 const NEAR_DEPTH = 1;
 

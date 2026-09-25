@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { LightSource } from '@/components/scene/light-source';
-import { ART, layerX, layerY, VILLAGE, VILLAGE_GROUND_Y } from '@/lib/scene/camp-layout';
+import { ART, layerX, layerY, VILLAGE, VILLAGE_GROUND_Y } from '@/scene/camp-layout';
 
 /**
  * How far a house is sunk below the ground line, as a share of its height. It is drawn from slightly above, so its
