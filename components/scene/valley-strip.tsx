@@ -2,7 +2,14 @@
 
 import type React from 'react';
 import { CampMark } from '@/components/scene/camp-mark';
-import { Daylight, SCENE_LAYERS, SceneLayerSvg, Sky, Stars } from '@/components/scene/scene-layer';
+import {
+  Daylight,
+  SCENE_LAYERS,
+  SceneLayerSvg,
+  ScenePalette,
+  Sky,
+  Stars,
+} from '@/components/scene/scene-layer';
 import { Village } from '@/components/scene/village';
 import { TRAILHEAD } from '@/content/jobs';
 import { campArtKey } from '@/scene/camp-layout';
@@ -45,6 +52,7 @@ export function ValleyStrip({ children }: { children?: React.ReactNode }) {
     >
       {/* the signpost's name is drawn as <text>: down here the page's own words do that work */}
       <div aria-hidden='true' className='absolute inset-0 [&_text]:hidden'>
+        <ScenePalette />
         <Sky />
         <Daylight />
         <Stars />

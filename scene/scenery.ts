@@ -221,14 +221,55 @@ export function moonlit([l, c, h]: Oklch): Oklch {
 }
 
 /**
- * A generated colour by day and by moonlight, as an element's attributes. `light-dark()` picks by the page's
- * `color-scheme`, which the theme sets, so one drawing serves both and switching repaints it once. The plain
- * attribute holds the day colour for a browser without `light-dark()`: it drops the style and stays in daylight.
+ * Every generated colour, in the order it was first painted. The index is the colour's name in CSS, so two shapes
+ * painted the same colour share one variable — which is how 81 painted shapes come to 48 names.
+ */
+const PALETTE: { c: Oklch; alpha?: number }[] = [];
+const PALETTE_NAMES = new Map<string, number>();
+
+/**
+ * The CSS variable a colour is painted with, registering it on first sight. Keyed by the string the colour prints
+ * as, not by the triple: two triples that round to the same three decimals are the same colour to the eye, and
+ * giving them one name is the whole saving.
+ */
+function variableFor(c: Oklch, alpha?: number): string {
+  const key = col(c, alpha);
+  let index = PALETTE_NAMES.get(key);
+
+  if (index === undefined) {
+    index = PALETTE.length;
+    PALETTE_NAMES.set(key, index);
+    PALETTE.push({ c, alpha });
+  }
+
+  return `--m-${index}`;
+}
+
+/**
+ * A generated colour, as an element's attributes. The colour itself is not written here — only the name of the
+ * variable holding it, which `scenePalette()` defines. That indirection is what lets one drawing serve more than
+ * the two looks `light-dark()` can hold.
+ *
+ * The plain attribute still carries the daylight colour, for a browser without `light-dark()`: it drops the style
+ * and stays in a summer day, which is the same browser the day/night switch hides itself from.
  */
 function paint(prop: 'fill' | 'stop-color', c: Oklch, alpha?: number): string {
-  const day = col(c, alpha);
+  return `${prop}="${col(c, alpha)}" style="${prop}:var(${variableFor(c, alpha)})"`;
+}
 
-  return `${prop}="${day}" style="${prop}:light-dark(${day},${col(moonlit(c), alpha)})"`;
+/**
+ * Every generated colour as a CSS variable, each a `light-dark()` pair of its daylight self and its moonlit one.
+ * Rendered once per page that draws the scene.
+ *
+ * It reads what `sceneLayers()` registered, so it has to be called after it — which is what both callers do, at
+ * module scope, one line apart. A test asserts the block defines every variable the markup asks for.
+ */
+export function scenePalette(): string {
+  const vars = PALETTE.map(
+    ({ c, alpha }, i) => `--m-${i}:light-dark(${col(c, alpha)},${col(moonlit(c), alpha)})`
+  ).join(';');
+
+  return `:root{${vars}}`;
 }
 
 /** A gradient stop in the scene's ink, at some strength. */

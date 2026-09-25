@@ -1,5 +1,5 @@
 import type React from 'react';
-import { sceneLayers, type SceneLayer } from '@/scene/scenery';
+import { sceneLayers, scenePalette, type SceneLayer } from '@/scene/scenery';
 import { SUMMIT_LINE } from '@/content/site';
 import { starField } from '@/scene/stars';
 import { WORLD } from '@/scene/world';
@@ -11,7 +11,17 @@ import { cn } from '@/utils/cn';
  * time inside the RSC payload.
  */
 export const SCENE_LAYERS: SceneLayer[] = sceneLayers(SUMMIT_LINE);
+/* after sceneLayers(), which is what registers the colours it defines */
+const PALETTE = scenePalette();
 const STARS = starField();
+
+/**
+ * The scene's generated colours, as CSS variables. The drawing names them rather than spelling them out, so one
+ * set of shapes can wear more than one set of colours. Rendered once by every piece that draws the scene.
+ */
+export function ScenePalette() {
+  return <style dangerouslySetInnerHTML={{ __html: PALETTE }} />;
+}
 
 type SceneLayerSvgProps = {
   depth: number;

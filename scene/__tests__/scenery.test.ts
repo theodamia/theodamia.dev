@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { moonlit, sceneLayers, walkedPathMarkup } from '@/scene/scenery';
+import { moonlit, sceneLayers, scenePalette, walkedPathMarkup } from '@/scene/scenery';
 import { CAMP_ANCHORS } from '@/constants';
 import { ART, VILLAGE } from '@/scene/camp-layout';
 import { cameraKnot, campAnchor, CAMP_Y, LEGS, WORLD } from '@/scene/world';
@@ -51,20 +51,36 @@ describe('scenery', () => {
     });
   });
 
-  it('pairs every generated colour with its moonlit twin, keeping the day as the fallback', () => {
-    const PAIR =
-      /(fill|stop-color)="(oklch\([^)]*\))" style="\1:light-dark\(\2,oklch\(([\d.]+) [^)]*\)\)"/g;
-    sceneLayers('Summit').forEach(layer => {
-      const pairs = [...layer.markup.matchAll(PAIR)];
+  it('names every generated colour, and defines every name it uses', () => {
+    const layers = sceneLayers('Summit');
+    const palette = scenePalette();
+    const defined = new Set([...palette.matchAll(/(--m-\d+):/g)].map(([, name]) => name));
+    const used = new Set(
+      layers
+        .flatMap(layer => [...layer.markup.matchAll(/(?:fill|stop-color):var\((--m-\d+)\)/g)])
+        .map(([, name]) => name)
+    );
+
+    expect(used.size).toBeGreaterThan(0);
+    /* a drawing that asked for a colour nobody defined would paint black, and only in some seasons */
+    [...used].forEach(name => expect(defined).toContain(name));
+
+    layers.forEach(layer => {
+      /* the colour itself is written once, as the daylight fallback; the rest is the variable's name */
+      const PAINT = /(fill|stop-color)="(oklch\([^)]*\))" style="\1:var\(--m-\d+\)"/g;
+      const painted = [...layer.markup.matchAll(PAINT)].length;
       const oklchCount = layer.markup.match(/oklch\(/g)?.length ?? 0;
-      /* every oklch() in the markup is one of a pair: the fallback, the day and the night */
-      expect(oklchCount).toBe(pairs.length * 3);
+      expect(oklchCount).toBe(painted);
       expect(layer.markup).not.toMatch(/rgb\(/);
-      pairs.forEach(([, , day, nightL]) => {
-        const dayL = Number(day.match(/oklch\(([\d.]+)/)?.[1]);
-        expect(Number(nightL)).toBeLessThan(dayL);
-      });
     });
+  });
+
+  it('pairs every colour in the palette with its moonlit twin, which is darker', () => {
+    const PAIR = /--m-\d+:light-dark\(oklch\(([\d.]+)[^)]*\),oklch\(([\d.]+)[^)]*\)\)/g;
+    const pairs = [...scenePalette().matchAll(PAIR)];
+
+    expect(pairs.length).toBeGreaterThan(0);
+    pairs.forEach(([, dayL, nightL]) => expect(Number(nightL)).toBeLessThan(Number(dayL)));
   });
 
   it('keeps snow the brightest thing on the mountain by moonlight', () => {

@@ -9,6 +9,7 @@ import {
   Daylight,
   SCENE_LAYERS,
   SceneLayerSvg,
+  ScenePalette,
   Sky,
   Stars,
 } from '@/components/scene/scene-layer';
@@ -158,6 +159,7 @@ export function AscentStage({ reducedMotion, stop, ref }: AscentStageProps) {
       className='scene-stage sticky top-0 col-start-1 row-start-1 h-lvh self-start overflow-clip contain-[layout_paint]'
       style={{ '--cam': 1 } as React.CSSProperties}
     >
+      <ScenePalette />
       <Sky />
       <Daylight ref={day} className='opacity-0 will-change-[opacity]' />
       <Stars />
