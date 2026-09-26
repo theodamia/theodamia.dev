@@ -2,7 +2,7 @@ import type React from 'react';
 import { CAMP_ANCHORS } from '@/constants';
 import { Eyebrow } from '@/components/ui/text';
 import { JOBS, TRAILHEAD } from '@/content/jobs';
-import { SUMMIT_LINE } from '@/content/site';
+import { SUMMIT_MARK } from '@/content/site';
 import { cameraKnot, campAnchor, WORLD } from '@/scene/world';
 import { cn } from '@/utils/cn';
 
@@ -65,9 +65,9 @@ export function Altimeter({
 }: AltimeterProps) {
   return (
     <div className='max-wide:top-3.5 max-wide:right-3 max-wide:bottom-auto pointer-events-none fixed top-[22px] right-[22px] bottom-10 z-[6] flex flex-col items-end gap-5'>
-      {/* the top of the rail: the summit the trail leads to and never reaches, because the climb goes on */}
+      {/* the top of the rail: where the trail is heading, opposite Start at the foot of it */}
       <p className='text-ink-3 max-wide:hidden mr-[5px] flex items-center gap-1.5 text-[12.5px] leading-none font-semibold'>
-        {SUMMIT_LINE}
+        {SUMMIT_MARK}
         <svg aria-hidden='true' viewBox='0 0 12 10' width='12' height='10' className='shrink-0'>
           <path
             d='M1 9 L6 1.5 L11 9 Z'

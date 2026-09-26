@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { Altimeter } from '@/components/altimeter';
 import { JOBS, TRAILHEAD } from '@/content/jobs';
-import { SUMMIT_LINE } from '@/content/site';
+import { SUMMIT_LINE, SUMMIT_MARK } from '@/content/site';
 
 function renderAltimeter(job: number, onJump = vi.fn()) {
   const { container } = render(
@@ -70,7 +70,14 @@ describe('Altimeter', () => {
     const now = within(rail).getByRole('button', { name: /^Now:/ });
     expect(now).toHaveTextContent(`Now · ${JOBS[JOBS.length - 1].start}`);
     expect(screen.getAllByRole('button', { name: /^Now/ })).toHaveLength(1);
-    expect(screen.getByText(SUMMIT_LINE)).toBeInTheDocument();
+    expect(screen.getByText(SUMMIT_MARK)).toBeInTheDocument();
+  });
+
+  /* the scene paints SUMMIT_LINE over the summit, and both are on screen at the top of the climb */
+  it('marks the top of the rail without repeating the words over the summit', () => {
+    renderAltimeter(0);
+
+    expect(screen.queryByText(SUMMIT_LINE)).not.toBeInTheDocument();
   });
 
   it('jumps to a stop, or back to the start', async () => {

@@ -12,6 +12,7 @@ const LEG_SCROLL_LVH = 140;
 /** Room under the last card before the page's closing section. */
 const LAST_CARD_LVH = 110;
 import { useClimbScroll } from '@/hooks/use-climb-scroll';
+import { useInView } from '@/hooks/use-in-view';
 import { useReducedMotion } from '@/hooks/use-reduced-motion';
 import { JOBS } from '@/content/jobs';
 import { LEG_WEIGHTS, SIDES, type SceneHandle } from '@/scene/world';
@@ -45,7 +46,11 @@ export function Climb({ hero, children }: ClimbProps) {
   const rail = useRef<HTMLElement>(null);
   const needle = useRef<HTMLSpanElement>(null);
   const walked = useRef<HTMLSpanElement>(null);
+  const closing = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
+  /* the closing card in view is what "the climb is over" means: the last job is behind you and the summit is off
+     the top of the screen, so the label up there has nothing left to point at */
+  const climbOver = useInView(closing);
   const { stop, year, moving, scrollToStop } = useClimbScroll({
     scene,
     track,
@@ -57,7 +62,7 @@ export function Climb({ hero, children }: ClimbProps) {
 
   return (
     <main className='grid'>
-      <AscentStage ref={scene} reducedMotion={reducedMotion} stop={stop} />
+      <AscentStage ref={scene} reducedMotion={reducedMotion} stop={stop} climbOver={climbOver} />
 
       <div
         ref={track}
@@ -83,7 +88,7 @@ export function Climb({ hero, children }: ClimbProps) {
             </li>
           ))}
         </ol>
-        {children}
+        <div ref={closing}>{children}</div>
       </div>
 
       <Altimeter

@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { moonlit, sceneLayers, scenePalette, seasonal, walkedPathMarkup } from '@/scene/scenery';
+import {
+  moonlit,
+  sceneLayers,
+  scenePalette,
+  seasonal,
+  summitLabelMarkup,
+  SUMMIT_LABEL,
+  walkedPathMarkup,
+} from '@/scene/scenery';
 import { SEASONS } from '@/lib/season';
 import { CAMP_ANCHORS } from '@/constants';
 import { ART, VILLAGE } from '@/scene/camp-layout';
@@ -7,11 +15,11 @@ import { cameraKnot, campAnchor, CAMP_Y, LEGS, WORLD } from '@/scene/world';
 
 describe('scenery', () => {
   it('is deterministic, so server and browser paint the same mountain', () => {
-    expect(sceneLayers('Summit')).toEqual(sceneLayers('Summit'));
+    expect(sceneLayers()).toEqual(sceneLayers());
   });
 
   it('paints seven layers back to front, each as tall as its depth travels', () => {
-    const layers = sceneLayers('Summit');
+    const layers = sceneLayers();
     expect(layers.map(layer => layer.depth)).toEqual([0.05, 0.15, 0.35, 0.8, 1, 1, 1.35]);
     layers.forEach(layer => {
       expect(layer.height).toBeCloseTo(WORLD.VIEW + WORLD.TRAVEL * layer.depth);
@@ -21,20 +29,29 @@ describe('scenery', () => {
   });
 
   it('gives every layer its own gradient ids', () => {
-    const ids = sceneLayers('Summit').flatMap(layer =>
+    const ids = sceneLayers().flatMap(layer =>
       [...layer.markup.matchAll(/ id="([^"]+)"/g)].map(match => match[1])
     );
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it('labels the summit on the trail layer, escaping text, and leaves the camps to their own elements', () => {
-    const trail = sceneLayers('Summit & beyond').find(layer => layer.key === 'trail');
-    expect(trail?.markup).toContain('Summit &amp; beyond');
-    expect(trail?.markup.match(/<text /g)).toHaveLength(1);
+  /*
+   * The label has to fade on its own once the climb is over, so it is drawn apart from the layers, the way the
+   * camps are. If it ever creeps back into one, the fade would repaint a full-height layer for every frame of it.
+   */
+  it('leaves every word out of the layers: the summit label and the camps are drawn apart', () => {
+    sceneLayers().forEach(layer => expect(layer.markup).not.toContain('<text'));
+  });
+
+  it('draws the summit label at the summit, escaping its text', () => {
+    const markup = summitLabelMarkup('Summit & beyond');
+    expect(markup.match(/<text /g)).toHaveLength(1);
+    expect(markup).toContain('Summit &amp; beyond');
+    expect(markup).toContain(`x="${SUMMIT_LABEL.x}"`);
   });
 
   it('keeps the foreground mist off every camp when the climber stands there', () => {
-    const front = sceneLayers('Summit').find(layer => layer.key === 'front');
+    const front = sceneLayers().find(layer => layer.key === 'front');
     const wisps = [
       ...(front?.markup.matchAll(/<ellipse cx="[\d.]+" cy="([\d.]+)" rx="[\d.]+" ry="(\d+)"/g) ??
         []),
@@ -53,7 +70,7 @@ describe('scenery', () => {
   });
 
   it('names every generated colour, and defines every name it uses', () => {
-    const layers = sceneLayers('Summit');
+    const layers = sceneLayers();
     const palette = scenePalette();
     const defined = new Set([...palette.matchAll(/(--m-\d+):/g)].map(([, name]) => name));
     const used = new Set(
@@ -79,7 +96,7 @@ describe('scenery', () => {
   it('defines every colour in every season, so no season paints a hole', () => {
     const palette = scenePalette();
     const names = new Set([
-      ...sceneLayers('Summit')
+      ...sceneLayers()
         .flatMap(layer => [...layer.markup.matchAll(/var\((--m-\d+)\)/g)])
         .map(([, name]) => name),
     ]);
@@ -125,7 +142,7 @@ describe('scenery', () => {
   });
 
   it('draws a hut only where a village house has no artwork yet', () => {
-    const trail = sceneLayers('Summit').find(layer => layer.key === 'trail');
+    const trail = sceneLayers().find(layer => layer.key === 'trail');
     const huts = trail?.markup.match(/var\(--color-hut-wall\)/g)?.length ?? 0;
     expect(huts).toBe(VILLAGE.filter(house => !ART[house.key]).length);
   });

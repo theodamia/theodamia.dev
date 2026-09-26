@@ -14,7 +14,7 @@ export function Hero() {
         {SITE.name}
       </Heading>
       <Lede>
-        Ten years of frontend work, drawn as one long climb: a camp for every job, and the summit
+        Ten years of frontend work, drawn as one long climb: a camp for every job and the summit
         still ahead.
       </Lede>
       <SocialLinks />

@@ -1,6 +1,5 @@
 import type React from 'react';
 import { sceneLayers, scenePalette, type SceneLayer } from '@/scene/scenery';
-import { SUMMIT_LINE } from '@/content/site';
 import { starField } from '@/scene/stars';
 import { WORLD } from '@/scene/world';
 import { cn } from '@/utils/cn';
@@ -10,7 +9,7 @@ import { cn } from '@/utils/cn';
  * generated from code on the server (for the HTML) and again in the browser, instead of travelling a second
  * time inside the RSC payload.
  */
-export const SCENE_LAYERS: SceneLayer[] = sceneLayers(SUMMIT_LINE);
+export const SCENE_LAYERS: SceneLayer[] = sceneLayers();
 /* after sceneLayers(), which is what registers the colours it defines */
 const PALETTE = scenePalette();
 const STARS = starField();

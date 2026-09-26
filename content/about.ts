@@ -1,8 +1,8 @@
 /** The About section, in the order it reads: where I come from, the lead years, and what I am doing now. */
 export const ABOUT_PARAGRAPHS: string[] = [
   'Frontend engineer, ten years in, mostly at startups. I work across the stack: React and TypeScript up front, Node.js, GraphQL and databases behind. I take a feature from the schema to the screen.',
-  "I work closely with Product, Design and UX, from the first sketch to release. At Geekbot I led the frontend team for four years: I built its design system, set the team's coding and review standards, brought Claude Code into the daily work with the rules and review contexts that make it useful, and mentored the engineers who joined.",
-  'Now I am hands-on again at DeepSea.ai, where I set the frontend architecture: a Turborepo monorepo, the move off Create React App, a design system, and the guides the frontend guild works from, with releases going out all the while. I ask what we are solving before how, and I write code that stays easy to change.',
+  "I work closely with Product, Design and UX, from the first sketch to release. At Geekbot, used by teams at GitHub, Shopify and GitLab, I led the frontend team for four years: I built its design system, set the team's coding and review standards, brought Claude Code into the daily work with the rules and review contexts that make it useful and mentored the engineers who joined.",
+  'Now I am hands-on again at DeepSea.ai, where I set the frontend architecture: a Turborepo monorepo, the move off Create React App, a design system and the guides the frontend guild works from, with releases going out all the while. I ask what we are solving before how and I write code that stays easy to change.',
 ];
 
 /** One line of the fact list beside the About text. */
@@ -65,5 +65,5 @@ export const WEEK: WeekSlice[] = [
   { label: 'Code review', share: 20, note: 'The cheapest place to catch a bad idea.' },
   { label: 'Deciding what to build', share: 15, note: 'Mostly saying no to good ideas.' },
   { label: 'Mentoring', share: 10, note: "It shows up later, in someone else's code." },
-  { label: 'Meetings', share: 10, note: 'Few, and the ones that stay have a decision in them.' },
+  { label: 'Meetings', share: 10, note: 'Few and the ones that stay have a decision in them.' },
 ];

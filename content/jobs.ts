@@ -37,11 +37,10 @@ export const JOBS: Job[] = [
     duration: '6 months',
     years: 0.5,
     summary:
-      'Client websites on a proprietary CMS, built in JavaScript and PHP next to senior engineers. The first taste of real users and real deadlines.',
+      'Client sites on a proprietary CMS, in JavaScript and PHP, next to senior engineers. Among them Mount Olympus Summits, still up ten years on.',
     highlights: [
-      'Built and customized client websites on a proprietary CMS',
-      'Added dynamic features in JavaScript and PHP with senior engineers',
-      'Tuned performance and made every site work across devices',
+      'Built and customized client sites on the company’s own CMS',
+      'Tuned performance and made every one work across devices',
     ],
   },
   {
@@ -54,11 +53,10 @@ export const JOBS: Job[] = [
     duration: '1 year',
     years: 1,
     summary:
-      'My first year of React: building and reworking interfaces with PostCSS, fixing what QA found and leaving the code cleaner than I found it.',
+      'My first year of React: new interfaces, design updates and the bugs that came with both.',
     highlights: [
-      'Built and updated React interfaces styled with PostCSS',
-      'Worked with QA to find and fix bugs before they shipped',
-      'Made regular cleanup part of the job, not a side project',
+      'Built the design updates as they landed, in React and PostCSS',
+      'Fixed what QA found and left the code cleaner than I got it',
     ],
   },
   {
@@ -72,11 +70,11 @@ export const JOBS: Job[] = [
     years: 3.4,
     url: 'https://geekbot.com/',
     summary:
-      'Building Geekbot’s web app in React, Redux and GraphQL and shipping features together with Product, Design and UX.',
+      'Four years on Geekbot’s web app in React and GraphQL, as the whole of its frontend team, shipping a release every few days.',
     highlights: [
-      'Developed and optimized the web app’s frontend architecture',
-      'Shipped user-facing features with Product, Design and UX',
-      'Held the bar through debugging and thorough code review',
+      'Built the standup builder, the insights graphs, billing and A/B testing',
+      'Kept the GraphQL gateway and went into PHP to finish a feature off',
+      'Replaced no standard at all with a UI library and Storybook specs',
     ],
   },
   {
@@ -90,11 +88,11 @@ export const JOBS: Job[] = [
     years: 4,
     url: 'https://geekbot.com/',
     summary:
-      'Leading the frontend I had built most of: a UI library and standards that made onboarding easier, for the people using it and the people writing it.',
+      'Leading a frontend team of three on the codebase I had mostly written, used by teams at GitHub, Shopify and GitLab.',
     highlights: [
-      'Created the internal UI library; introduced Tailwind and Atomic Design',
-      'Brought in Claude Code with shared rules and review contexts',
-      'Mentored engineers; ran planning, design handovers and the sprint board',
+      'Built the Polls sub-product: the builder, the views and its billing',
+      'Ran the board in Asana, reviewed the code, mentored the engineers',
+      'Design handovers, written specs and Claude Code rules: less was guessed',
     ],
   },
   {
@@ -108,11 +106,11 @@ export const JOBS: Job[] = [
     years: 0.6,
     url: 'https://www.deepsea.ai/',
     summary:
-      'Rebuilding the frontend from its foundations, shipping all the way: the architecture, the stack, the design system and the standards.',
+      'Rebuilding the frontend from its foundations: off Create React App, onto React 18, Vite and Tailwind in a Turborepo monorepo.',
     highlights: [
-      'CRA to React 19, Vite, Tailwind and Vitest, in a Turborepo',
-      'Architected the design system: Storybook, icon library, Material',
-      "Wrote the frontend guild's guides, from security to the AI rules",
+      'Built the shared UI, lint, types and docs packages the other apps use',
+      'Kept Cassandra’s data-heavy graphs shipping through the whole move',
+      'Planning the state migrations off Redux: TanStack Query, faster loads',
     ],
   },
 ];

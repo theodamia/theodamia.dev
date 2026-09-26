@@ -10,7 +10,9 @@ function reachedFlags(container: HTMLElement) {
 
 describe('camps on the stage', () => {
   it('draws the trailhead and one camp per job, named, in a layer of their own', () => {
-    const { container } = render(<AscentStage ref={null} reducedMotion={false} stop={0} />);
+    const { container } = render(
+      <AscentStage ref={null} reducedMotion={false} stop={0} climbOver={false} />
+    );
 
     const camps = [...container.querySelectorAll('svg.camp')];
     expect(camps).toHaveLength(JOBS.length + 1);
@@ -22,7 +24,9 @@ describe('camps on the stage', () => {
   });
 
   it('pitches a bigger shelter as the career climbs', () => {
-    const { container } = render(<AscentStage ref={null} reducedMotion={false} stop={0} />);
+    const { container } = render(
+      <AscentStage ref={null} reducedMotion={false} stop={0} climbOver={false} />
+    );
 
     const tents = [...container.querySelectorAll('svg.camp')].map(camp =>
       camp.getAttribute('data-tent')
@@ -42,7 +46,7 @@ describe('camps on the stage', () => {
 
   it("lights a camp's fire only once the camp is reached", () => {
     const { container, rerender } = render(
-      <AscentStage ref={null} reducedMotion={false} stop={0} />
+      <AscentStage ref={null} reducedMotion={false} stop={0} climbOver={false} />
     );
     /* the village's windows follow the night, not the climber (next test) */
     const campLights = () => container.querySelectorAll('.camp-light-source[data-reached]');
@@ -54,13 +58,13 @@ describe('camps on the stage', () => {
     );
     expect(fires().every(lit => lit === 'false' || lit === 'true')).toBe(true);
 
-    rerender(<AscentStage ref={null} reducedMotion={false} stop={JOBS.length} />);
+    rerender(<AscentStage ref={null} reducedMotion={false} stop={JOBS.length} climbOver={false} />);
     expect(fires()).toEqual(Array(count).fill('true'));
   });
 
   it('raises a flag at every job camp, none at the trailhead, as each one is reached', () => {
     const { container, rerender } = render(
-      <AscentStage ref={null} reducedMotion={false} stop={1} />
+      <AscentStage ref={null} reducedMotion={false} stop={1} climbOver={false} />
     );
     const flags = () =>
       [...container.querySelectorAll('.camp-light-source[data-kind="flag"]')].map(flag =>
@@ -73,13 +77,13 @@ describe('camps on the stage', () => {
       JOBS.length
     );
 
-    rerender(<AscentStage ref={null} reducedMotion={false} stop={JOBS.length} />);
+    rerender(<AscentStage ref={null} reducedMotion={false} stop={JOBS.length} climbOver={false} />);
     expect(flags()).toEqual(Array(JOBS.length).fill('true'));
   });
 
   it("lights the village's windows by night, whatever camp the climber has reached", () => {
     const { container, rerender } = render(
-      <AscentStage ref={null} reducedMotion={false} stop={0} />
+      <AscentStage ref={null} reducedMotion={false} stop={0} climbOver={false} />
     );
     const windows = () => [...container.querySelectorAll('.camp-light-source[data-kind="window"]')];
     expect(windows().length).toBeGreaterThan(0);
@@ -89,23 +93,25 @@ describe('camps on the stage', () => {
       expect(light).toHaveAttribute('data-wave');
     });
 
-    rerender(<AscentStage ref={null} reducedMotion={false} stop={JOBS.length} />);
+    rerender(<AscentStage ref={null} reducedMotion={false} stop={JOBS.length} climbOver={false} />);
     windows().forEach(light => expect(light).not.toHaveAttribute('data-reached'));
   });
 
   it('starts with only the trailhead reached', () => {
-    const { container } = render(<AscentStage ref={null} reducedMotion={false} stop={0} />);
+    const { container } = render(
+      <AscentStage ref={null} reducedMotion={false} stop={0} climbOver={false} />
+    );
 
     expect(reachedFlags(container)).toEqual(['true', 'false', 'false', 'false', 'false', 'false']);
   });
 
   it('conquers every camp up to the stop reached, and gives them back on the way down', () => {
     const { container, rerender } = render(
-      <AscentStage ref={null} reducedMotion={false} stop={3} />
+      <AscentStage ref={null} reducedMotion={false} stop={3} climbOver={false} />
     );
     expect(reachedFlags(container)).toEqual(['true', 'true', 'true', 'true', 'false', 'false']);
 
-    rerender(<AscentStage ref={null} reducedMotion={false} stop={1} />);
+    rerender(<AscentStage ref={null} reducedMotion={false} stop={1} climbOver={false} />);
     expect(reachedFlags(container)).toEqual(['true', 'true', 'false', 'false', 'false', 'false']);
   });
 });

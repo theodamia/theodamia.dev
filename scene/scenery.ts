@@ -794,17 +794,32 @@ function foreground(depth: number): SceneLayer {
   return { key: 'front', depth, height, markup };
 }
 
-/** The trail layer: the dotted route still to walk, the village and the summit label. Camps are drawn apart. */
-function trailLayer(summitLabel: string): SceneLayer {
+/** The trail layer: the dotted route still to walk and the village. The summit label and the camps are drawn apart. */
+function trailLayer(): SceneLayer {
   const route = `${LEGS.map(leg => leg.d).join(' ')} ${SUMMIT_PITCH_D}`;
   let markup = `<path d="${route}" style="fill:none;stroke:${INK};stroke-opacity:0.36;stroke-width:4;stroke-linecap:round;stroke-dasharray:2 15"/>`;
   /* a house with artwork is a picture of its own (components/scene/village.tsx); the rest are still drawn here */
   markup += VILLAGE.filter(house => !ART[house.key])
     .map(house => hut(house.x, VILLAGE_GROUND_Y, house.hut.width, house.hut.roof))
     .join('');
-  markup += label(SUMMIT.x, SUMMIT.y - 34, summitLabel, 26);
 
   return { key: 'trail', depth: 1, height: VIEW + TRAVEL, markup };
+}
+
+/** Where the label over the summit sits, in world units, and how big it is drawn. */
+export const SUMMIT_LABEL = { x: SUMMIT.x, y: SUMMIT.y - 34, size: 26 } as const;
+
+/**
+ * The label over the summit, as a drawing of its own rather than part of the trail layer. It is lifted out for the
+ * same reason the camps are: it has to fade once the climb is over, and opacity on something inside a full-height
+ * layer would repaint that whole layer every frame of the fade. `components/scene/summit-label.tsx` gives it a
+ * small SVG of its own in the layer that moves with the mountain, so only the label repaints.
+ *
+ * The coordinates stay in world units, so the caller's viewBox is the world's and the label lands where it always
+ * did. The still strip on /about hides every `text` in the layers and so never showed this one.
+ */
+export function summitLabelMarkup(text: string): string {
+  return label(SUMMIT_LABEL.x, SUMMIT_LABEL.y, text, SUMMIT_LABEL.size);
 }
 
 /** The walked path as one finished drawing. The stage reveals it by moving a clip window, never by redrawing. */
@@ -816,7 +831,7 @@ export function walkedPathMarkup(): string {
 }
 
 /** Every layer, back to front. The walked path is separate (see `walkedPathMarkup`) and sits above `near`. */
-export function sceneLayers(summitLabel: string): SceneLayer[] {
+export function sceneLayers(): SceneLayer[] {
   return [
     genLayer('giants', 0.05, giants(0.05), { fog: 0.15 }),
     genLayer('hills-far', 0.15, foothills(23, 0.15, [440, 360], 56), {
@@ -829,7 +844,7 @@ export function sceneLayers(summitLabel: string): SceneLayer[] {
     }),
     genLayer('peaks', 0.8, sisterPeaks(41, 5000, 900, 820), { fog: 0.46, fade: true }),
     genLayer('near', 1, nearBands(), { fog: 0, fade: true, ink: 0.3, trees: true }),
-    trailLayer(summitLabel),
+    trailLayer(),
     foreground(1.35),
   ];
 }

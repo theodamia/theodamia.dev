@@ -3,6 +3,7 @@
 import type React from 'react';
 import { useImperativeHandle, useRef } from 'react';
 import { CampMark, tentFor } from '@/components/scene/camp-mark';
+import { SummitLabel } from '@/components/scene/summit-label';
 import { Village } from '@/components/scene/village';
 import { WeatherLayer } from '@/components/scene/weather-layer';
 import {
@@ -44,6 +45,8 @@ type AscentStageProps = {
   reducedMotion: boolean;
   /** Index of the camp the climber has reached (0 is the trailhead): camps up to it are conquered. */
   stop: number;
+  /** True once the climb is over and the closing card is up: the summit's label fades out. */
+  climbOver: boolean;
   ref: React.Ref<SceneHandle>;
 };
 
@@ -58,7 +61,7 @@ type AscentStageProps = {
  *
  * Camps are small SVGs of their own in a layer that moves with the mountain, so an arrival repaints only the camp.
  */
-export function AscentStage({ reducedMotion, stop, ref }: AscentStageProps) {
+export function AscentStage({ reducedMotion, stop, climbOver, ref }: AscentStageProps) {
   const stage = useRef<HTMLDivElement>(null);
   const day = useRef<HTMLDivElement>(null);
   const camps = useRef<HTMLDivElement>(null);
@@ -189,6 +192,7 @@ export function AscentStage({ reducedMotion, stop, ref }: AscentStageProps) {
 
       <div ref={camps} className='scene-layer' style={{ '--d': NEAR_DEPTH } as React.CSSProperties}>
         <Village />
+        <SummitLabel gone={climbOver} />
         {/* camp 0 is the trailhead: a signpost, no flag to raise, always "reached" */}
         <CampMark index={0} artKey={campArtKey(0)} name={TRAILHEAD.label} tent='signpost' reached />
         {JOBS.map((job, i) => (

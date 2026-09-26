@@ -313,6 +313,19 @@
 }
 
 /*
+ * The label over the summit. It rides in the layer that moves with the mountain, like the camps, and fades out once
+ * the closing card is up: by then the summit is off the top of the screen and the words are alone in the sky.
+ * Slow, because nothing else in the scene hurries, and opacity only, so the compositor handles it.
+ */
+.summit-label {
+  transition: opacity 0.7s ease-out;
+}
+
+.summit-label[data-gone='true'] {
+  opacity: 0;
+}
+
+/*
  * What comes alive at a camp, and how. Each item (a flame and its core, a lantern's glass, a lit doorway, a spinner's
  * blades) is a separate picture laid over the artwork, which is saved with its lights out. Only opacity and
  * transform move, on plain HTML elements, so the compositor does it all and nothing repaints.
@@ -449,6 +462,12 @@
  * Wind spinner: the blades are always there. Reaching the camp lets them run: one slow first turn that ends at
  * exactly the speed of the steady turn that follows (the easing's end slope, 1.6, times 360deg over 2.4s is the
  * same 240deg a second as one turn every 1.5s). Leaving holds them where they are; coming back, they carry on.
+ *
+ * The first turn must not fill forwards. Both animations write `transform`, so a `forwards` fill leaves the first
+ * one in effect for ever, holding rotate(360deg) — which is the identity matrix, so the blades simply stop dead the
+ * moment the first turn lands. `backwards` holds them still through the 0.3s delay and then lets go, leaving the
+ * steady turn alone from 2.7s on. The handoff is seamless either way: the first ends at 360deg and the second
+ * starts at 0deg, which are the same picture.
  */
 .camp-light-source[data-kind='spinner'] {
   opacity: 1;
@@ -456,7 +475,7 @@
 
 [data-kind='spinner'] .camp-lit {
   animation:
-    spin 2.4s cubic-bezier(0.5, 0, 0.75, 0.6) 0.3s 1 both,
+    spin 2.4s cubic-bezier(0.5, 0, 0.75, 0.6) 0.3s 1 backwards,
     spin 1.5s linear 2.7s infinite;
   animation-play-state: paused;
 }
@@ -512,39 +531,31 @@
   }
 }
 
+/*
+ * One dip per cycle, and nothing else. An earlier version dipped, half recovered and dipped again inside 300ms,
+ * which reads as a blink rather than a breath: `ease-in-out` is applied to every segment, so a short one snaps.
+ * Keep it to two stops — the low point in the middle, the ends equal so the loop joins invisibly.
+ */
 @keyframes lantern-breathe {
   0%,
   100% {
     opacity: 1;
   }
-  46% {
+  50% {
     opacity: 0.84;
-  }
-  58% {
-    opacity: 0.95;
-  }
-  64% {
-    opacity: 0.8;
   }
 }
 
+/* the glow breathes with the glass, on the same two stops, so the light and its halo never disagree */
 @keyframes lantern-glow {
   0%,
   100% {
     opacity: 1;
     transform: scale(1);
   }
-  46% {
+  50% {
     opacity: 0.78;
     transform: scale(0.94);
-  }
-  58% {
-    opacity: 0.9;
-    transform: scale(0.98);
-  }
-  64% {
-    opacity: 0.72;
-    transform: scale(0.93);
   }
 }
 
