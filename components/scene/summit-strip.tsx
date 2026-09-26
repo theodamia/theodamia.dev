@@ -16,7 +16,8 @@ export function SummitStrip() {
   return (
     <div
       aria-hidden='true'
-      /* the summit's label stays on the climb: here the page's own title sits where it would, and says as much */
+      /* the summit's label stays on the climb: here the page's own title sits where it would, and says as much.
+         It is drawn apart from the layers now, so there is nothing to hide; the rule stays as the guard it was. */
       className='absolute inset-x-0 top-0 h-[58vh] min-h-[360px] overflow-clip [&_text]:hidden'
       style={{ '--cam': 0 } as React.CSSProperties}
     >

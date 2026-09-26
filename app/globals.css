@@ -313,6 +313,19 @@
 }
 
 /*
+ * The label over the summit. It rides in the layer that moves with the mountain, like the camps, and fades out once
+ * the closing card is up: by then the summit is off the top of the screen and the words are alone in the sky.
+ * Slow, because nothing else in the scene hurries, and opacity only, so the compositor handles it.
+ */
+.summit-label {
+  transition: opacity 0.7s ease-out;
+}
+
+.summit-label[data-gone='true'] {
+  opacity: 0;
+}
+
+/*
  * What comes alive at a camp, and how. Each item (a flame and its core, a lantern's glass, a lit doorway, a spinner's
  * blades) is a separate picture laid over the artwork, which is saved with its lights out. Only opacity and
  * transform move, on plain HTML elements, so the compositor does it all and nothing repaints.
