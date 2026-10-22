@@ -106,11 +106,11 @@ export const JOBS: Job[] = [
     years: 0.6,
     url: 'https://www.deepsea.ai/',
     summary:
-      'Rebuilding the frontend from its foundations: off Create React App, onto React 18, Vite and Tailwind in a Turborepo monorepo.',
+      'Rebuilding the frontend from its foundations: I set up the Turborepo monorepo and moved its apps onto React 19, Vite and Tailwind.',
     highlights: [
       'Built the shared UI, lint, types and docs packages the other apps use',
-      'Kept Cassandra’s data-heavy graphs shipping through the whole move',
-      'Planning the state migrations off Redux: TanStack Query, faster loads',
+      'Designed the typed API layer every app reads the backend through',
+      'Set up Claude Code with rules and review steps the team ships with',
     ],
   },
 ];
