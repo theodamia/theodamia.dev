@@ -14,7 +14,8 @@ import { bareUrl } from '@/utils/bare-url';
 
 export const metadata: Metadata = pageMetadata({
   title: `Experience | ${SITE.name}`,
-  description: 'Ten years of frontend work, newest first: every role, what it was and what I did.',
+  description:
+    'Ten years of software engineering, newest first: every role, what it was and what I did.',
   path: '/cv',
 });
 

@@ -1,6 +1,6 @@
 # theodamia.dev
 
-Personal portfolio website for Theodore Damianidis - Senior Frontend Software Engineer. "The Ascent": ten years of frontend work drawn as one long, scroll-driven climb up a mountain, with a second, quiet page for about, skills and contact.
+Personal portfolio website for Theodore Damianidis - Senior Software Engineer. "The Ascent": ten years of software engineering drawn as one long, scroll-driven climb up a mountain, with a second, quiet page for about, skills and contact.
 
 ## 🚀 Tech Stack
 

@@ -29,9 +29,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: `${SITE.name} | ${SITE.title}`,
   description:
-    'The Ascent: ten years of frontend engineering drawn as one long climb. Senior Frontend Software Engineer at DeepSea.ai, previously Frontend Lead at Geekbot.',
+    'The Ascent: ten years of software engineering, built on frontend fundamentals, drawn as one long climb. Senior Frontend Software Engineer at DeepSea.ai, previously Frontend Lead at Geekbot.',
   generator: 'theodamia.dev',
   keywords: [
+    'Senior Software Engineer',
+    'Software Engineer',
     'Frontend Engineer',
     'Frontend Software Engineer',
     'React',
@@ -48,7 +50,7 @@ export const metadata: Metadata = {
    */
   openGraph: {
     title: `${SITE.name} | ${SITE.title}`,
-    description: 'Ten years of frontend engineering, drawn as one long climb',
+    description: 'Ten years of software engineering, drawn as one long climb',
     type: 'website',
     url: '/',
     siteName: SITE.name,

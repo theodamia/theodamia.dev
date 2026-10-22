@@ -84,7 +84,7 @@ export default async function Image() {
           {SITE.name}
         </div>
         <div style={{ display: 'flex', fontSize: 31, color: INK_2, marginTop: 26 }}>
-          Ten years of frontend work, drawn as one long climb.
+          Ten years of software engineering, drawn as one long climb.
         </div>
         <div
           style={{

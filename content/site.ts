@@ -3,7 +3,7 @@ export const SITE = {
   /* the canonical origin: `metadataBase`, so every share card and canonical link resolves to one address */
   url: 'https://theodamia.dev',
   name: 'Theodore Damianidis',
-  title: 'Senior Frontend Software Engineer',
+  title: 'Senior Software Engineer',
   location: 'Thessaloniki, Greece',
   email: 'theodamia@gmail.com',
   linkedin: {
