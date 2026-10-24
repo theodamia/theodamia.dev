@@ -1,13 +1,46 @@
 import { existsSync, statSync } from 'node:fs';
 import path from 'node:path';
+import sharp from 'sharp';
 import { describe, expect, it } from 'vitest';
-import { FLAG, FLATS, type Theme } from '@/scene/flats';
+import { BACKDROP, FLAG, FLATS, type Theme } from '@/scene/flats';
 
 const PUBLIC = path.resolve(__dirname, '../../public/scene');
 const THEMES: Theme[] = ['day', 'night'];
 /** What one visit downloads for the scene, per theme: the other theme loads only when idle. */
 const BUDGET = { DESKTOP: 1_500_000, PHONE: 800_000 };
 const bytes = (file?: string) => (file ? statSync(path.join(PUBLIC, file)).size : 0);
+
+/**
+ * A shipped tile, decoded, as the steps between neighbouring columns (premultiplied grey plus alpha, averaged down
+ * the column): `steps[x]` is the change from column x - 1 to x.
+ */
+async function columnSteps(file: string) {
+  const { data, info } = await sharp(path.join(PUBLIC, file))
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const { width, height } = info;
+
+  const value = (x: number, y: number) => {
+    const i = (y * width + x) * 4;
+    const a = data[i + 3] / 255;
+
+    return { grey: (0.3 * data[i] + 0.59 * data[i + 1] + 0.11 * data[i + 2]) * a, a: data[i + 3] };
+  };
+
+  const difference = (x0: number, x1: number) => {
+    let sum = 0;
+
+    for (let y = 0; y < height; y++) {
+      const [p, q] = [value(x0, y), value(x1, y)];
+      sum += Math.abs(p.grey - q.grey) + Math.abs(p.a - q.a);
+    }
+
+    return sum / height;
+  };
+
+  return { width, difference };
+}
 
 describe('painted flats', () => {
   it('ships every file the manifest names, in both themes', () => {
@@ -29,6 +62,32 @@ describe('painted flats', () => {
     /* the camera starts at the trailhead, so the village is never seen from further than its stop */
     for (const flat of FLATS) {
       expect(Boolean(flat.art.day.far), flat.id).toBe(flat.kind === 'camp' && flat.camp !== 0);
+    }
+  });
+
+  it('repeats the backdrop without a seam, and overlaps its copies on identical paint', async () => {
+    const tile = BACKDROP.tile!;
+    expect(BACKDROP.boxPhone).toEqual(BACKDROP.box);
+
+    for (const theme of THEMES) {
+      for (const file of [BACKDROP.art[theme].near, BACKDROP.art[theme].nearPhone]) {
+        const { width, difference } = await columnSteps(file);
+        /* the same share of bleed in both files: the phone's is 7 px on a 1456 px period */
+        const bleed = Math.round((width * tile.bleed) / (tile.period + tile.bleed));
+        const period = width - bleed;
+        const ordinary = Array.from({ length: period - 1 }, (_, x) => difference(x, x + 1)).sort(
+          (a, b) => a - b
+        );
+        /* a joined seam is one more ordinary column; the unjoined one stepped 7 times the 99th percentile */
+        const p99 = ordinary[Math.floor(ordinary.length * 0.99)];
+
+        /* from the period's last column to its first, as the next copy lays it */
+        expect(difference(period - 1, 0), `${file} seam`).toBeLessThanOrEqual(p99);
+
+        for (let x = 0; x < bleed; x++) {
+          expect(difference(period + x, x), `${file} bleed column ${x}`).toBeLessThan(4);
+        }
+      }
     }
   });
 

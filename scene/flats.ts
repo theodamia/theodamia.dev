@@ -7,6 +7,9 @@ export type Theme = 'day' | 'night';
 /** [x, y, width, height] in design units, from the focus of expansion, at the flat's own scale 1. */
 export type Box = readonly [x: number, y: number, width: number, height: number];
 
+/** A span of x, in design units. */
+export type Span = readonly [left: number, right: number];
+
 /** A flat's files in one theme. Ridges also have a far version: smaller, softer, hazed. */
 export type FlatArt = { near: string; nearPhone: string; far?: string; farPhone?: string };
 
@@ -22,6 +25,16 @@ export type Flat = {
   side?: number;
   /** Where this camp's flag stands from its trail point, in units. */
   flagDx?: number;
+  /**
+   * A seamless tile (the backdrop): the page lays copies a period apart. Its files hold the period plus `bleed`
+   * pixels of its own start, so each copy overlaps the last on identical paint (pixels of the desktop file).
+   */
+  tile?: { period: number; bleed: number };
+  /** Where a tile's painting dissolves at its foot (units): the page fills below it with the haze. */
+  foot?: number;
+  /** The span this flat paints solid, and its phone file's: what the camera tests check the screen against. */
+  solid?: Span;
+  solidPhone?: Span;
   art: Record<Theme, FlatArt>;
 };
 
@@ -34,6 +47,7 @@ export type Flag = {
 };
 
 const box = (values: number[]): Box => [values[0], values[1], values[2], values[3]];
+const span = (values?: number[]): Span | undefined => values && [values[0], values[1]];
 
 /**
  * The flats, back to front, from `scene/flats.json` (written by `pnpm flats`). JSON arrays come in as
@@ -48,8 +62,16 @@ export const FLATS: Flat[] = manifest.order.map(id => {
     kind: entry.kind as Flat['kind'],
     box: box(entry.box),
     boxPhone: box(entry.boxPhone),
+    solid: span('solid' in entry ? entry.solid : undefined),
+    solidPhone: span('solidPhone' in entry ? entry.solidPhone : undefined),
   };
 });
+
+/** The backdrop: the one tile, which every other flat stands in front of. */
+export const BACKDROP: Flat = FLATS.find(flat => flat.tile)!;
+
+/** The middle of the painting a phone file keeps, in units either side of the focus line, and its dissolve. */
+export const PHONE_ART = manifest.phone;
 
 export const FLAG: Flag = manifest.flag;
 

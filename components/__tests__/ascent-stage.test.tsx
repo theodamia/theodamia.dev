@@ -4,8 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AscentStage } from '@/components/scene/ascent-stage';
 import { WIDE_QUERY } from '@/constants';
 import { CAMP_COUNT, type SceneHandle } from '@/scene/world';
-import { FIRST_POSE, poseAt } from '@/scene/camera';
-import { FLATS } from '@/scene/flats';
+import { BACKDROP_TILES, FIRST_POSE, poseAt } from '@/scene/camera';
+import { BACKDROP, FLATS } from '@/scene/flats';
 
 const VIEW = { width: 1440, height: 900 };
 
@@ -154,6 +154,25 @@ describe('the climb stage', () => {
     const again = recordWrites(root);
     handle().applyFrame({ leg: 4, f: 0.9 });
     expect(again()).toHaveLength(0);
+  });
+
+  it('lays the backdrop as copies of one picture over its haze fill', () => {
+    const { flat } = stage();
+    const copies = Array.from(flat(BACKDROP.id).querySelectorAll<HTMLElement>('[data-tile]'));
+
+    expect(copies.map(copy => Number(copy.dataset.tile))).toEqual(BACKDROP_TILES);
+    expect(flat(BACKDROP.id).querySelector('.scene-foot')).not.toBeNull();
+
+    for (const theme of ['day', 'night']) {
+      const sources = copies.map(copy => {
+        const pictures = copy.querySelectorAll<HTMLImageElement>(`img[data-art='${theme}']`);
+        expect(pictures).toHaveLength(1);
+
+        return pictures[0].dataset.src;
+      });
+      /* one URL: one download and one decode for every copy */
+      expect(new Set(sources).size).toBe(1);
+    }
   });
 
   it('raises the flag and lights the name of every camp reached, and lowers them on the way down', () => {

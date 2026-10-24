@@ -1,4 +1,5 @@
 import { WIDE_QUERY } from '@/constants';
+import { usesPhoneArt } from '@/scene/camera';
 import type { Theme } from '@/scene/flats';
 import { readTheme } from '@/lib/theme';
 
@@ -55,7 +56,11 @@ export function prepareArt(
   pick: (img: HTMLImageElement) => boolean = () => true,
   priority: 'high' | 'low' = 'high'
 ): Promise<void> {
-  const phone = !window.matchMedia(WIDE_QUERY).matches;
+  const phone = usesPhoneArt({
+    width: window.innerWidth,
+    height: window.innerHeight,
+    wide: window.matchMedia(WIDE_QUERY).matches,
+  });
   const images = Array.from(root.querySelectorAll<HTMLImageElement>(`img[data-art='${theme}']`));
 
   return Promise.allSettled(

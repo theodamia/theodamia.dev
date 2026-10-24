@@ -11,16 +11,19 @@ Each flat has a day and a night painting with identical silhouettes. The page sc
 
 ## Where things are
 
-| Path                                                                       | What                                                            | In git                                |
-| -------------------------------------------------------------------------- | --------------------------------------------------------------- | ------------------------------------- |
-| `flats/guides/guide-*.png`                                                 | placement guides on magenta, 1664 × 936                         | yes                                   |
-| `flats/guides/guides.json`                                                 | the units rectangle and px per unit each canvas covers          | yes                                   |
-| `flats/raw/<flat>-{day,night}.png`, `flats/raw/flag-parts-{day,night}.png` | the paintings                                                   | no: **the only copies, back them up** |
-| `flats/raw/v1/`                                                            | the first day set, before the camp kit                          | no                                    |
-| `flats/camp-kit-day.png`                                                   | the camp kit reference sheet                                    | no                                    |
-| `flats/PAINT-README.md`, `KIT-README.md`, `NIGHT-README.md`                | the exact prompts and inputs of every painting                  | yes                                   |
-| `style/frames/README.md`                                                   | the style exploration that set the look (its frames stay local) | yes                                   |
-| `../../public/scene/*.webp`, `../../scene/flats.json`                      | the processed flats and their manifest                          | yes                                   |
+| Path                                                                       | What                                                             | In git                                |
+| -------------------------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------- |
+| `flats/guides/guide-*.png`                                                 | placement guides on magenta, 1664 × 936                          | yes                                   |
+| `flats/guides/guides.json`                                                 | the units rectangle and px per unit each canvas covers           | yes                                   |
+| `flats/raw/<flat>-{day,night}.png`, `flats/raw/flag-parts-{day,night}.png` | the paintings                                                    | no: **the only copies, back them up** |
+| `flats/raw/v1/`                                                            | the first day set, before the camp kit                           | no                                    |
+| `flats/raw/originals/`                                                     | approved paintings as they were before an edit was joined in     | no: back them up with `raw/`          |
+| `flats/edits/`                                                             | guides for edits and the edits themselves (`pnpm flats:compose`) | no                                    |
+| `flats/ENVELOPE-README.md`                                                 | the prompts of the seam and bleed edits                          | yes                                   |
+| `flats/camp-kit-day.png`                                                   | the camp kit reference sheet                                     | no                                    |
+| `flats/PAINT-README.md`, `KIT-README.md`, `NIGHT-README.md`                | the exact prompts and inputs of every painting                   | yes                                   |
+| `style/frames/README.md`                                                   | the style exploration that set the look (its frames stay local)  | yes                                   |
+| `../../public/scene/*.webp`, `../../scene/flats.json`                      | the processed flats and their manifest                           | yes                                   |
 
 ## Rebuild
 
@@ -29,13 +32,31 @@ Each flat has a day and a night painting with identical silhouettes. The page sc
 1. Key the magenta out (median key colour, de-spill).
 2. Apply the design fades: ends and feet dissolve, never a straight edge.
 3. Give night paintings the day alpha, so silhouettes match.
-4. Haze the far ranges toward `--color-scene-haze`.
-5. Trim.
-6. Encode WebP (q76, smart subsampling) at desktop size and as a phone set at most 1080 px wide.
+4. Haze the far ranges toward `--color-scene-haze`, evenly (any change across it would step at every repeat).
+5. Trim (never sideways for the backdrop: its width is its period).
+6. Encode WebP (q76, smart subsampling) at desktop size and as a phone set at most 1080 px wide. The backdrop's
+   files carry 8 px of their own start after their end (7 on the phone file, which is the whole tile at 0.875×).
 7. Make each ridge's far version: 0.55×, softened, 38% hazed.
 8. Write content-hashed files into `public/scene/` and the manifest into `scene/flats.json`.
 
 It also writes check PNGs to `flats/check/` and prints the byte budget per theme and device.
+
+## Any screen: the envelope
+
+The camera never bends to fit a screen. A wider screen sees more world, so the world has to go on:
+
+- **The backdrop is a seamless tile.** The page lays copies a period apart (`BACKDROP_TILES` in `scene/camera.ts`) over a haze fill that runs past the bottom of any screen (`.scene-foot`). Up to `FILLED_ASPECT` (5.5:1) nothing below the cloud sea's crest is ever bare.
+- **The trailhead is painted with bleed.** Within `PAINTED_ASPECT` (2.4:1 wide, 9:21 tall) the hero's meadow reaches both edges. Beyond it, the meadow's ends dissolve into the cloud sea, as every ridge's ends do by design.
+- `scene/__tests__/camera.test.ts` proves both, from the manifest's boxes and solid spans.
+
+Edits that widen or join a painting go through `pnpm flats:compose` (`scripts/compose-flats.mjs`), never straight into `raw/`:
+
+1. `seam-guide <raw> day` rolls a painting by half its width so its ends meet in the middle. `bleed-guide <raw> day` cuts its outer strips (936 px square, the model's native size) with grey where new paint goes.
+2. The painter edits the guide (prompts in `flats/ENVELOPE-README.md`).
+3. `seam-join` / `bleed-join` resize the edit to the guide, register it on the untouched part, key both off their own magenta and join them over a narrow feather. Pixels outside the band are copied unchanged (the script checks the difference is 0). A bleed join widens the canvas by whole pixels at the same px per unit and updates `guides.json`.
+4. Night: the same with `night`; the night guide comes with the joined day as the reference for its shapes.
+
+Run `pnpm flats` only once both themes are joined: a painting and its night must share one canvas.
 
 ## Painting a new piece
 

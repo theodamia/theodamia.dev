@@ -1,4 +1,4 @@
-import { FLAG, FLATS, type Flat } from '@/scene/flats';
+import { BACKDROP, FLAG, FLATS, PHONE_ART, type Flat } from '@/scene/flats';
 import { CAMP_COUNT, LEG_WEIGHTS, SIDES } from '@/scene/world';
 
 /**
@@ -54,15 +54,18 @@ const FLAG_SIZE = { HEIGHT: 104, CLOTH: 0.72, SINK: 6 } as const;
 
 const LAST = CAMP_COUNT - 1;
 
-/** The far world: the backdrop every other flat stands in front of, and the one that must always fill the screen. */
-const BACKDROP = FLATS.find(flat => flat.kind === 'back')!;
-/** Units the backdrop keeps beyond each side of the screen, so its edge never shows, even after pixel snapping. */
-const BACKDROP_MARGIN = 2;
-/** How far the backdrop reaches left and right of the focus (where it is anchored), in units at scale 1. */
-const BACKDROP_REACH = {
-  LEFT: -BACKDROP.box[0] - BACKDROP_MARGIN,
-  RIGHT: BACKDROP.box[0] + BACKDROP.box[2] - BACKDROP_MARGIN,
-} as const;
+/**
+ * The screens the scene is made for, as width over height. Up to FILLED, nothing below the cloud sea's crest is
+ * ever bare: the backdrop repeats sideways (BACKDROP_TILES) over a haze fill that runs down past any screen's foot
+ * (FOOT_END), so raising it costs layers, not bytes. Within PAINTED, the ground at the trailhead is painting from
+ * edge to edge at the hero: every maximized 16:9 or 16:10 window and fullscreen 21:9 on the wide side, a tall phone
+ * on the narrow one. Past it the meadow's ends dissolve into the cloud sea, as every ridge's do by design. The
+ * camera itself never bends to fit a screen: the composition is the same everywhere, the world just goes on.
+ */
+export const FILLED_ASPECT = 5.5;
+export const PAINTED_ASPECT = { WIDE: 2.4, TALL: 9 / 21 } as const;
+/** Where the haze fill under the backdrop ends, in units below the focus: past the foot of any screen. */
+export const FOOT_END = 4000;
 
 export const clamp = (x: number, min: number, max: number) => Math.min(max, Math.max(min, x));
 
@@ -109,29 +112,30 @@ const focusDepth = (k: number) =>
 /** The screen the stage fills, and (wide only) the middle of the gap between the two card lanes. */
 export type View = { width: number; height: number; wide: boolean; laneGap: number | null };
 
-/** The backdrop's whole width: a screen wider than this at scale 1 needs a larger scale to stay covered. */
-const BACKDROP_SPAN = BACKDROP_REACH.LEFT + BACKDROP_REACH.RIGHT;
-
-/**
- * Design units to pixels: the story column fits the screen. Only a screen wider than the backdrop itself (32:9
- * and beyond) is scaled up past that, because there no focus could keep both of the backdrop's ends out of view.
- */
+/** Design units to pixels: the story column fits the screen, and a wider screen sees more of the world. */
 export const stageScale = (width: number, height: number) =>
-  Math.max(Math.min(width / COLUMN.WIDTH, height / COLUMN.HEIGHT), width / BACKDROP_SPAN);
+  Math.min(width / COLUMN.WIDTH, height / COLUMN.HEIGHT);
 
 /** The same scale in CSS, as a length per unit, for anything sized by stylesheet (needs a size container). */
-export const STAGE_SCALE_CSS = `max(min(100cqw / ${COLUMN.WIDTH}, 100cqh / ${COLUMN.HEIGHT}), 100cqw / ${BACKDROP_SPAN})`;
+export const STAGE_SCALE_CSS = `min(100cqw / ${COLUMN.WIDTH}, 100cqh / ${COLUMN.HEIGHT})`;
+
+/**
+ * The backdrop's copies, as offsets in periods: as many each side as the widest FILLED screen needs with the focus
+ * where it stands furthest off centre (the hero's 64%). The backdrop is at scale 1 or more, so this is enough.
+ */
+export const BACKDROP_TILES: number[] = (() => {
+  const seen = FILLED_ASPECT * COLUMN.HEIGHT;
+  const [x, , width] = BACKDROP.box;
+  const reach = Math.max(HERO_FOCUS_X, 1 - HERO_FOCUS_X) * seen;
+  const each = Math.ceil(Math.max(reach + x, reach - (x + width)) / width);
+
+  return Array.from({ length: 2 * each + 1 }, (_, k) => k - each);
+})();
 
 /** Phones lean toward the camp ahead; the trailhead stands in the middle. */
 const lean = (k: number) => (k < 1 ? 0 : SIDES[Math.min(k, LAST)]);
 
-/**
- * The focus of expansion on screen, in pixels, and the stage scale `v`.
- *
- * The focus is also where the backdrop is anchored, so it is kept where the backdrop still reaches both edges of
- * the screen. That only ever binds near the hero on a wide, short screen (about 1.9:1 and wider), where the focus
- * stands right of centre and the backdrop's left end would otherwise show as a bare strip of sky.
- */
+/** The focus of expansion on screen, in pixels, and the stage scale `v`. */
 export function focusAt(u: number, view: View) {
   const { width, height, wide } = view;
   const v = stageScale(width, height);
@@ -139,17 +143,26 @@ export function focusAt(u: number, view: View) {
   const e = ease(f);
   const depth = focusDepth(leg) + (focusDepth(leg + 1) - focusDepth(leg)) * e;
   const y = (wide ? CAMP_LINE.WIDE : CAMP_LINE.PHONE) * height - depth * v;
-  const lane = view.laneGap ?? width / 2;
-  const x = wide
-    ? lane + (HERO_FOCUS_X * width - lane) * (1 - smoothstep(0, 1, u))
-    : width / 2 - (lean(leg) + (lean(leg + 1) - lean(leg)) * e) * PHONE_LEAN * v;
-  const reach = scaleOf(BACKDROP, cameraZ(u)) * v;
 
-  return {
-    x: clamp(x, width - BACKDROP_REACH.RIGHT * reach, BACKDROP_REACH.LEFT * reach),
-    y,
-    v,
-  };
+  if (!wide) {
+    return { x: width / 2 - (lean(leg) + (lean(leg + 1) - lean(leg)) * e) * PHONE_LEAN * v, y, v };
+  }
+
+  const lane = view.laneGap ?? width / 2;
+
+  return { x: lane + (HERO_FOCUS_X * width - lane) * (1 - smoothstep(0, 1, u)), y, v };
+}
+
+/**
+ * Whether this screen gets the phone files. They keep only the middle of each painting (PHONE_ART), so they are
+ * for screens that see no more than that middle with the camera's lean: a phone held upright, or a tablet. It is
+ * not the 900 px breakpoint: a phone on its side is narrow in pixels and sees about 1950 units.
+ */
+export function usesPhoneArt(view: Pick<View, 'width' | 'height' | 'wide'>): boolean {
+  if (view.wide) return false;
+  const seen = view.width / stageScale(view.width, view.height);
+
+  return seen / 2 + PHONE_LEAN <= PHONE_ART.halfWidth - PHONE_ART.fade;
 }
 
 /** The scale a flat's box is authored at: the largest it is ever shown. */

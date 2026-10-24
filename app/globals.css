@@ -324,25 +324,26 @@
 :root[data-theme='dark'] .scene-flat img[data-art='night'][data-ready],
 :root[data-theme='dark']
   .scene-flat
-  :is([data-lod], .scene-flag-part):not(:has(> img[data-art='night'][data-ready]))
+  :is([data-lod], [data-tile], .scene-flag-part):not(:has(> img[data-art='night'][data-ready]))
   > img[data-art='day'][data-ready],
 :root:not([data-theme='dark'])
   .scene-flat
-  :is([data-lod], .scene-flag-part):not(:has(> img[data-art='day'][data-ready]))
+  :is([data-lod], [data-tile], .scene-flag-part):not(:has(> img[data-art='day'][data-ready]))
   > img[data-art='night'][data-ready] {
   display: block;
 }
 
-/*
- * Under the flats, at the foot of the stage. A tall phone screen runs past the backdrop's foot between camps, when
- * no ridge reaches that low: there the clouds dissolve into their own haze instead of ending on the sky. Covered
- * everywhere else, and static, so it costs nothing per frame.
- */
-.scene-floor {
+/* the backdrop's copies, a period apart (each is the period plus its bleed wide), over its haze fill */
+.scene-flat [data-tile] {
   position: absolute;
-  inset: 0;
+  top: 0;
+  height: 100%;
+}
+
+.scene-foot {
+  position: absolute;
+  background: var(--color-scene-haze);
   pointer-events: none;
-  background: linear-gradient(to top, var(--color-scene-haze) 10%, transparent 26%);
 }
 
 /* nothing shows until the first frame is posed: the boxes would sit at full size in the corner */

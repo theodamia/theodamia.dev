@@ -1,5 +1,5 @@
 import type React from 'react';
-import { flagLayout, maxScale, type BoxShare } from '@/scene/camera';
+import { BACKDROP_TILES, flagLayout, FOOT_END, maxScale, type BoxShare } from '@/scene/camera';
 import { artUrl, FLAG, type Flat, type FlatArt, type Theme } from '@/scene/flats';
 
 const THEMES: Theme[] = ['day', 'night'];
@@ -48,6 +48,46 @@ function Paintings({
       />
     );
   });
+}
+
+/**
+ * The backdrop, laid as copies a period apart over a haze fill. Each copy is its own wrapper, so the theme
+ * fallback in CSS judges each copy's day and night pictures on their own; its pictures are the period plus its
+ * bleed, wider than the period by the same share in both files, and later copies lie over earlier ones' bleed.
+ * All copies share one URL: one download, one decode. The fill starts where the painting's foot dissolves and runs
+ * past the bottom of any screen, so a tall screen ends in haze, never in sky.
+ */
+function Tiles({ flat }: { flat: Flat }) {
+  const { tile, foot = 0, box } = flat;
+  if (!tile) return null;
+  const [, y, , height] = box;
+  const first = BACKDROP_TILES[0];
+
+  return (
+    <>
+      <div
+        className='scene-foot'
+        style={{
+          left: `${first * 100}%`,
+          width: `${BACKDROP_TILES.length * 100}%`,
+          top: `${(((foot - y) / height) * 100).toFixed(3)}%`,
+          height: `${(((FOOT_END - foot) / height) * 100).toFixed(3)}%`,
+        }}
+      />
+      {BACKDROP_TILES.map(k => (
+        <div
+          key={k}
+          data-tile={k}
+          style={{
+            left: `${k * 100}%`,
+            width: `${(((tile.period + tile.bleed) / tile.period) * 100).toFixed(4)}%`,
+          }}
+        >
+          <Paintings art={flat.art} lod='near' />
+        </div>
+      ))}
+    </>
+  );
 }
 
 /** The shared flag: a pole and its pennant, each in both themes. The pennant runs up when its camp is reached. */
@@ -124,7 +164,11 @@ export function SceneFlat({ flat, reached }: SceneFlatProps) {
         </div>
       )}
       <div data-lod='near'>
-        <Paintings art={flat.art} lod='near' phoneShare={phoneShare} />
+        {flat.tile ? (
+          <Tiles flat={flat} />
+        ) : (
+          <Paintings art={flat.art} lod='near' phoneShare={phoneShare} />
+        )}
         <Flag flat={flat} reached={reached} />
       </div>
     </div>

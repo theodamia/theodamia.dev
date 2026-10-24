@@ -15,11 +15,14 @@ function painting(theme: 'day' | 'night', phone = true) {
   return img;
 }
 
-function wide(matches: boolean) {
+/** A screen: wide (1440 × 900) or a phone held upright (390 × 844), or any size given. */
+function wide(matches: boolean, [width, height] = matches ? [1440, 900] : [390, 844]) {
   window.matchMedia = vi.fn((query: string) => ({
     matches: query === WIDE_QUERY && matches,
     media: query,
   })) as unknown as typeof window.matchMedia;
+  Object.defineProperty(window, 'innerWidth', { configurable: true, value: width });
+  Object.defineProperty(window, 'innerHeight', { configurable: true, value: height });
 }
 
 const tick = () => new Promise<void>(resolve => setTimeout(resolve, 0));
@@ -51,6 +54,8 @@ describe('scene art', () => {
     Object.defineProperty(HTMLImageElement.prototype, 'decode', original.decode);
     root.remove();
     delete document.documentElement.dataset.theme;
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 1024 });
+    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 768 });
     vi.useRealTimers();
   });
 
@@ -69,6 +74,16 @@ describe('scene art', () => {
     await prepareArt(root, 'day');
     expect(onPhone.getAttribute('src')).toBe('/scene/day-phone.webp');
     expect(decodes).toBe(2);
+  });
+
+  it('gives a phone on its side the full files: it sees far more than their middle', async () => {
+    const onSide = painting('day');
+    root.append(onSide);
+    wide(false, [844, 390]);
+
+    await prepareArt(root, 'day');
+
+    expect(onSide.getAttribute('src')).toBe('/scene/day.webp');
   });
 
   it("leaves the other theme's paintings unfetched", async () => {

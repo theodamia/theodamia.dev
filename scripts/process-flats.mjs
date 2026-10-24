@@ -10,11 +10,15 @@
  *   2. applies the design fades, in units, so the ends and the foot dissolve and no edge is ever straight;
  *   3. gives the night painting the DAY alpha, so the two silhouettes match exactly through the theme reveal, and
  *      grows the night colours inward wherever the night painting drifted off its silhouette;
- *   4. hazes the far ranges toward --color-scene-haze, more at the left end, which sits behind the hero's title;
+ *   4. hazes the far ranges toward --color-scene-haze, evenly, so the backdrop repeats without a step;
  *   5. trims, and writes WebP at desktop size and as a phone set, plus each ridge's far version: smaller,
  *      softened and 38% hazed, which is both the level of detail and the atmospheric perspective;
  *   6. names every file by a hash of its bytes (so public/scene can be cached forever) and writes
- *      scene/flats.json with each flat's box in design units.
+ *      scene/flats.json with each flat's box in design units, and the part of it that is solid paint.
+ * The backdrop is a seamless tile (`tile`): the page repeats it side by side, so no screen is ever wider than it.
+ * It is never trimmed sideways (its width is the period), its edge repair wraps round, and its files carry a few
+ * columns of its own start after the end (the bleed), so the copies overlap on identical paint instead of
+ * meeting on a hairline. Its phone file is the whole tile, smaller, since a tile cannot be cut.
  * The shared flag (raw/flag-parts-{day,night}.png) is split into its pole and its pennant the same way.
  *
  * public/scene/ belongs to this script: it is emptied first. Check PNGs go to art/scene/flats/check/.
@@ -25,6 +29,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { format } from 'prettier';
 import sharp from 'sharp';
+import { clampByte, key, smooth } from './flat-key.mjs';
 import { sceneTokenRgb } from './scene-token-rgb.mjs';
 
 /* a closed output pipe (`| head`) must not stop the run half way, before the manifest is written */
@@ -44,15 +49,14 @@ const MANIFEST = path.join(ROOT, 'scene/flats.json');
  * whole painting. Its far version is the desktop one at FAR_SCALE (far versions are only ever shown small).
  */
 const PHONE = { HALF_WIDTH: 520, FADE: 80, SCALE: 0.85, FAR_SCALE: 0.5 };
+/**
+ * A tile's bleed (its first columns again after its end) and its phone file's scale. The scale keeps every
+ * length whole: the 1664 px period becomes 1456, the 8 px bleed 7 and the PAD columns of wrapped paint, added
+ * on each side before resizing so the kernel never sees an edge, 14. Periods stay multiples of 16 for WebP.
+ */
+const TILE = { BLEED: 8, PHONE_SCALE: 0.875, PAD: 16 };
 /** A ridge's far version: its size against the full painting, its softening and how far it is hazed. */
 const FAR = { SCALE: 0.55, BLUR: 1.2, HAZE: 0.38 };
-/** How magenta a pixel is: min(red, blue) - green, from where it starts to count to (a share of) the key's own. */
-const KEY_FROM = 40;
-const KEY_SHARE = 0.85;
-/** Residual pink on opaque edge pixels: where min(red, blue) still stands this far above green. */
-const SPILL_FROM = 20;
-const SPILL_RANGE = 60;
-const SPILL_PULL = 0.3;
 /** Pixels fainter than this do not count when trimming. */
 const TRIM_ALPHA = 3;
 /** Passes of the inward fill that covers a night painting's drift off the day silhouette. */
@@ -115,8 +119,16 @@ const ridge = (raw, camp, year, side, flagDx) => ({
   ],
 });
 const FLATS = [
-  /* the foot dissolves only where a tall phone screen sees it, between camps; wide screens never reach it */
-  { id: 'far', raw: 'far', kind: 'back', fades: [['y', 760, 907]], haze: 0.3, hazeLeft: 0.3 },
+  /* the backdrop repeats sideways; its foot dissolves into the haze fill the page lays under it (`foot`) */
+  {
+    id: 'far',
+    raw: 'far',
+    kind: 'back',
+    tile: true,
+    foot: 760,
+    fades: [['y', 760, 907]],
+    haze: 0.3,
+  },
   {
     id: 'peak',
     raw: 'peak',
@@ -140,24 +152,19 @@ const FLATS = [
     side: 0,
     /* no far version: the camera starts at the trailhead, so the village is never further than its stop */
     lod: false,
+    /* painted wide, with bleed (compose-flats.mjs): the meadow reaches both edges at the hero up to 2.4:1 */
     fades: [
-      /* the meadow runs to the painting's left edge: at the hero that edge stands at the screen's own (the camera
-         keeps the backdrop, which ends at the same -1100, just covering it), so only its last strip dissolves */
-      ['x', -1030, -1100],
-      ['x', 520, 700],
+      ['x', -1390, -1460],
+      ['x', 780, 850],
     ],
   },
 ];
 
-const smooth = t => {
-  if (t <= 0) return 0;
-  if (t >= 1) return 1;
-
-  return t * t * (3 - 2 * t);
-};
-
-const clampByte = v => Math.max(0, Math.min(255, Math.round(v)));
-const median = values => values.toSorted((a, b) => a - b)[values.length >> 1];
+for (const flat of FLATS) {
+  if (flat.tile && flat.fades.some(([axis]) => axis === 'x')) {
+    throw new Error(`${flat.id}: a tile repeats sideways, so it cannot fade sideways`);
+  }
+}
 
 /** A painting as raw RGB at its canvas size: a generator that returns a few pixels more is scaled back, never cropped. */
 async function load(file, canvas) {
@@ -171,69 +178,25 @@ async function load(file, canvas) {
   return (await sized.raw().toBuffer({ resolveWithObject: true })).data;
 }
 
-/**
- * The key's own alpha and the colours with the key's share taken out. The key colour is the median of the most
- * magenta pixels: generators paint a slightly different magenta every time.
- */
-function key(data, canvas) {
-  const pixels = canvas.W * canvas.H;
-  const magentas = [];
-
-  for (let i = 0; i < pixels; i += 7) {
-    const [r, g, b] = [data[i * 3], data[i * 3 + 1], data[i * 3 + 2]];
-    if (r < 180 || b < 180 || g > 90) continue;
-    magentas.push([r, g, b]);
-  }
-
-  const keyColour = magentas.length
-    ? [0, 1, 2].map(c => median(magentas.map(p => p[c])))
-    : [255, 0, 255];
-  const keyStrength = Math.min(keyColour[0], keyColour[2]) - keyColour[1];
-  const rgb = new Float32Array(pixels * 3);
-  const alpha = new Float32Array(pixels);
-
-  for (let i = 0; i < pixels; i++) {
-    let [r, g, b] = [data[i * 3], data[i * 3 + 1], data[i * 3 + 2]];
-    const magenta = Math.min(r, b) - g;
-    const a = 1 - smooth((magenta - KEY_FROM) / (keyStrength * KEY_SHARE - KEY_FROM));
-
-    if (a > 0 && a < 1) {
-      r = (r - (1 - a) * keyColour[0]) / a;
-      g = (g - (1 - a) * keyColour[1]) / a;
-      b = (b - (1 - a) * keyColour[2]) / a;
-    }
-
-    const spill = Math.min(r, b) - g;
-
-    if (a > 0 && spill > SPILL_FROM && magenta > 25) {
-      const pull = Math.min(1, (spill - SPILL_FROM) / SPILL_RANGE) * SPILL_PULL;
-      r -= (r - g) * pull;
-      b -= (b - g) * pull;
-    }
-
-    rgb.set([r, g, b], i * 3);
-    alpha[i] = a;
-  }
-
-  return { rgb, alpha, keyColour };
-}
-
 /** Grows trusted colours into the pixels that need one: a night painting's drift off the day silhouette. */
-function fillInward(rgb, trusted, needed, canvas) {
+function fillInward(rgb, trusted, needed, canvas, wrap = false) {
   const { W, H } = canvas;
   const known = Uint8Array.from(trusted);
+  const [x0, x1] = wrap ? [0, W] : [1, W - 1];
 
   for (let pass = 0; pass < FILL_PASSES; pass++) {
     const grown = [];
 
     for (let y = 1; y < H - 1; y++) {
-      for (let x = 1; x < W - 1; x++) {
+      for (let x = x0; x < x1; x++) {
         const i = y * W + x;
         if (known[i] || !needed[i]) continue;
         const sum = [0, 0, 0];
         let count = 0;
+        /* a tile's first and last columns are neighbours */
+        const row = y * W;
 
-        for (const j of [i - 1, i + 1, i - W, i + W]) {
+        for (const j of [row + ((x + W - 1) % W), row + ((x + 1) % W), i - W, i + W]) {
           if (!known[j]) continue;
           count++;
 
@@ -292,7 +255,7 @@ function fadedAlpha(alpha, flat, rect, canvas) {
 }
 
 /** RGBA for one theme, hazed where the flat asks for it. */
-function compose(rgb, alpha, flat, rect, pxPerUnit, haze, canvas) {
+function compose(rgb, alpha, flat, haze, canvas) {
   const { W, H } = canvas;
   const out = Buffer.alloc(W * H * 4);
 
@@ -302,12 +265,9 @@ function compose(rgb, alpha, flat, rect, pxPerUnit, haze, canvas) {
       let [r, g, b] = [rgb[i * 3], rgb[i * 3 + 1], rgb[i * 3 + 2]];
 
       if (flat.haze) {
-        const ux = rect[0] + x / pxPerUnit;
-        /* the far left sits behind the hero's title: it fades further into the haze */
-        const amount = flat.haze + (flat.hazeLeft ?? 0) * smooth((-400 - ux) / 700);
-        r += (haze[0] - r) * amount;
-        g += (haze[1] - g) * amount;
-        b += (haze[2] - b) * amount;
+        r += (haze[0] - r) * flat.haze;
+        g += (haze[1] - g) * flat.haze;
+        b += (haze[2] - b) * flat.haze;
       }
 
       out[i * 4] = clampByte(r);
@@ -397,17 +357,24 @@ async function emit(png, base, options, width) {
 }
 
 /** The opaque pixels at least EDGE.BAND pixels inside the silhouette: the colours that can be trusted. */
-function inside(alpha, canvas) {
+function inside(alpha, canvas, wrap = false) {
   const { W, H } = canvas;
   let mask = Uint8Array.from(alpha, a => (a >= EDGE.OPAQUE ? 1 : 0));
+  const [x0, x1] = wrap ? [0, W] : [1, W - 1];
 
   for (let pass = 0; pass < EDGE.BAND; pass++) {
     const next = new Uint8Array(mask.length);
 
     for (let y = 1; y < H - 1; y++) {
-      for (let x = 1; x < W - 1; x++) {
+      for (let x = x0; x < x1; x++) {
         const i = y * W + x;
-        next[i] = mask[i] & mask[i - 1] & mask[i + 1] & mask[i - W] & mask[i + W];
+        const row = y * W;
+        next[i] =
+          mask[i] &
+          mask[row + ((x + W - 1) % W)] &
+          mask[row + ((x + 1) % W)] &
+          mask[i - W] &
+          mask[i + W];
       }
     }
 
@@ -422,46 +389,137 @@ function inside(alpha, canvas) {
  * from the night's own colours. A flat's edge band is repainted from inside too; the flag's is not (`edges:
  * false`), because its pole is narrower than two bands and would take its colour from the stones.
  */
-async function keyPair(raw, { edges = true } = {}) {
+async function keyPair(raw, { edges = true, wrap = false } = {}) {
   const canvas = canvasOf(raw);
   const day = key(await load(path.join(RAW_DIR, `${raw}-day.png`), canvas), canvas);
   const night = key(await load(path.join(RAW_DIR, `${raw}-night.png`), canvas), canvas);
   const needed = Uint8Array.from(day.alpha, a => (a > 0 ? 1 : 0));
 
   if (edges) {
-    fillInward(day.rgb, inside(day.alpha, canvas), needed, canvas);
+    fillInward(day.rgb, inside(day.alpha, canvas, wrap), needed, canvas, wrap);
   }
 
   const trusted = edges
-    ? inside(night.alpha, canvas)
+    ? inside(night.alpha, canvas, wrap)
     : Uint8Array.from(night.alpha, a => (a > 0.9 ? 1 : 0));
-  fillInward(night.rgb, trusted, needed, canvas);
+  fillInward(night.rgb, trusted, needed, canvas, wrap);
 
   return { day, night, canvas };
 }
 
+/** RGBA rows with `left` columns from the end before them and `right` columns from the start after them. */
+function wrapPad(rgba, W, H, left, right) {
+  const wide = left + W + right;
+  const out = Buffer.alloc(wide * H * 4);
+
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < wide; x++) {
+      const from = (y * W + ((((x - left) % W) + W) % W)) * 4;
+      rgba.copy(out, (y * wide + x) * 4, from, from + 4);
+    }
+  }
+
+  return out;
+}
+
+/**
+ * A tile's two files: the period plus its bleed, and the phone's, made from the period padded with wrapped paint
+ * on both sides (so resizing never meets an edge) and cut back to the phone period plus its bleed.
+ */
+async function tileFiles(rgba, W, H, flat, theme) {
+  const raw = (width, height) => ({ raw: { width, height, channels: 4 } });
+  const desktop = await sharp(wrapPad(rgba, W, H, 0, TILE.BLEED), raw(W + TILE.BLEED, H))
+    .png()
+    .toBuffer();
+  const scaled = [W, TILE.BLEED, TILE.PAD].map(px => px * TILE.PHONE_SCALE);
+
+  if (!scaled.every(Number.isInteger)) {
+    throw new Error(`${flat.id}: ${TILE.PHONE_SCALE} does not keep the tile's lengths whole`);
+  }
+
+  const [period, bleed, pad] = scaled;
+  const padded = W + 2 * TILE.PAD + TILE.BLEED;
+  const phone = await sharp(wrapPad(rgba, W, H, TILE.PAD, TILE.PAD + TILE.BLEED), raw(padded, H))
+    .resize(padded * TILE.PHONE_SCALE, Math.round(H * TILE.PHONE_SCALE), { fit: 'fill' })
+    .extract({ left: pad, top: 0, width: period + bleed, height: Math.round(H * TILE.PHONE_SCALE) })
+    .png()
+    .toBuffer();
+
+  /* the review: three periods side by side, and the join between two of them at three times */
+  const three = await sharp(wrapPad(rgba, W, H, W, W), raw(3 * W, H))
+    .resize(Math.round((3 * W) / 2))
+    .png()
+    .toBuffer();
+  await fs.writeFile(path.join(CHECK_DIR, `${flat.id}-tile-${theme}.png`), three);
+  await sharp(wrapPad(rgba, W, H, 60, 60), raw(W + 120, H))
+    .extract({ left: W, top: 0, width: 120, height: H })
+    .resize(360, H * 3, { kernel: 'nearest' })
+    .png()
+    .toFile(path.join(CHECK_DIR, `${flat.id}-seam-${theme}.png`));
+
+  return {
+    near: await emit(desktop, `${flat.id}-near-${theme}`, ENCODE.NEAR),
+    nearPhone: await emit(phone, `${flat.id}-near-${theme}-phone`, ENCODE.NEAR_PHONE),
+  };
+}
+
+/**
+ * The span (units) a flat paints solid: its box, less whatever its sideways fades take, and on a phone less the
+ * dissolve where its phone file is cut. The camera tests read it to prove the trailhead's meadow reaches both edges
+ * of every screen the design promises; a tile has none, it never ends.
+ */
+function solidSpan(flat, [x0, x1], cut) {
+  let [left, right] = [x0, x1];
+
+  for (const [axis, from, to] of flat.fades) {
+    if (axis !== 'x') continue;
+
+    if (to < from) {
+      left = Math.max(left, from);
+    } else {
+      right = Math.min(right, from);
+    }
+  }
+
+  if (cut?.cutsLeft) {
+    left = Math.max(left, cut.x0 + PHONE.FADE);
+  }
+
+  if (cut?.cutsRight) {
+    right = Math.min(right, cut.x1 - PHONE.FADE);
+  }
+
+  return [+left.toFixed(2), +right.toFixed(2)];
+}
+
 async function processFlat(flat) {
   const rect = guides.flats[flat.raw].rect;
-  const pair = await keyPair(flat.raw);
+  const pair = await keyPair(flat.raw, { wrap: Boolean(flat.tile) });
   const { canvas } = pair;
   const { faded, box, pxPerUnit } = fadedAlpha(pair.day.alpha, flat, rect, canvas);
+  /* a tile keeps its whole width: that width is its period */
   const trim = {
-    left: box.x0,
+    left: flat.tile ? 0 : box.x0,
     top: box.y0,
-    width: box.x1 - box.x0 + 1,
+    width: flat.tile ? canvas.W : box.x1 - box.x0 + 1,
     height: box.y1 - box.y0 + 1,
   };
-  const phone = phoneCut(trim, rect, pxPerUnit);
+  const phone = flat.tile ? null : phoneCut(trim, rect, pxPerUnit);
   const art = {};
 
   for (const theme of ['day', 'night']) {
     const haze = sceneTokenRgb('scene-haze', theme === 'night');
-    const rgba = compose(pair[theme].rgb, faded, flat, rect, pxPerUnit, haze, canvas);
-    const png = await sharp(rgba, { raw: { width: canvas.W, height: canvas.H, channels: 4 } })
-      .extract(trim)
-      .png()
-      .toBuffer();
+    const rgba = compose(pair[theme].rgb, faded, flat, haze, canvas);
+    const sheet = () => sharp(rgba, { raw: { width: canvas.W, height: canvas.H, channels: 4 } });
+    const png = await sheet().extract(trim).png().toBuffer();
     await fs.writeFile(path.join(CHECK_DIR, `${flat.id}-${theme}.png`), png);
+
+    if (flat.tile) {
+      const trimmed = await sheet().extract(trim).raw().toBuffer();
+      art[theme] = await tileFiles(trimmed, trim.width, trim.height, flat, theme);
+      continue;
+    }
+
     const phonePng = await sharp(dissolveCut(rgba, phone, canvas), {
       raw: { width: canvas.W, height: canvas.H, channels: 4 },
     })
@@ -492,24 +550,37 @@ async function processFlat(flat) {
     art[theme] = files;
   }
 
+  const units = px => rect[0] + px / pxPerUnit;
+  const x = [units(trim.left), units(trim.left + trim.width)];
+  const phoneX = phone ? [units(phone.left), units(phone.left + phone.width)] : x;
   const entry = {
     kind: flat.kind,
     box: [
-      +(rect[0] + trim.left / pxPerUnit).toFixed(2),
+      +x[0].toFixed(2),
       +(rect[1] + trim.top / pxPerUnit).toFixed(2),
-      +(trim.width / pxPerUnit).toFixed(2),
+      +(x[1] - x[0]).toFixed(2),
       +(trim.height / pxPerUnit).toFixed(2),
     ],
     /* the phone's near version covers less: only its x and width differ */
     boxPhone: [
-      +(rect[0] + phone.left / pxPerUnit).toFixed(2),
+      +phoneX[0].toFixed(2),
       +(rect[1] + trim.top / pxPerUnit).toFixed(2),
-      +(phone.width / pxPerUnit).toFixed(2),
+      +(phoneX[1] - phoneX[0]).toFixed(2),
       +(trim.height / pxPerUnit).toFixed(2),
     ],
     px: [trim.width, trim.height],
     art,
   };
+
+  if (flat.tile) {
+    /* the files hold the period plus the bleed; the page lays copies a period apart, each over the last's bleed */
+    Object.assign(entry, { tile: { period: trim.width, bleed: TILE.BLEED }, foot: flat.foot });
+  } else {
+    Object.assign(entry, {
+      solid: solidSpan(flat, x),
+      solidPhone: solidSpan(flat, phoneX, phone && { ...phone, x0: phoneX[0], x1: phoneX[1] }),
+    });
+  }
 
   if (flat.kind === 'camp') {
     Object.assign(entry, { camp: flat.camp, side: flat.side });
@@ -578,15 +649,7 @@ async function processFlag() {
   const art = {};
 
   for (const theme of ['day', 'night']) {
-    const rgba = compose(
-      pair[theme].rgb,
-      pair.day.alpha,
-      { fades: [] },
-      [0, 0, W],
-      1,
-      null,
-      pair.canvas
-    );
+    const rgba = compose(pair[theme].rgb, pair.day.alpha, { fades: [] }, null, pair.canvas);
     const sheet = sharp(rgba, { raw: { width: W, height: H, channels: 4 } });
     art[theme] = {
       pole: await emit(
@@ -626,6 +689,8 @@ for (const flat of FLATS) {
 
 const manifest = {
   note: 'Generated by scripts/process-flats.mjs. Boxes are [x, y, width, height] in design units, from the focus of expansion at scale 1.',
+  /* the part of the painting a phone file keeps: the page picks those files only where they cover the screen */
+  phone: { halfWidth: PHONE.HALF_WIDTH, fade: PHONE.FADE },
   order: FLATS.map(flat => flat.id),
   flats,
   flag: await processFlag(),

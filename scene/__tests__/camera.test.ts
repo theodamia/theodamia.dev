@@ -1,21 +1,52 @@
 import { describe, expect, it } from 'vitest';
 import {
   anchorOf,
+  BACKDROP_TILES,
   ease,
+  FILLED_ASPECT,
   FIRST_POSE,
   flagLayout,
+  FOOT_END,
   HEADROOM,
   maxScale,
+  PAINTED_ASPECT,
   poseAt,
   stageScale,
+  usesPhoneArt,
   type View,
 } from '@/scene/camera';
-import { campFlat, FLATS } from '@/scene/flats';
+import { BACKDROP, campFlat, FLATS } from '@/scene/flats';
 import { CAMP_COUNT, SIDES } from '@/scene/world';
 
 const WIDE: View = { width: 1440, height: 900, wide: true, laneGap: 720 };
 const PHONE: View = { width: 390, height: 844, wide: false, laneGap: null };
 const LAST = CAMP_COUNT - 1;
+
+/** Wide screens from 0.6:1 up to `maxAspect`, at a few heights, with and without two card lanes. */
+function wideScreens(maxAspect: number): View[] {
+  const views: View[] = [];
+
+  for (const height of [600, 875, 1080, 1440]) {
+    for (let tenth = 6; tenth <= Math.round(maxAspect * 10); tenth++) {
+      const width = Math.round((tenth / 10) * height);
+      if (width < 900) continue;
+      views.push({ width, height, wide: true, laneGap: null });
+      views.push({ width, height, wide: true, laneGap: Math.round(width * 0.46) });
+    }
+  }
+
+  return views;
+}
+
+/** Below the breakpoint: phones upright and on their side, tablets, a short window. */
+const NARROW: View[] = [
+  [390, 844],
+  [360, 840],
+  [820, 1180],
+  [880, 1000],
+  [844, 390],
+  [850, 500],
+].map(([width, height]) => ({ width, height, wide: false, laneGap: null }));
 
 /** Where a flat's anchor (its camp) lands on screen in a pose. */
 function anchorOnScreen(id: string, u: number, view: View) {
@@ -105,33 +136,63 @@ describe('camera', () => {
     expect(poseAt(3, { ...WIDE, laneGap: 690 }).focus.x).toBeCloseTo(690, 5);
   });
 
-  it('keeps the backdrop across the whole width of any screen, at every point of the climb', () => {
-    const backdrop = FLATS.find(flat => flat.kind === 'back')!;
-    const screens: View[] = [
-      WIDE,
-      PHONE,
-      { width: 1280, height: 720, wide: true, laneGap: null },
-      /* a 16-inch laptop's browser window: the screen this was found on */
-      { width: 1728, height: 875, wide: true, laneGap: 880 },
-      { width: 2560, height: 1080, wide: true, laneGap: null },
-      { width: 3440, height: 1440, wide: true, laneGap: null },
-      { width: 5120, height: 1440, wide: true, laneGap: null },
-      { width: 820, height: 1180, wide: false, laneGap: null },
-    ];
+  it('never leaves the screen bare below the cloud sea, on any screen up to the filled envelope', () => {
+    for (const view of [...wideScreens(FILLED_ASPECT), ...NARROW]) {
+      for (let step = 0; step <= LAST * 20; step++) {
+        const pose = poseAt(step / 20, view);
+        const far = pose.flats.find(at => at.id === BACKDROP.id)!;
+        /* screen pixels per unit of the backdrop's box, and its period on screen */
+        const k = far.scale * maxScale(BACKDROP) * pose.focus.v;
+        const period = BACKDROP.box[2] * k;
+        const label = `${view.width}×${view.height} at ${step / 20}`;
 
-    screens.forEach(view => {
-      for (let u = 0; u <= LAST; u += 0.05) {
-        const pose = poseAt(u, view);
-        const far = pose.flats.find(at => at.id === backdrop.id)!;
-        const width = backdrop.box[2] * maxScale(backdrop) * pose.focus.v * far.scale;
-
-        expect(far.x).toBeLessThanOrEqual(0);
-        expect(far.x + width).toBeGreaterThanOrEqual(view.width);
+        expect(far.x + BACKDROP_TILES[0] * period, label).toBeLessThanOrEqual(0);
+        expect(far.x + (BACKDROP_TILES.at(-1)! + 1) * period, label).toBeGreaterThanOrEqual(
+          view.width
+        );
+        expect(far.y + (FOOT_END - BACKDROP.box[1]) * k, label).toBeGreaterThanOrEqual(view.height);
       }
-    });
-    /* the screens the design was drawn on keep their composition: nothing gives way there */
+    }
+  });
+
+  it('paints the ground at the trailhead from edge to edge on every screen in the painted envelope', () => {
+    const village = campFlat(0)!;
+    const tall = [
+      { width: 360, height: 840 },
+      { width: 390, height: 844 },
+      { width: 430, height: 932 },
+      { width: 768, height: 1024 },
+    ].map(size => ({ ...size, wide: false, laneGap: null }));
+
+    for (const view of [...wideScreens(PAINTED_ASPECT.WIDE), ...tall]) {
+      expect(view.width / view.height).toBeGreaterThanOrEqual(PAINTED_ASPECT.TALL - 1e-9);
+      const pose = poseAt(0, view);
+      const at = pose.flats.find(item => item.id === village.id)!;
+      const k = at.scale * maxScale(village) * pose.focus.v;
+      const [left, right] = usesPhoneArt(view) ? village.solidPhone! : village.solid!;
+      const label = `${view.width}×${view.height}`;
+
+      expect(at.x + (left - village.box[0]) * k, label).toBeLessThanOrEqual(0);
+      expect(at.x + (right - village.box[0]) * k, label).toBeGreaterThanOrEqual(view.width);
+      expect(at.y + village.box[3] * k, label).toBeGreaterThanOrEqual(view.height);
+    }
+  });
+
+  it('keeps the composition it was drawn at: the camera never bends to fit a screen', () => {
     expect(stageScale(1440, 900)).toBe(1);
     expect(poseAt(0, WIDE).focus.x).toBeCloseTo(0.64 * 1440, 5);
+    /* a wide, short window sees more world, not a moved one */
+    const laptop = { width: 1728, height: 875, wide: true, laneGap: null };
+    expect(poseAt(0, laptop).focus.x).toBeCloseTo(0.64 * 1728, 5);
+    expect(stageScale(5120, 1440)).toBe(1440 / 900);
+  });
+
+  it('gives the phone files only to screens that see no more than their middle', () => {
+    expect(usesPhoneArt(PHONE)).toBe(true);
+    expect(usesPhoneArt({ width: 820, height: 1180, wide: false })).toBe(true);
+    /* a phone on its side is narrow in pixels, but sees far more of the world than a phone file keeps */
+    expect(usesPhoneArt({ width: 844, height: 390, wide: false })).toBe(false);
+    expect(usesPhoneArt(WIDE)).toBe(false);
   });
 
   it('leans toward each camp on phones, and stands centred at the trailhead', () => {
