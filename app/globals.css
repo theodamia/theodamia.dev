@@ -448,6 +448,39 @@
   opacity: 0;
 }
 
+/* the closing card set aside to take in the view (components/closing-card.tsx): the summit's line comes back */
+:root[data-scenery] .scene-summit > span[data-gone='true'] {
+  opacity: 1;
+}
+
+/*
+ * The closing card folding into its tab and back (a view transition, named only while it runs). The box travels
+ * and reshapes, clipped to rounded corners, and each picture keeps its own size inside it: the box reveals the
+ * card as it grows and closes over it as it shrinks, rather than stretching a tab into a card. What is leaving
+ * fades quickly; what is arriving takes the whole move.
+ */
+::view-transition-group(closing-card) {
+  overflow: clip;
+  border-radius: 22px;
+  animation-duration: 460ms;
+  animation-timing-function: var(--ease-soft);
+}
+
+::view-transition-old(closing-card),
+::view-transition-new(closing-card) {
+  height: 100%;
+  object-fit: none;
+  object-position: 50% 50%;
+}
+
+::view-transition-old(closing-card) {
+  animation-duration: 220ms;
+}
+
+::view-transition-new(closing-card) {
+  animation-duration: 460ms;
+}
+
 @media (min-width: 900px) {
   .scene-summit > span {
     transform: translate(-100%, -50%);

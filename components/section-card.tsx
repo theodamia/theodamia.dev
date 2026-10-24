@@ -4,6 +4,7 @@ import { cn } from '@/utils/cn';
 
 type SectionCardProps = {
   id?: string;
+  ref?: React.Ref<HTMLElement>;
   eyebrow: string;
   title: string;
   className?: string;
@@ -11,9 +12,10 @@ type SectionCardProps = {
 };
 
 /** The big white reading surface every piece of general information sits on. */
-export function SectionCard({ id, eyebrow, title, className, children }: SectionCardProps) {
+export function SectionCard({ id, ref, eyebrow, title, className, children }: SectionCardProps) {
   return (
     <section
+      ref={ref}
       id={id}
       className={cn(
         // w-full: an auto margin in the page's flex column would otherwise shrink the card to its content
