@@ -89,7 +89,7 @@ function track(transition: ViewTransition, cleanUp?: () => void) {
 }
 
 /**
- * Changes the world from a button: the theme, the season, anything that is one attribute on <html>.
+ * Changes the world from a button: the theme, or anything else that is one attribute on <html>.
  *
  * The new look spreads from the button as a soft-edged circle — a view transition holds the old page still and
  * masks the new one behind a radius (`--reveal-r`) growing past the farthest corner. The new view is the *live*

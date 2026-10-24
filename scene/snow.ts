@@ -1,9 +1,9 @@
 import { rnd } from '@/scene/noise';
 
 /**
- * The snow of the heights. It is not a season's weather: the upper mountain is painted snowy all year, so from the
- * Lead camp upward it snows in every season (the camera fades it in, `poseAt(...).snow` in scene/camera.ts), and a
- * second, thicker fall comes in toward the summit. Lower down each season keeps its own weather (scene/weather.ts).
+ * The snow of the heights. The upper mountain is painted snowy, so from the Lead camp upward it snows (the camera
+ * fades it in, `poseAt(...).snow` in scene/camera.ts), and a second, thicker fall comes in toward the summit. Below
+ * the snowline the sky is clear: the green meadows get no weather.
  *
  * Flakes fall at three depths, which is most of what makes snow look deep rather than like dust on the glass: far
  * flakes small, faint and slow; near ones big, soft and quick. All of them ride the clouds' wind, left to right,

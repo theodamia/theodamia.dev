@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { Climb } from '@/components/climb';
 import { Hero } from '@/components/hero';
-import { SeasonDial } from '@/components/season-dial';
 import { SectionCard } from '@/components/section-card';
 import { buttonVariants } from '@/components/ui/button';
 import { personSchema } from '@/lib/person-schema';
@@ -39,8 +38,6 @@ export default function Home() {
           </Link>
         </p>
       </SectionCard>
-
-      <SeasonDial />
 
       <footer className='pb-[130px] text-center'>
         <a href='#top' className={buttonVariants({ variant: 'quiet', size: 'sm' })}>

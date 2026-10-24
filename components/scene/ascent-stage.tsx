@@ -5,7 +5,6 @@ import { useEffect, useEffectEvent, useImperativeHandle, useRef } from 'react';
 import { SceneFlat } from '@/components/scene/scene-flat';
 import { SnowLayer } from '@/components/scene/snow-layer';
 import { Celestial, Clouds, Daylight, Meteors, Sky, Stars } from '@/components/scene/sky';
-import { WeatherLayer } from '@/components/scene/weather-layer';
 import { WIDE_QUERY } from '@/constants';
 import { JOBS, TRAILHEAD } from '@/content/jobs';
 import { SUMMIT_LINE } from '@/content/site';
@@ -14,8 +13,6 @@ import { FIRST_POSE, poseAt, SNOWLINE_CAMP, STAGE_SCALE_CSS, type View } from '@
 import { FLATS } from '@/scene/flats';
 import type { SceneFrame, SceneHandle, SceneLayout } from '@/scene/world';
 
-/* camp 0 is the trailhead, so the first job's camp is 1: past it, the trees are behind you */
-const FIRST_CAMP = 1;
 /** Reduced motion: the scene changes between stops under a veil in the sky's colour, never by moving. */
 const VEIL_MS = 130;
 /** The camps by index, as the labels name them: the trailhead, then one per job. */
@@ -232,9 +229,8 @@ export function AscentStage({ reducedMotion, stop, climbOver, ref }: AscentStage
         ))}
       </div>
 
-      {/* in front of the ridges, behind the labels */}
-      <WeatherLayer belowFirstCamp={stop < FIRST_CAMP} />
-      {/* from the camp below the snowline on, so the flakes are already falling when they come into view */}
+      {/* in front of the ridges, behind the labels; from the camp below the snowline on, the flakes are falling
+          already when they come into view */}
       <SnowLayer running={stop >= SNOWLINE_CAMP - 1} snowRef={snow} squallRef={squall} />
 
       {CAMPS.map((camp, i) => (
