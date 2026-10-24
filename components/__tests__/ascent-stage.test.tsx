@@ -162,7 +162,10 @@ describe('the climb stage', () => {
     const { root } = stage();
     const clouds = Array.from(root.querySelectorAll('.scene-cloud'));
 
-    expect(clouds.length).toBe(Math.min(CLOUDS.length, 3));
+    /* the farthest clouds are smaller copies of the paintings: more sky, no more bytes */
+    expect(clouds.length).toBeGreaterThan(CLOUDS.length);
+    const sources = clouds.map(cloud => cloud.querySelector('img')!.dataset.src);
+    expect(new Set(sources).size).toBe(CLOUDS.length);
     clouds.forEach(cloud => {
       expect(cloud.querySelectorAll("img[data-art='day']")).toHaveLength(1);
       expect(cloud.querySelector("img[data-art='night']")).toHaveAttribute('src');

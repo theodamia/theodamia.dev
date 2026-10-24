@@ -3,7 +3,7 @@
 import type React from 'react';
 import { useEffect, useEffectEvent, useImperativeHandle, useRef } from 'react';
 import { SceneFlat } from '@/components/scene/scene-flat';
-import { Celestial, Clouds, Daylight, Sky, Stars } from '@/components/scene/sky';
+import { Celestial, Clouds, Daylight, Meteors, Sky, Stars } from '@/components/scene/sky';
 import { WeatherLayer } from '@/components/scene/weather-layer';
 import { WIDE_QUERY } from '@/constants';
 import { JOBS, TRAILHEAD } from '@/content/jobs';
@@ -211,6 +211,7 @@ export function AscentStage({ reducedMotion, stop, climbOver, ref }: AscentStage
       <Sky />
       <Daylight ref={day} className='opacity-0 will-change-[opacity]' />
       <Stars />
+      <Meteors />
       {/* a fixed place at the top right, where the light comes from: just left of the altimeter's card.
           Phones have no clear sky up there, so no sun or moon */}
       <Celestial className='top-[6%] right-[19%] max-sm:hidden' />

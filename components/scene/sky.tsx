@@ -1,11 +1,12 @@
 import type React from 'react';
 import { STAGE_SCALE_CSS } from '@/scene/camera';
 import { artUrl, CLOUDS, type Theme } from '@/scene/flats';
-import { starField } from '@/scene/stars';
+import { starField, twinkleKeyframes, twinkleLevel } from '@/scene/stars';
 import { cn } from '@/utils/cn';
 
 /** Painted once per module load: the same field on the server and in the browser. */
 const STARS = starField();
+const TWINKLE_CSS = twinkleKeyframes();
 
 /** Dawn at the trailhead by day, dusk by night: the same layer, its colours are theme tokens. */
 export function Sky() {
@@ -41,12 +42,18 @@ export function Daylight({
 export function Stars() {
   return (
     <div className='absolute inset-0'>
+      {/* the twinkle's keyframes, generated with the field (scene/stars.ts); React hoists and dedupes them */}
+      <style href='scene-twinkle' precedence='default'>
+        {TWINKLE_CSS}
+      </style>
       {STARS.map(star => (
         <span
           key={star.cell}
           data-wave
           data-tier={star.tier}
           data-twinkle={star.twinkle ? '' : undefined}
+          data-tint={star.tint}
+          data-depth={star.twinkle ? twinkleLevel(star.depth) : undefined}
           className='star'
           style={
             {
@@ -83,39 +90,48 @@ export function Celestial({ className }: { className?: string }) {
 const THEMES: Theme[] = ['day', 'night'];
 
 /**
- * Where each painted cloud drifts, in the order they were painted (largest first): its place on the stage and its
- * width in design units, so it keeps its size against the mountains on every screen. Placed in the open sky of the
- * hero at the 1440 × 900 reference: the big one above the title, clear of its first line, drifting behind the
- * peak's left flank; the middle one tucked behind the peak's right shoulder under the sun; the small one high on
- * the left. They pass behind the mountains (the stage draws them first), so a bigger peak later simply covers more.
+ * The wind. Every cloud crosses the whole sky from left to right and comes round again, at a steady speed: the
+ * farther (smaller) it is, the slower. `at` is how far across it stands when the page opens, so the hero keeps its
+ * composition (at 1440 × 900: the big one above the title clear of its first line, the middle one behind the peak's
+ * right shoulder under the sun, the small one high on the left); the two farthest are copies of the smaller
+ * paintings, smaller still. Each also billows slowly, as a cumulus does. Widths are design units, so a cloud keeps
+ * its size against the mountains; times are seconds, `cross` for the whole sky and `billow` for one swell.
  */
-const CLOUD_PLACES = [
-  { top: '1.5%', left: '44%', width: 230, drift: 'motion-safe:animate-drift' },
-  { top: '10%', left: '68%', width: 150, drift: 'motion-safe:animate-drift-slow' },
-  { top: '2.5%', left: '15%', width: 110, drift: 'motion-safe:animate-drift-slow' },
+const CLOUD_WIND = [
+  { cloud: 0, top: '1.5%', width: 230, at: 0.5, cross: 200, billow: 19 },
+  { cloud: 1, top: '10%', width: 150, at: 0.72, cross: 260, billow: 15 },
+  { cloud: 2, top: '2.5%', width: 110, at: 0.24, cross: 320, billow: 13 },
+  { cloud: 1, top: '5.5%', width: 100, at: 0.02, cross: 300, billow: 17 },
+  { cloud: 2, top: '14%', width: 80, at: 0.88, cross: 360, billow: 11 },
 ] as const;
 
 /**
- * The sky's clouds: painted like the cloud sea below them, each a day and a night picture with one outline, drifting
- * slowly in place (a transform, so the compositor moves them). They stand behind the mountains, not in the world:
- * the sky is at infinity, so the climb does not move them. Their pictures show once decoded, like every painting.
+ * The sky's clouds: painted like the cloud sea below them, each a day and a night picture with one outline. They
+ * move on the compositor (`translate` for the wind, `scale` for the billow; see `.scene-cloud` in globals.css) and
+ * stand behind the mountains, not in the world: the sky is at infinity, so the climb does not move them. With
+ * reduced motion each simply stays where it stands when the page opens.
  */
 export function Clouds() {
   return (
     <div className='absolute inset-0' style={{ '--v': STAGE_SCALE_CSS } as React.CSSProperties}>
-      {CLOUDS.slice(0, CLOUD_PLACES.length).map((cloud, i) => {
-        const place = CLOUD_PLACES[i];
+      {CLOUD_WIND.map(wind => {
+        const cloud = CLOUDS[wind.cloud];
+        if (!cloud) return null;
 
         return (
           <div
-            key={cloud.art.day}
-            className={cn('scene-cloud', place.drift)}
-            style={{
-              top: place.top,
-              left: place.left,
-              width: `calc(var(--v) * ${place.width})`,
-              aspectRatio: `${cloud.w} / ${cloud.h}`,
-            }}
+            key={`${wind.cloud}-${wind.top}`}
+            className='scene-cloud'
+            style={
+              {
+                top: wind.top,
+                width: `calc(var(--v) * ${wind.width})`,
+                aspectRatio: `${cloud.w} / ${cloud.h}`,
+                '--at': wind.at,
+                '--cross': `${wind.cross}s`,
+                '--billow': `${wind.billow}s`,
+              } as React.CSSProperties
+            }
           >
             {THEMES.map(theme => (
               <img
@@ -130,6 +146,45 @@ export function Clouds() {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+/**
+ * Shooting stars: rare, brief, only at night, in the open sky right of the summit (left of it the hero's words
+ * and their wash would hide them). Each starts at (x, y) in % of the sky, runs `dx`, `dy` px along its
+ * heading (`angle`, degrees; the run is worked out here once, not with trigonometry at render, so server and
+ * browser write the same markup) and comes round every `cycle` seconds, `at` seconds into it when the page opens.
+ * Cycles that share no beat keep the two from ever settling into a rhythm.
+ */
+const METEORS = [
+  /* over the moon, toward the altimeter */
+  { x: 72, y: 1.5, angle: 24, dx: 238, dy: 106, cycle: 37, at: 9 },
+  /* just above the summit's tip, burning out at the moon */
+  { x: 60, y: 0.5, angle: 14, dx: 223, dy: 56, cycle: 53, at: 31 },
+] as const;
+
+/** The shooting stars' layer: two streaks that cross the night sky now and then (`.meteor` in globals.css). */
+export function Meteors() {
+  return (
+    <div className='absolute inset-0'>
+      {METEORS.map(meteor => (
+        <span
+          key={meteor.cycle}
+          className='meteor'
+          style={
+            {
+              left: `${meteor.x}%`,
+              top: `${meteor.y}%`,
+              rotate: `${meteor.angle}deg`,
+              '--dx': `${meteor.dx}px`,
+              '--dy': `${meteor.dy}px`,
+              '--cycle': `${meteor.cycle}s`,
+              '--at': `-${meteor.at}s`,
+            } as React.CSSProperties
+          }
+        />
+      ))}
     </div>
   );
 }
