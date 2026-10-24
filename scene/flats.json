@@ -166,15 +166,11 @@
       "art": {
         "day": {
           "near": "camp-2014-near-day.581bfde8.webp",
-          "nearPhone": "camp-2014-near-day-phone.6c2c6f75.webp",
-          "far": "camp-2014-far-day.f9c98642.webp",
-          "farPhone": "camp-2014-far-day-phone.ac1a2f09.webp"
+          "nearPhone": "camp-2014-near-day-phone.6c2c6f75.webp"
         },
         "night": {
           "near": "camp-2014-near-night.6e3280f0.webp",
-          "nearPhone": "camp-2014-near-night-phone.f8df936b.webp",
-          "far": "camp-2014-far-night.20e39a1f.webp",
-          "farPhone": "camp-2014-far-night-phone.ba72173e.webp"
+          "nearPhone": "camp-2014-near-night-phone.f8df936b.webp"
         }
       },
       "camp": 0,

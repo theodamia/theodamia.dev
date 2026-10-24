@@ -37,8 +37,6 @@ const CHECK_DIR = path.join(ROOT, 'art/scene/flats/check');
 const OUT_DIR = path.join(ROOT, 'public/scene');
 const MANIFEST = path.join(ROOT, 'scene/flats.json');
 
-/** Every painting is made on this canvas, the guides' size. */
-const CANVAS = { W: 1664, H: 936 };
 /**
  * A phone only ever sees the middle of a near painting: the story column, the camera's lean and a margin. So its
  * near version is cut to this half-width (units, around the focus line), dissolved over FADE units where the cut
@@ -78,6 +76,23 @@ const FLAG_HANG_PX = 6;
 /** Camp depths below the focus at each stop, in units (guides.json `OY`); the ridges' fades are measured from them. */
 const guides = JSON.parse(await fs.readFile(GUIDES, 'utf8'));
 const OY = guides.OY;
+
+/**
+ * The canvas a painting is made on, in pixels: the guides' common size unless its guide names its own (a painting
+ * widened for bleed keeps its pixels per unit and grows by whole pixels instead).
+ */
+function canvasOf(raw) {
+  const guide = guides.flats[raw];
+  const [W, H] = guide?.canvas ?? guides.canvas;
+
+  if (guide && Math.abs(W / guide.rect[2] - guide.pxPerUnit) > 1e-3) {
+    throw new Error(
+      `${raw}: canvas ${W} px over ${guide.rect[2]} units is not ${guide.pxPerUnit} px per unit`
+    );
+  }
+
+  return { W, H };
+}
 
 /**
  * One entry per flat, back to front. `raw` names the paintings, `camp` is the camp index (0 is the trailhead),
@@ -123,7 +138,8 @@ const FLATS = [
     kind: 'camp',
     camp: 0,
     side: 0,
-    lod: true,
+    /* no far version: the camera starts at the trailhead, so the village is never further than its stop */
+    lod: false,
     fades: [
       /* the meadow runs to the painting's left edge: at the hero that edge stands at the screen's own (the camera
          keeps the backdrop, which ends at the same -1100, just covering it), so only its last strip dissolves */
@@ -143,14 +159,14 @@ const smooth = t => {
 const clampByte = v => Math.max(0, Math.min(255, Math.round(v)));
 const median = values => values.toSorted((a, b) => a - b)[values.length >> 1];
 
-/** A painting as raw RGB at the canvas size: a generator that returns a few pixels more is scaled back, never cropped. */
-async function load(file) {
+/** A painting as raw RGB at its canvas size: a generator that returns a few pixels more is scaled back, never cropped. */
+async function load(file, canvas) {
   const image = sharp(file).removeAlpha();
   const { width, height } = await image.metadata();
   const sized =
-    width === CANVAS.W && height === CANVAS.H
+    width === canvas.W && height === canvas.H
       ? image
-      : image.resize(CANVAS.W, CANVAS.H, { fit: 'fill' });
+      : image.resize(canvas.W, canvas.H, { fit: 'fill' });
 
   return (await sized.raw().toBuffer({ resolveWithObject: true })).data;
 }
@@ -159,8 +175,8 @@ async function load(file) {
  * The key's own alpha and the colours with the key's share taken out. The key colour is the median of the most
  * magenta pixels: generators paint a slightly different magenta every time.
  */
-function key(data) {
-  const pixels = CANVAS.W * CANVAS.H;
+function key(data, canvas) {
+  const pixels = canvas.W * canvas.H;
   const magentas = [];
 
   for (let i = 0; i < pixels; i += 7) {
@@ -203,8 +219,8 @@ function key(data) {
 }
 
 /** Grows trusted colours into the pixels that need one: a night painting's drift off the day silhouette. */
-function fillInward(rgb, trusted, needed) {
-  const { W, H } = CANVAS;
+function fillInward(rgb, trusted, needed, canvas) {
+  const { W, H } = canvas;
   const known = Uint8Array.from(trusted);
 
   for (let pass = 0; pass < FILL_PASSES; pass++) {
@@ -245,8 +261,8 @@ function fillInward(rgb, trusted, needed) {
 }
 
 /** The day alpha with the design fades applied, and the box (in canvas pixels) that holds what survives. */
-function fadedAlpha(alpha, flat, rect) {
-  const { W, H } = CANVAS;
+function fadedAlpha(alpha, flat, rect, canvas) {
+  const { W, H } = canvas;
   const [rx, ry, rw] = rect;
   const pxPerUnit = W / rw;
   const faded = new Float32Array(W * H);
@@ -276,8 +292,8 @@ function fadedAlpha(alpha, flat, rect) {
 }
 
 /** RGBA for one theme, hazed where the flat asks for it. */
-function compose(rgb, alpha, flat, rect, pxPerUnit, haze) {
-  const { W, H } = CANVAS;
+function compose(rgb, alpha, flat, rect, pxPerUnit, haze, canvas) {
+  const { W, H } = canvas;
   const out = Buffer.alloc(W * H * 4);
 
   for (let y = 0; y < H; y++) {
@@ -320,8 +336,8 @@ function phoneCut(trim, rect, pxPerUnit) {
 }
 
 /** A copy of the RGBA whose alpha dissolves toward each cut that falls inside the painting. */
-function dissolveCut(rgba, cut) {
-  const { W, H } = CANVAS;
+function dissolveCut(rgba, cut, canvas) {
+  const { W, H } = canvas;
   const out = Buffer.from(rgba);
   const right = cut.left + cut.width - 1;
 
@@ -381,8 +397,8 @@ async function emit(png, base, options, width) {
 }
 
 /** The opaque pixels at least EDGE.BAND pixels inside the silhouette: the colours that can be trusted. */
-function inside(alpha) {
-  const { W, H } = CANVAS;
+function inside(alpha, canvas) {
+  const { W, H } = canvas;
   let mask = Uint8Array.from(alpha, a => (a >= EDGE.OPAQUE ? 1 : 0));
 
   for (let pass = 0; pass < EDGE.BAND; pass++) {
@@ -407,26 +423,28 @@ function inside(alpha) {
  * false`), because its pole is narrower than two bands and would take its colour from the stones.
  */
 async function keyPair(raw, { edges = true } = {}) {
-  const day = key(await load(path.join(RAW_DIR, `${raw}-day.png`)));
-  const night = key(await load(path.join(RAW_DIR, `${raw}-night.png`)));
+  const canvas = canvasOf(raw);
+  const day = key(await load(path.join(RAW_DIR, `${raw}-day.png`), canvas), canvas);
+  const night = key(await load(path.join(RAW_DIR, `${raw}-night.png`), canvas), canvas);
   const needed = Uint8Array.from(day.alpha, a => (a > 0 ? 1 : 0));
 
   if (edges) {
-    fillInward(day.rgb, inside(day.alpha), needed);
+    fillInward(day.rgb, inside(day.alpha, canvas), needed, canvas);
   }
 
   const trusted = edges
-    ? inside(night.alpha)
+    ? inside(night.alpha, canvas)
     : Uint8Array.from(night.alpha, a => (a > 0.9 ? 1 : 0));
-  fillInward(night.rgb, trusted, needed);
+  fillInward(night.rgb, trusted, needed, canvas);
 
-  return { day, night };
+  return { day, night, canvas };
 }
 
 async function processFlat(flat) {
   const rect = guides.flats[flat.raw].rect;
   const pair = await keyPair(flat.raw);
-  const { faded, box, pxPerUnit } = fadedAlpha(pair.day.alpha, flat, rect);
+  const { canvas } = pair;
+  const { faded, box, pxPerUnit } = fadedAlpha(pair.day.alpha, flat, rect, canvas);
   const trim = {
     left: box.x0,
     top: box.y0,
@@ -438,14 +456,14 @@ async function processFlat(flat) {
 
   for (const theme of ['day', 'night']) {
     const haze = sceneTokenRgb('scene-haze', theme === 'night');
-    const rgba = compose(pair[theme].rgb, faded, flat, rect, pxPerUnit, haze);
-    const png = await sharp(rgba, { raw: { width: CANVAS.W, height: CANVAS.H, channels: 4 } })
+    const rgba = compose(pair[theme].rgb, faded, flat, rect, pxPerUnit, haze, canvas);
+    const png = await sharp(rgba, { raw: { width: canvas.W, height: canvas.H, channels: 4 } })
       .extract(trim)
       .png()
       .toBuffer();
     await fs.writeFile(path.join(CHECK_DIR, `${flat.id}-${theme}.png`), png);
-    const phonePng = await sharp(dissolveCut(rgba, phone), {
-      raw: { width: CANVAS.W, height: CANVAS.H, channels: 4 },
+    const phonePng = await sharp(dissolveCut(rgba, phone, canvas), {
+      raw: { width: canvas.W, height: canvas.H, channels: 4 },
     })
       .extract({ left: phone.left, top: trim.top, width: phone.width, height: trim.height })
       .png()
@@ -509,7 +527,7 @@ async function processFlat(flat) {
 /** The flag sheet: the pole on the left half, the pennant on the right, each trimmed on its own. */
 async function processFlag() {
   const pair = await keyPair('flag-parts', { edges: false });
-  const { W, H } = CANVAS;
+  const { W, H } = pair.canvas;
   const split = Math.round(W * 0.42);
 
   const bounds = (x0, x1) => {
@@ -560,7 +578,15 @@ async function processFlag() {
   const art = {};
 
   for (const theme of ['day', 'night']) {
-    const rgba = compose(pair[theme].rgb, pair.day.alpha, { fades: [] }, [0, 0, W], 1, null);
+    const rgba = compose(
+      pair[theme].rgb,
+      pair.day.alpha,
+      { fades: [] },
+      [0, 0, W],
+      1,
+      null,
+      pair.canvas
+    );
     const sheet = sharp(rgba, { raw: { width: W, height: H, channels: 4 } });
     art[theme] = {
       pole: await emit(

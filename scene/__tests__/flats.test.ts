@@ -25,9 +25,10 @@ describe('painted flats', () => {
     }
   });
 
-  it('gives every ridge a far version, and the far world none', () => {
+  it('gives every ridge ahead a far version, and the far world and the trailhead none', () => {
+    /* the camera starts at the trailhead, so the village is never seen from further than its stop */
     for (const flat of FLATS) {
-      expect(Boolean(flat.art.day.far), flat.id).toBe(flat.kind === 'camp');
+      expect(Boolean(flat.art.day.far), flat.id).toBe(flat.kind === 'camp' && flat.camp !== 0);
     }
   });
 
