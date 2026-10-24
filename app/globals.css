@@ -333,6 +333,18 @@
   display: block;
 }
 
+/*
+ * Under the flats, at the foot of the stage. A tall phone screen runs past the backdrop's foot between camps, when
+ * no ridge reaches that low: there the clouds dissolve into their own haze instead of ending on the sky. Covered
+ * everywhere else, and static, so it costs nothing per frame.
+ */
+.scene-floor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to top, var(--color-scene-haze) 10%, transparent 26%);
+}
+
 /* nothing shows until the first frame is posed: the boxes would sit at full size in the corner */
 .scene-stage:not([data-posed]) [data-scene-flats] {
   visibility: hidden;

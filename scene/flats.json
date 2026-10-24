@@ -13,17 +13,17 @@
   "flats": {
     "far": {
       "kind": "back",
-      "box": [-1100, -221.59, 2200, 1129.09],
-      "boxPhone": [-519.59, -221.59, 1040.5, 1129.09],
-      "px": [1664, 854],
+      "box": [-1100, -221.59, 2200, 1119.83],
+      "boxPhone": [-519.59, -221.59, 1040.5, 1119.83],
+      "px": [1664, 847],
       "art": {
         "day": {
-          "near": "far-near-day.a62c2262.webp",
-          "nearPhone": "far-near-day-phone.e8ec6b74.webp"
+          "near": "far-near-day.2846a690.webp",
+          "nearPhone": "far-near-day-phone.637469b6.webp"
         },
         "night": {
-          "near": "far-near-night.a1db428e.webp",
-          "nearPhone": "far-near-night-phone.85b71e46.webp"
+          "near": "far-near-night.beedaa47.webp",
+          "nearPhone": "far-near-night-phone.5a0a83a5.webp"
         }
       }
     },
@@ -160,21 +160,21 @@
     },
     "camp-2014": {
       "kind": "camp",
-      "box": [-1087.02, 175.75, 1776.2, 896.75],
+      "box": [-1094.59, 175.75, 1783.77, 896.75],
       "boxPhone": [-520.19, 175.75, 1041.71, 896.75],
-      "px": [1642, 829],
+      "px": [1649, 829],
       "art": {
         "day": {
-          "near": "camp-2014-near-day.09e32695.webp",
+          "near": "camp-2014-near-day.581bfde8.webp",
           "nearPhone": "camp-2014-near-day-phone.6c2c6f75.webp",
-          "far": "camp-2014-far-day.f8c74c83.webp",
-          "farPhone": "camp-2014-far-day-phone.50ff6402.webp"
+          "far": "camp-2014-far-day.f9c98642.webp",
+          "farPhone": "camp-2014-far-day-phone.ac1a2f09.webp"
         },
         "night": {
-          "near": "camp-2014-near-night.e86bdc7f.webp",
+          "near": "camp-2014-near-night.6e3280f0.webp",
           "nearPhone": "camp-2014-near-night-phone.f8df936b.webp",
-          "far": "camp-2014-far-night.ea0f50e5.webp",
-          "farPhone": "camp-2014-far-night-phone.afaa3147.webp"
+          "far": "camp-2014-far-night.20e39a1f.webp",
+          "farPhone": "camp-2014-far-night-phone.ba72173e.webp"
         }
       },
       "camp": 0,

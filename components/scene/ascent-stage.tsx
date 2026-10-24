@@ -214,6 +214,7 @@ export function AscentStage({ reducedMotion, stop, climbOver, ref }: AscentStage
       <Cloud className='motion-safe:animate-drift top-[7%] left-[40%] w-[190px]' />
       <Cloud className='motion-safe:animate-drift-slow top-[24%] left-[70%] w-[120px] opacity-80' />
 
+      <div className='scene-floor' />
       <div
         data-scene-flats
         className='absolute inset-0'

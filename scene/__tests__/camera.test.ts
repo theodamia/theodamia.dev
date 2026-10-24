@@ -105,6 +105,35 @@ describe('camera', () => {
     expect(poseAt(3, { ...WIDE, laneGap: 690 }).focus.x).toBeCloseTo(690, 5);
   });
 
+  it('keeps the backdrop across the whole width of any screen, at every point of the climb', () => {
+    const backdrop = FLATS.find(flat => flat.kind === 'back')!;
+    const screens: View[] = [
+      WIDE,
+      PHONE,
+      { width: 1280, height: 720, wide: true, laneGap: null },
+      /* a 16-inch laptop's browser window: the screen this was found on */
+      { width: 1728, height: 875, wide: true, laneGap: 880 },
+      { width: 2560, height: 1080, wide: true, laneGap: null },
+      { width: 3440, height: 1440, wide: true, laneGap: null },
+      { width: 5120, height: 1440, wide: true, laneGap: null },
+      { width: 820, height: 1180, wide: false, laneGap: null },
+    ];
+
+    screens.forEach(view => {
+      for (let u = 0; u <= LAST; u += 0.05) {
+        const pose = poseAt(u, view);
+        const far = pose.flats.find(at => at.id === backdrop.id)!;
+        const width = backdrop.box[2] * maxScale(backdrop) * pose.focus.v * far.scale;
+
+        expect(far.x).toBeLessThanOrEqual(0);
+        expect(far.x + width).toBeGreaterThanOrEqual(view.width);
+      }
+    });
+    /* the screens the design was drawn on keep their composition: nothing gives way there */
+    expect(stageScale(1440, 900)).toBe(1);
+    expect(poseAt(0, WIDE).focus.x).toBeCloseTo(0.64 * 1440, 5);
+  });
+
   it('leans toward each camp on phones, and stands centred at the trailhead', () => {
     const v = stageScale(PHONE.width, PHONE.height);
     expect(poseAt(0, PHONE).focus.x).toBeCloseTo(195, 5);

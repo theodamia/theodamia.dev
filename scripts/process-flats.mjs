@@ -100,7 +100,8 @@ const ridge = (raw, camp, year, side, flagDx) => ({
   ],
 });
 const FLATS = [
-  { id: 'far', raw: 'far', kind: 'back', fades: [], haze: 0.3, hazeLeft: 0.3 },
+  /* the foot dissolves only where a tall phone screen sees it, between camps; wide screens never reach it */
+  { id: 'far', raw: 'far', kind: 'back', fades: [['y', 760, 907]], haze: 0.3, hazeLeft: 0.3 },
   {
     id: 'peak',
     raw: 'peak',
@@ -124,7 +125,9 @@ const FLATS = [
     side: 0,
     lod: true,
     fades: [
-      ['x', -900, -1100],
+      /* the meadow runs to the painting's left edge: at the hero that edge stands at the screen's own (the camera
+         keeps the backdrop, which ends at the same -1100, just covering it), so only its last strip dissolves */
+      ['x', -1030, -1100],
       ['x', 520, 700],
     ],
   },

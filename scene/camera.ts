@@ -54,6 +54,16 @@ const FLAG_SIZE = { HEIGHT: 104, CLOTH: 0.72, SINK: 6 } as const;
 
 const LAST = CAMP_COUNT - 1;
 
+/** The far world: the backdrop every other flat stands in front of, and the one that must always fill the screen. */
+const BACKDROP = FLATS.find(flat => flat.kind === 'back')!;
+/** Units the backdrop keeps beyond each side of the screen, so its edge never shows, even after pixel snapping. */
+const BACKDROP_MARGIN = 2;
+/** How far the backdrop reaches left and right of the focus (where it is anchored), in units at scale 1. */
+const BACKDROP_REACH = {
+  LEFT: -BACKDROP.box[0] - BACKDROP_MARGIN,
+  RIGHT: BACKDROP.box[0] + BACKDROP.box[2] - BACKDROP_MARGIN,
+} as const;
+
 export const clamp = (x: number, min: number, max: number) => Math.min(max, Math.max(min, x));
 
 /** Hermite smoothstep from `a` to `b`. */
@@ -99,17 +109,29 @@ const focusDepth = (k: number) =>
 /** The screen the stage fills, and (wide only) the middle of the gap between the two card lanes. */
 export type View = { width: number; height: number; wide: boolean; laneGap: number | null };
 
-/** Design units to pixels: the story column fits the screen. */
+/** The backdrop's whole width: a screen wider than this at scale 1 needs a larger scale to stay covered. */
+const BACKDROP_SPAN = BACKDROP_REACH.LEFT + BACKDROP_REACH.RIGHT;
+
+/**
+ * Design units to pixels: the story column fits the screen. Only a screen wider than the backdrop itself (32:9
+ * and beyond) is scaled up past that, because there no focus could keep both of the backdrop's ends out of view.
+ */
 export const stageScale = (width: number, height: number) =>
-  Math.min(width / COLUMN.WIDTH, height / COLUMN.HEIGHT);
+  Math.max(Math.min(width / COLUMN.WIDTH, height / COLUMN.HEIGHT), width / BACKDROP_SPAN);
 
 /** The same scale in CSS, as a length per unit, for anything sized by stylesheet (needs a size container). */
-export const STAGE_SCALE_CSS = `min(100cqw / ${COLUMN.WIDTH}, 100cqh / ${COLUMN.HEIGHT})`;
+export const STAGE_SCALE_CSS = `max(min(100cqw / ${COLUMN.WIDTH}, 100cqh / ${COLUMN.HEIGHT}), 100cqw / ${BACKDROP_SPAN})`;
 
 /** Phones lean toward the camp ahead; the trailhead stands in the middle. */
 const lean = (k: number) => (k < 1 ? 0 : SIDES[Math.min(k, LAST)]);
 
-/** The focus of expansion on screen, in pixels, and the stage scale `v`. */
+/**
+ * The focus of expansion on screen, in pixels, and the stage scale `v`.
+ *
+ * The focus is also where the backdrop is anchored, so it is kept where the backdrop still reaches both edges of
+ * the screen. That only ever binds near the hero on a wide, short screen (about 1.9:1 and wider), where the focus
+ * stands right of centre and the backdrop's left end would otherwise show as a bare strip of sky.
+ */
 export function focusAt(u: number, view: View) {
   const { width, height, wide } = view;
   const v = stageScale(width, height);
@@ -117,14 +139,17 @@ export function focusAt(u: number, view: View) {
   const e = ease(f);
   const depth = focusDepth(leg) + (focusDepth(leg + 1) - focusDepth(leg)) * e;
   const y = (wide ? CAMP_LINE.WIDE : CAMP_LINE.PHONE) * height - depth * v;
-
-  if (!wide) {
-    return { x: width / 2 - (lean(leg) + (lean(leg + 1) - lean(leg)) * e) * PHONE_LEAN * v, y, v };
-  }
-
   const lane = view.laneGap ?? width / 2;
+  const x = wide
+    ? lane + (HERO_FOCUS_X * width - lane) * (1 - smoothstep(0, 1, u))
+    : width / 2 - (lean(leg) + (lean(leg + 1) - lean(leg)) * e) * PHONE_LEAN * v;
+  const reach = scaleOf(BACKDROP, cameraZ(u)) * v;
 
-  return { x: lane + (HERO_FOCUS_X * width - lane) * (1 - smoothstep(0, 1, u)), y, v };
+  return {
+    x: clamp(x, width - BACKDROP_REACH.RIGHT * reach, BACKDROP_REACH.LEFT * reach),
+    y,
+    v,
+  };
 }
 
 /** The scale a flat's box is authored at: the largest it is ever shown. */
