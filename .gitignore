@@ -55,5 +55,6 @@ coverage
 /art/scene/flats/raw/*
 /art/scene/flats/*.png
 /art/scene/flats/check/
+/art/scene/flats/edits/
 /art/scene/style/**/*.png
 /art/scene/review/

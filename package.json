@@ -26,7 +26,8 @@
     "prepare": "husky",
     "typecheck": "tsc --noEmit",
     "camps": "node scripts/process-camps.mjs",
-    "flats": "node scripts/process-flats.mjs"
+    "flats": "node scripts/process-flats.mjs",
+    "flats:compose": "node scripts/compose-flats.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
