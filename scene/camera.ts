@@ -44,8 +44,6 @@ const LABEL_SHOWN = [0.5, 0.75] as const;
 const LABEL_GAP = 14;
 /** Room above today's camp's name that its door also covers: the name, and the note line under it. */
 const DOOR_NAME_ROOM = 34;
-/** The lamp glow in today's doorway: its size, in units. */
-const LAMP_SIZE = 64;
 /** The summit line comes in over the last stretch of the climb. */
 const SUMMIT_FADE = [4.35, 4.95] as const;
 /**
@@ -300,10 +298,11 @@ export function poseAt(u: number, view: View): Pose {
   };
 }
 
-/** Today's camp's door, in pixels from its trail point: the box it answers clicks in, and the lamp in its doorway. */
+/** Today's camp's door, in pixels from its trail point: the box it answers clicks in, and its lit doorway. */
 export type TodayDoor = {
   box: { left: number; top: number; width: number; height: number };
-  lamp: { x: number; y: number; size: number };
+  /** The doorway: its centre, and its size. */
+  lamp: { x: number; y: number; width: number; height: number };
 };
 
 /**
@@ -320,11 +319,17 @@ export function todayDoor(view: View): TodayDoor | null {
   const at = pose.flats.find(item => item.id === flat.id)!;
   const k = at.scale * maxScale(flat) * pose.focus.v;
   const [x0, , x1, y1] = flat.tent;
+  const [dx0, dy0, dx1, dy1] = flat.door;
   const top = flat.label[1] - LABEL_GAP - DOOR_NAME_ROOM;
 
   return {
     box: { left: x0 * k, top: top * k, width: (x1 - x0) * k, height: (y1 - top) * k },
-    lamp: { x: flat.door[0] * k, y: flat.door[1] * k, size: LAMP_SIZE * k },
+    lamp: {
+      x: ((dx0 + dx1) / 2) * k,
+      y: ((dy0 + dy1) / 2) * k,
+      width: (dx1 - dx0) * k,
+      height: (dy1 - dy0) * k,
+    },
   };
 }
 

@@ -139,7 +139,8 @@ export function AscentStage({ reducedMotion, stop, climbOver, doorRef, ref }: As
     });
     el.style.setProperty('--lamp-x', `${(lamp.x - box.left).toFixed(1)}px`);
     el.style.setProperty('--lamp-y', `${(lamp.y - box.top).toFixed(1)}px`);
-    el.style.setProperty('--lamp-size', `${lamp.size.toFixed(1)}px`);
+    el.style.setProperty('--lamp-w', `${lamp.width.toFixed(1)}px`);
+    el.style.setProperty('--lamp-h', `${lamp.height.toFixed(1)}px`);
   };
 
   /* no dependency array: every frame must see the current props, and the rest lives in refs */

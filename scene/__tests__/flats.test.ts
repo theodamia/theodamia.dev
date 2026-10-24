@@ -116,7 +116,10 @@ describe('painted flats', () => {
       b.camp! > a.camp! ? b : a
     );
     const [x0, y0, x1, y1] = today.tent!;
-    const [dx, dy] = today.door!;
+    const [dx0, dy0, dx1, dy1] = today.door!;
+    const [dx, dy] = [(dx0 + dx1) / 2, (dy0 + dy1) / 2];
+    expect(dx0).toBeLessThan(dx1);
+    expect(dy0).toBeLessThan(dy1);
     const ax = (today.side ?? 0) * 150;
 
     expect(x0).toBeLessThan(x1);

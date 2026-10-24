@@ -159,11 +159,16 @@ const FLATS = [
     ],
   },
   /*
-   * the dome's frame stands a little above its canvas. Today's camp also knows its whole outline (`tent`, units
-   * from the trail point) and its doorway (`door`): the closing card folds into it, and a lamp is lit there until
-   * the card is taken out again (components/scene/camp-door.tsx). Measured on the painting.
+   * the dome's frame stands a little above its canvas. Today's camp also knows its whole outline (`tent`) and its
+   * doorway (`door`), both [x0, y0, x1, y1] in units from the trail point: the closing card folds into it, and the
+   * doorway is lit from inside until the card is taken out again (components/scene/camp-door.tsx). Measured on the
+   * painting (the slate of the opening, from the camp kit's colours).
    */
-  { ...ridge('deepsea', 5, 2026, -1, 34, [-42, -74]), tent: [-130, -88, 44, 6], door: [-15, -14] },
+  {
+    ...ridge('deepsea', 5, 2026, -1, 34, [-42, -74]),
+    tent: [-130, -88, 44, 6],
+    door: [-40, -37, 10, 3],
+  },
   /* the bell tent's peak */
   ridge('lead', 4, 2022, 1, -122, [72, -147]),
   ridge('geekbot', 3, 2018, -1, 34, [-86, -101]),

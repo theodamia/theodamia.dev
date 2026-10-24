@@ -52,8 +52,9 @@
   --color-halo: rgb(255 255 255 / 0.8);
   /* the foreground mist */
   --color-wisp: oklch(0.985 0.008 85);
-  /* the lamp lit in today's camp while the closing card is kept there */
+  /* the lamp lit in today's camp while the closing card is kept there, and its hot centre */
   --color-lamp: oklch(0.83 0.14 72);
+  --color-lamp-core: oklch(0.96 0.07 90);
   /* the snow that falls on the heights */
   --color-flake: oklch(0.99 0.008 250);
   /* a flake's shaded rim: what keeps a white flake visible against a white mountain, without an outline */
@@ -483,44 +484,70 @@
   position: absolute;
   top: var(--lamp-y);
   left: var(--lamp-x);
-  width: var(--lamp-size);
-  height: var(--lamp-size);
+  width: var(--lamp-w);
+  height: var(--lamp-h);
   translate: -50% -50%;
-  opacity: 0.75;
-  mix-blend-mode: screen;
   pointer-events: none;
-  transition:
-    opacity 0.4s var(--ease-soft),
-    scale 0.4s var(--ease-soft);
 }
 
-.camp-door:is(:hover, :focus-visible) .camp-door-lamp {
+/* the light it gives: a halo around the doorway, and a pool of it on the ground in front, added like light */
+.camp-door-lamp::before,
+.camp-door-lamp::after {
+  content: '';
+  position: absolute;
+  mix-blend-mode: screen;
+  opacity: 0.8;
+  transition: opacity 0.4s var(--ease-soft);
+}
+
+.camp-door-lamp::before {
+  inset: -70% -90%;
+  background: radial-gradient(
+    ellipse 50% 50%,
+    color-mix(in oklab, var(--color-lamp) 42%, transparent),
+    transparent 70%
+  );
+}
+
+.camp-door-lamp::after {
+  top: 78%;
+  left: -110%;
+  width: 320%;
+  height: 120%;
+  background: radial-gradient(
+    ellipse 50% 40% at 50% 30%,
+    color-mix(in oklab, var(--color-lamp) 60%, transparent),
+    transparent 72%
+  );
+}
+
+.camp-door:is(:hover, :focus-visible) .camp-door-lamp::before,
+.camp-door:is(:hover, :focus-visible) .camp-door-lamp::after {
   opacity: 1;
-  scale: 1.15;
 }
 
+/* the doorway itself, lit from inside: brightest low in the middle, warm to its arched edges */
 .camp-door-flame {
   position: absolute;
   inset: 0;
-  border-radius: 50%;
+  border-radius: 46% 46% 10% 10% / 42% 42% 10% 10%;
   background: radial-gradient(
-    circle,
-    color-mix(in oklab, var(--color-lamp) 90%, transparent) 0,
-    color-mix(in oklab, var(--color-lamp) 40%, transparent) 34%,
-    transparent 70%
+    ellipse 75% 85% at 50% 72%,
+    var(--color-lamp-core) 0,
+    var(--color-lamp) 42%,
+    color-mix(in oklab, var(--color-lamp) 70%, transparent) 74%,
+    transparent 100%
   );
   animation: lamp-breathe 3.2s ease-in-out infinite alternate;
 }
 
 @keyframes lamp-breathe {
   from {
-    opacity: 0.7;
-    scale: 0.92;
+    opacity: 0.84;
   }
 
   to {
     opacity: 1;
-    scale: 1.06;
   }
 }
 
@@ -548,7 +575,8 @@
     animation: none;
   }
 
-  .camp-door-lamp,
+  .camp-door-lamp::before,
+  .camp-door-lamp::after,
   .scene-label-note {
     transition: none;
   }
