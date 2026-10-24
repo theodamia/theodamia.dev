@@ -107,13 +107,14 @@
   /* the Contact card's radio waves: each ring flares up, then fades while the next one lights */
   --animate-signal: signal 2.8s ease-out infinite both;
 
+  /* evenly either side of where it rests, so a bobbing icon still sits on its text's centre line */
   @keyframes bob {
     0%,
     100% {
       transform: translateY(-2px);
     }
     50% {
-      transform: translateY(4px);
+      transform: translateY(2px);
     }
   }
 

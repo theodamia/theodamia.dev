@@ -46,7 +46,7 @@ describe('Climb', () => {
   it('starts the climb from the scroll cue', async () => {
     render(<Climb hero={null}>after</Climb>);
 
-    await userEvent.click(screen.getByRole('button', { name: /Scroll to climb/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Start the climb' }));
 
     expect(window.scrollTo).toHaveBeenCalledWith({ top: expect.any(Number) });
   });
