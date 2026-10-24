@@ -2,14 +2,8 @@
 
 import type React from 'react';
 import { CampMark } from '@/components/scene/camp-mark';
-import {
-  Daylight,
-  SCENE_LAYERS,
-  SceneLayerSvg,
-  ScenePalette,
-  Sky,
-  Stars,
-} from '@/components/scene/scene-layer';
+import { SCENE_LAYERS, SceneLayerSvg, ScenePalette } from '@/components/scene/scene-layer';
+import { Daylight, Sky, Stars } from '@/components/scene/sky';
 import { Village } from '@/components/scene/village';
 import { TRAILHEAD } from '@/content/jobs';
 import { campArtKey } from '@/scene/camp-layout';

@@ -1,15 +1,8 @@
 'use client';
 
 import type React from 'react';
-import {
-  Celestial,
-  Daylight,
-  SCENE_LAYERS,
-  SceneLayerSvg,
-  ScenePalette,
-  Sky,
-  Stars,
-} from '@/components/scene/scene-layer';
+import { SCENE_LAYERS, SceneLayerSvg, ScenePalette } from '@/components/scene/scene-layer';
+import { Celestial, Daylight, Sky, Stars } from '@/components/scene/sky';
 
 /** The quiet page's header: a still view of the unreached summit, fading into the page. Nothing moves. */
 export function SummitStrip() {

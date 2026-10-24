@@ -44,19 +44,23 @@ export type Point = readonly [x: number, y: number];
 
 /** What a renderer needs to draw one moment of the climb. */
 export type SceneFrame = {
-  /** World Y at the top of the viewport, 0 (summit in view) to WORLD.TRAVEL (trailhead). */
-  yTop: number;
-  /** Index of the leg being walked, 0 to LEGS.length - 1. */
+  /** Index of the leg being walked: 0 leaves the trailhead, the last one arrives at the present camp. */
   leg: number;
   /** Progress along that leg, 0 to 1. */
   f: number;
+};
+
+/** Layout the stage cannot read for itself: measured by the scroll hook, with the cards. */
+export type SceneLayout = {
+  /** Wide screens: the middle of the gap between the two card lanes, in viewport pixels. Null on phones. */
+  laneGap: number | null;
 };
 
 export type SceneHandle = {
   /** Draw one frame. Must only write transforms and opacity: no layout reads, no re-renders. */
   applyFrame: (frame: SceneFrame) => void;
   /** Re-read the stage size. Called on resize, never while scrolling. */
-  resize: () => void;
+  resize: (layout: SceneLayout) => void;
 };
 
 /** Camps are waypoints: the trailhead, then one per job. */
@@ -80,6 +84,20 @@ export const LEG_WEIGHTS: number[] = [
 ];
 
 const TOTAL_WEIGHT = LEG_WEIGHTS.reduce((sum, weight) => sum + weight, 0);
+
+/** Room left above the present camp on the altimeter's rail, for the summit it is heading to. */
+const SUMMIT_ROOM = 1.08;
+
+/**
+ * How far down the altimeter's rail a point of the climb sits: 0 at the summit mark, 1 at the trailhead. The rail
+ * is a map of the same road the camera walks, so it is measured by leg weight, linear within a leg: the needle
+ * passes each mark exactly when its card arrives.
+ */
+export function railShare(leg: number, f: number): number {
+  const walked = LEG_WEIGHTS.slice(0, leg).reduce((sum, weight) => sum + weight, 0);
+
+  return 1 - (walked + (LEG_WEIGHTS[leg] ?? 0) * f) / (TOTAL_WEIGHT * SUMMIT_ROOM);
+}
 
 /** +1: the tent sits right of the trail's centre and the card sits left; they alternate up the mountain. */
 export const SIDES: number[] = Array.from({ length: CAMP_COUNT }, (_, i) => (i % 2 === 0 ? 1 : -1));

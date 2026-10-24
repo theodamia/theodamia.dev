@@ -278,6 +278,206 @@
 }
 
 /*
+ * The forward climb (components/scene/ascent-stage.tsx, scene/camera.ts). Each flat is one whole painting the stage
+ * moves as a layer: its box is authored at the largest it is ever shown, sized here from the stage scale `--v` (a
+ * length per design unit, from the stage's container size), and the stage only ever scales it down. A painting is
+ * shown once it is decoded (`data-ready`, lib/scene-art.ts), and only in the theme on screen, so the day/night
+ * swap happens in the same frame as `data-theme` and the reveal's circle uncovers the night paintings from its
+ * first frame. Until a theme's painting is ready, the other theme's stands in: never a hole.
+ */
+.scene-flat {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--bw) * var(--v));
+  height: calc(var(--bh) * var(--v));
+  transform-origin: 0 0;
+  will-change: transform, opacity;
+}
+
+.scene-flat [data-lod] {
+  position: absolute;
+  inset: 0;
+  will-change: opacity;
+}
+
+/* each painting its own layer: the compositor then draws the decoded image as it is, with nothing to raster */
+.scene-flat img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* a phone's near painting covers only the middle of the box */
+.scene-flat img[data-variant='phone'] {
+  left: var(--phone-left, 0%);
+  width: var(--phone-width, 100%);
+}
+
+:root:not([data-theme='dark']) .scene-flat img[data-art='day'][data-ready],
+:root[data-theme='dark'] .scene-flat img[data-art='night'][data-ready],
+:root[data-theme='dark']
+  .scene-flat
+  :is([data-lod], .scene-flag-part):not(:has(> img[data-art='night'][data-ready]))
+  > img[data-art='day'][data-ready],
+:root:not([data-theme='dark'])
+  .scene-flat
+  :is([data-lod], .scene-flag-part):not(:has(> img[data-art='day'][data-ready]))
+  > img[data-art='night'][data-ready] {
+  display: block;
+}
+
+/* nothing shows until the first frame is posed: the boxes would sit at full size in the corner */
+.scene-stage:not([data-posed]) [data-scene-flats] {
+  visibility: hidden;
+}
+
+.scene-flag-part {
+  position: absolute;
+}
+
+/* the shared flag: furled low on the pole until its camp is reached, then it runs up */
+.scene-pennant {
+  transform-origin: 0 0;
+  transform: translateY(170%) scale(0.32, 0.5);
+  opacity: 0.6;
+  transition:
+    transform 0.8s var(--ease-pop),
+    opacity 0.3s ease-out;
+}
+
+.scene-pennant[data-reached='true'] {
+  transform: none;
+  opacity: 1;
+}
+
+/* camp names: they move with their camp but never scale, so the text stays sharp */
+.scene-label,
+.scene-summit {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.scene-label > span {
+  display: block;
+  transform: translate(-50%, -100%);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: var(--color-ink-2);
+  text-shadow: var(--text-shadow-halo);
+  transition: color 0.3s var(--ease-soft);
+}
+
+.scene-label > span b {
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+.scene-label[data-reached='true'] > span {
+  color: var(--color-ink);
+}
+
+/* the line over the summit at the end: left of the tip on wide screens, on the snow below it on phones */
+.scene-summit > span {
+  display: block;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--color-ink);
+  text-shadow: var(--text-shadow-halo);
+  transition: opacity 0.7s var(--ease-soft);
+}
+
+.scene-summit > span[data-gone='true'] {
+  opacity: 0;
+}
+
+@media (min-width: 900px) {
+  .scene-summit > span {
+    transform: translate(-100%, -50%);
+  }
+}
+
+/* reduced motion: the scene changes between stops under this veil, in the sky's colour */
+.scene-veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--color-day-low);
+  opacity: 0;
+  transition: opacity 125ms linear;
+}
+
+.scene-veil[data-on] {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene-pennant {
+    transition: opacity 0.3s ease-out;
+  }
+}
+
+/*
+ * The hero's words over the scene: on wide screens a soft wash of the page colour behind them, on phones a scrim
+ * from the top, where the village sits right under the lede. Both belong to the hero, so they scroll away with it
+ * and cost nothing per frame; by night the page colour makes them a dusk instead of a mist.
+ */
+.hero-wash {
+  position: relative;
+  isolation: isolate;
+}
+
+@media (min-width: 900px) {
+  .hero-wash::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    /* out to the screen's left edge: the page's 28px margin plus whatever the 1180px track leaves */
+    left: calc(-1 * max(28px, (100vw - 1180px) / 2 + 28px));
+    width: 62vw;
+    height: 68lvh;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse 78% 70% at 30% 44%,
+      color-mix(in oklab, var(--color-page) 52%, transparent),
+      color-mix(in oklab, var(--color-page) 28%, transparent) 58%,
+      transparent 84%
+    );
+  }
+}
+
+@media (max-width: 899.98px) {
+  .hero-wash {
+    margin-inline: -16px;
+    padding-inline: 16px;
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--color-page) 72%, transparent),
+      color-mix(in oklab, var(--color-page) 62%, transparent) 38%,
+      transparent 60%
+    );
+  }
+}
+
+/*
  * Camps. A camp stands in full colour at full size from the start. Reaching it (the stage flips `data-reached`)
  * runs its flag up the pole and brightens its name. Transforms are in the camp's own SVG units, measured from
  * each shape's own box.

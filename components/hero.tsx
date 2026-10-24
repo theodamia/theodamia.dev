@@ -7,11 +7,12 @@ import { SITE } from '@/content/site';
  * The top of the climb page: who this is, what the page is, and the three ways to reach me.
  *
  * The words float over the painted meadow and the path, so they wear the scene's text halo, as the altimeter's
- * labels do. A wider glow would read as a cloud and wash them out.
+ * labels do, and sit on a wash of the page colour (`.hero-wash`): a soft one beside the scene on wide screens, a
+ * scrim on phones, where the village is right under the lede. A wider halo would read as a cloud instead.
  */
 export function Hero() {
   return (
-    <section className='max-wide:pt-[84px] text-shadow-halo min-h-screen pt-[92px]'>
+    <section className='hero-wash max-wide:pt-[84px] text-shadow-halo min-h-screen pt-[92px]'>
       <Eyebrow className='text-[17px]'>
         {SITE.title} · {SITE.location}
       </Eyebrow>
