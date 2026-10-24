@@ -2,7 +2,7 @@ import { existsSync, statSync } from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 import { describe, expect, it } from 'vitest';
-import { BACKDROP, CLOUDS, FLAG, FLATS, type Theme } from '@/scene/flats';
+import { BACKDROP, CAIRN, CLOUDS, FLAG, FLATS, type Theme } from '@/scene/flats';
 
 const PUBLIC = path.resolve(__dirname, '../../public/scene');
 const THEMES: Theme[] = ['day', 'night'];
@@ -111,25 +111,25 @@ describe('painted flats', () => {
     }
   });
 
-  it("knows today's tent and its doorway, inside its painting: the closing card is kept there", () => {
+  it("stands a cairn by today's camp, inside its painting, with its pictures: the closing card is kept there", () => {
     const today = FLATS.filter(flat => flat.kind === 'camp').reduce((a, b) =>
       b.camp! > a.camp! ? b : a
     );
-    const [x0, y0, x1, y1] = today.tent!;
-    const [dx0, dy0, dx1, dy1] = today.door!;
-    const [dx, dy] = [(dx0 + dx1) / 2, (dy0 + dy1) / 2];
-    expect(dx0).toBeLessThan(dx1);
-    expect(dy0).toBeLessThan(dy1);
+    const { at, height } = today.cairn!;
     const ax = (today.side ?? 0) * 150;
+    const [left, right] = today.solid!;
 
-    expect(x0).toBeLessThan(x1);
-    expect(y0).toBeLessThan(y1);
-    expect(dx).toBeGreaterThan(x0);
-    expect(dx).toBeLessThan(x1);
-    expect(dy).toBeGreaterThan(y0);
-    expect(dy).toBeLessThan(y1);
-    expect(ax + x0).toBeGreaterThan(today.box[0]);
-    expect(ax + x1).toBeLessThan(today.box[0] + today.box[2]);
+    /* on the solid paint, not out where the ridge dissolves */
+    expect(ax + at[0]).toBeGreaterThan(left);
+    expect(ax + at[0]).toBeLessThan(right);
+    expect(height).toBeGreaterThan(0);
+    /* its stones stand low in the picture, with the patch of snow below them */
+    expect(CAIRN.ground).toBeGreaterThan(0.5);
+    expect(CAIRN.ground).toBeLessThan(1);
+
+    for (const theme of THEMES) {
+      expect(existsSync(path.join(PUBLIC, CAIRN.art[theme])), theme).toBe(true);
+    }
   });
 
   it('keeps the phone version inside the desktop one', () => {
@@ -147,7 +147,9 @@ describe('painted flats', () => {
       const flag =
         bytes(FLAG.art[theme].pole) +
         bytes(FLAG.art[theme].cloth) +
-        CLOUDS.reduce((sum, cloud) => sum + bytes(cloud.art[theme]), 0);
+        CLOUDS.reduce((sum, cloud) => sum + bytes(cloud.art[theme]), 0) +
+        /* fetched once the closing card is in view, so not by every visit, but counted */
+        bytes(CAIRN.art[theme]);
       const desktop = FLATS.reduce(
         (sum, flat) => sum + bytes(flat.art[theme].near) + bytes(flat.art[theme].far),
         flag

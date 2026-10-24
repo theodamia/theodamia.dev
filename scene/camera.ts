@@ -1,4 +1,4 @@
-import { BACKDROP, FLAG, FLATS, PHONE_ART, type Flat } from '@/scene/flats';
+import { BACKDROP, CAIRN, FLAG, FLATS, PHONE_ART, type Flat } from '@/scene/flats';
 import { CAMP_COUNT, LEG_WEIGHTS, SIDES } from '@/scene/world';
 
 /**
@@ -42,8 +42,11 @@ const LIFE = {
 const LABEL_SHOWN = [0.5, 0.75] as const;
 /** Units of clear air between the top of a camp (its tent, cabin or chalets) and the foot of its name. */
 const LABEL_GAP = 14;
-/** Room above today's camp's name that its door also covers: the name, and the note line under it. */
-const DOOR_NAME_ROOM = 34;
+/**
+ * Around today's cairn: the smallest box a finger or pointer gets (px), and the least air kept around the stones,
+ * so the rounded box the closing card shrinks into never cuts them.
+ */
+const CAIRN_TARGET = { MIN: 44, AIR: 10 } as const;
 /** The summit line comes in over the last stretch of the climb. */
 const SUMMIT_FADE = [4.35, 4.95] as const;
 /**
@@ -219,7 +222,7 @@ export type Pose = {
   summit: { x: number; y: number; opacity: number };
   /** How much of the snow is falling (0 below the snowline), and of the thicker fall near the summit. */
   snow: { falling: number; thick: number };
-  /** Today's camp (the last), as pixels: its trail point on screen, where its door is anchored. */
+  /** Today's camp (the last), as pixels: its trail point on screen, where its cairn is anchored. */
   today: { x: number; y: number };
   /** Dawn turns to day as you climb (dusk to midnight by night). */
   daylight: number;
@@ -298,38 +301,41 @@ export function poseAt(u: number, view: View): Pose {
   };
 }
 
-/** Today's camp's door, in pixels from its trail point: the box it answers clicks in, and its lit doorway. */
-export type TodayDoor = {
-  box: { left: number; top: number; width: number; height: number };
-  /** The doorway: its centre, and its size. */
-  lamp: { x: number; y: number; width: number; height: number };
-};
+type Rect = { left: number; top: number; width: number; height: number };
+
+/** Today's cairn, in pixels: the box it answers clicks in, from the camp's trail point, and its stones in the box. */
+export type TodayCairn = { box: Rect; stones: Rect };
 
 /**
- * Where the door of today's camp stands at the summit, for the way back to the closing card: a box over the tent
- * and its name (both answer the click), and the lamp's place in the doorway, in pixels from the camp's trail point
- * (where the stage anchors the door each frame, `Pose.today`). It only needs the last stop, where the camp holds
- * still, so the stage sizes the door once per resize and moves it with a transform. Null if today's camp has no
- * measured tent.
+ * Where the cairn by today's camp stands at the summit, for the way back to the closing card: the picture, drawn
+ * `height` units tall with its stones on the snow at `at`, and around it a box with room for a finger, in pixels
+ * from the camp's trail point (where the stage anchors it each frame, `Pose.today`). It only needs the last stop,
+ * where the camp holds still, so the stage sizes it once per resize and moves it with a transform. Null if today's
+ * camp has no cairn.
  */
-export function todayDoor(view: View): TodayDoor | null {
+export function todayCairn(view: View): TodayCairn | null {
   const flat = FLATS.find(item => item.camp === LAST);
-  if (!flat?.tent || !flat.door || !flat.label) return null;
+  if (!flat?.cairn) return null;
   const pose = poseAt(LAST, view);
   const at = pose.flats.find(item => item.id === flat.id)!;
   const k = at.scale * maxScale(flat) * pose.focus.v;
-  const [x0, , x1, y1] = flat.tent;
-  const [dx0, dy0, dx1, dy1] = flat.door;
-  const top = flat.label[1] - LABEL_GAP - DOOR_NAME_ROOM;
+  const {
+    at: [dx, dy],
+    height,
+  } = flat.cairn;
+  const h = height * k;
+  const w = (h * CAIRN.w) / CAIRN.h;
+  const airX = Math.max(CAIRN_TARGET.AIR, (CAIRN_TARGET.MIN - w) / 2);
+  const airY = Math.max(CAIRN_TARGET.AIR, (CAIRN_TARGET.MIN - h) / 2);
 
   return {
-    box: { left: x0 * k, top: top * k, width: (x1 - x0) * k, height: (y1 - top) * k },
-    lamp: {
-      x: ((dx0 + dx1) / 2) * k,
-      y: ((dy0 + dy1) / 2) * k,
-      width: (dx1 - dx0) * k,
-      height: (dy1 - dy0) * k,
+    box: {
+      left: dx * k - w / 2 - airX,
+      top: dy * k - CAIRN.ground * h - airY,
+      width: w + 2 * airX,
+      height: h + 2 * airY,
     },
+    stones: { left: airX, top: airY, width: w, height: h },
   };
 }
 

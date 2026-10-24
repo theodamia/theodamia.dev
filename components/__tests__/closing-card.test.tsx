@@ -7,7 +7,7 @@ import { ClosingCard } from '@/components/closing-card';
 const card = () =>
   screen.getByRole('heading', { name: 'The ascent never stops' }).closest('section')!;
 const setAside = () => card().parentElement!.hasAttribute('inert');
-const door = () => screen.queryByRole('button', { name: /Today's note/ });
+const cairn = () => screen.queryByRole('button', { name: /Today's note/ });
 
 function climb() {
   return render(
@@ -33,22 +33,22 @@ describe('ClosingCard', () => {
     );
     expect(screen.getByRole('link', { name: /plain list/ })).toHaveAttribute('href', '/cv');
     expect(screen.getByRole('button', { name: 'Or just take in the view' })).toBeInTheDocument();
-    expect(door()).toBeNull();
+    expect(cairn()).toBeNull();
   });
 
-  it("goes into today's camp, and the camp brings it back out", async () => {
+  it("goes into the cairn by today's camp, and the cairn brings it back out", async () => {
     climb();
 
     await userEvent.click(screen.getByRole('button', { name: 'Or just take in the view' }));
     expect(setAside()).toBe(true);
     expect(document.documentElement).toHaveAttribute('data-scenery');
-    expect(door()).toHaveFocus();
-    /* the way back is named once, under the camp's name, for a moment */
-    expect(door()).toHaveAttribute('data-hint');
+    expect(cairn()).toHaveFocus();
+    /* the way back is named once, over the cairn, for a moment */
+    expect(cairn()).toHaveAttribute('data-hint');
 
-    await userEvent.click(door()!);
+    await userEvent.click(cairn()!);
     expect(setAside()).toBe(false);
-    expect(door()).toBeNull();
+    expect(cairn()).toBeNull();
     expect(document.documentElement).not.toHaveAttribute('data-scenery');
     expect(screen.getByRole('button', { name: 'Or just take in the view' })).toHaveFocus();
   });

@@ -52,9 +52,6 @@
   --color-halo: rgb(255 255 255 / 0.8);
   /* the foreground mist */
   --color-wisp: oklch(0.985 0.008 85);
-  /* the lamp lit in today's camp while the closing card is kept there, and its hot centre */
-  --color-lamp: oklch(0.83 0.14 72);
-  --color-lamp-core: oklch(0.96 0.07 90);
   /* the snow that falls on the heights */
   --color-flake: oklch(0.99 0.008 250);
   /* a flake's shaded rim: what keeps a white flake visible against a white mountain, without an outline */
@@ -179,8 +176,7 @@
   --color-pine-front: oklch(0.2 0.025 215);
   --color-halo: rgb(10 16 24 / 0.75);
   --color-wisp: oklch(0.4 0.03 255);
-  /* by moonlight the snow still catches the light, and the lamp burns brighter */
-  --color-lamp: oklch(0.85 0.16 70);
+  /* by moonlight the snow still catches the light */
   --color-flake: oklch(0.93 0.012 250);
   --color-flake-shade: oklch(0.66 0.045 258);
 
@@ -458,157 +454,177 @@
 }
 
 /*
- * Today's camp's door (components/scene/camp-door.tsx): laid over the tent and its name while the closing card is
- * kept there. The door itself is invisible but for its focus ring. A lamp burns in the doorway, breathing slowly,
- * brighter under the pointer or focus; and the camp's name says "Today's note" then, and for a moment right after
- * the card goes in (`data-hint`), so the way back is shown once without being asked for.
+ * The cairn by today's camp (components/scene/cairn.tsx), up while the closing card is kept in it. The button is
+ * the stones and a little air around them, invisible but for its focus ring; the stage sizes it and moves it with
+ * the camp. Under the pointer or focus the stones catch a little more light and "Today's note" shows over them, as
+ * it does for a moment right after the card goes in (`data-hint`), so the way back is shown once unasked.
  */
-.camp-door {
+.cairn {
   position: fixed;
   top: 0;
   left: 0;
   z-index: 3;
   padding: 0;
   border: 0;
-  border-radius: 18px;
+  border-radius: 14px;
   background: none;
   cursor: pointer;
 }
 
-.camp-door:focus-visible {
+.cairn:focus-visible {
   outline: 2px solid var(--color-accent);
-  outline-offset: 6px;
+  outline-offset: 2px;
 }
 
-.camp-door-lamp {
-  position: absolute;
-  top: var(--lamp-y);
-  left: var(--lamp-x);
-  width: var(--lamp-w);
-  height: var(--lamp-h);
-  translate: -50% -50%;
-  pointer-events: none;
-}
-
-/* the light it gives: a halo around the doorway, and a pool of it on the ground in front, added like light */
-.camp-door-lamp::before,
-.camp-door-lamp::after {
-  content: '';
-  position: absolute;
-  mix-blend-mode: screen;
-  opacity: 0.8;
-  transition: opacity 0.4s var(--ease-soft);
-}
-
-.camp-door-lamp::before {
-  inset: -70% -90%;
-  background: radial-gradient(
-    ellipse 50% 50%,
-    color-mix(in oklab, var(--color-lamp) 42%, transparent),
-    transparent 70%
-  );
-}
-
-.camp-door-lamp::after {
-  top: 78%;
-  left: -110%;
-  width: 320%;
-  height: 120%;
-  background: radial-gradient(
-    ellipse 50% 40% at 50% 30%,
-    color-mix(in oklab, var(--color-lamp) 60%, transparent),
-    transparent 72%
-  );
-}
-
-.camp-door:is(:hover, :focus-visible) .camp-door-lamp::before,
-.camp-door:is(:hover, :focus-visible) .camp-door-lamp::after {
-  opacity: 1;
-}
-
-/* the doorway itself, lit from inside: brightest low in the middle, warm to its arched edges */
-.camp-door-flame {
+/* the stones and the air around them: what the closing card shrinks into */
+.cairn-stones {
   position: absolute;
   inset: 0;
-  border-radius: 46% 46% 10% 10% / 42% 42% 10% 10%;
-  background: radial-gradient(
-    ellipse 75% 85% at 50% 72%,
-    var(--color-lamp-core) 0,
-    var(--color-lamp) 42%,
-    color-mix(in oklab, var(--color-lamp) 70%, transparent) 74%,
-    transparent 100%
-  );
-  animation: lamp-breathe 3.2s ease-in-out infinite alternate;
+  padding: var(--air-y) var(--air-x);
 }
 
-@keyframes lamp-breathe {
-  from {
-    opacity: 0.84;
-  }
-
-  to {
-    opacity: 1;
-  }
+.cairn-stones img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: filter 0.3s var(--ease-soft);
 }
 
-.scene-label-note {
+:root[data-theme='dark'] .cairn-stones img[data-art='day'],
+:root:not([data-theme='dark']) .cairn-stones img[data-art='night'] {
   display: none;
 }
 
-:root[data-scenery] .scene-label-note {
-  display: block;
-  margin-top: 2px;
-  font-size: 11.5px;
-  font-weight: 650;
-  text-align: center;
-  color: var(--color-accent-text);
-  opacity: 0;
-  transition: opacity 0.35s var(--ease-soft);
+.cairn:is(:hover, :focus-visible) .cairn-stones img {
+  filter: brightness(1.1) contrast(1.06);
 }
 
-:root:has(.camp-door:is(:hover, :focus-visible, [data-hint])) .scene-label-note {
+:root[data-theme='dark'] .cairn:is(:hover, :focus-visible) .cairn-stones img {
+  filter: brightness(1.3);
+}
+
+.cairn-note {
+  position: absolute;
+  /* clear of the box, so the focus ring never runs through it */
+  bottom: calc(100% + 7px);
+  left: 50%;
+  translate: -50% 0;
+  font-size: 12.5px;
+  font-weight: 650;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: var(--color-ink);
+  text-shadow: var(--text-shadow-halo);
+  opacity: 0;
+  transition: opacity 0.35s var(--ease-soft);
+  pointer-events: none;
+}
+
+.cairn:is(:hover, :focus-visible, [data-hint]) .cairn-note {
   opacity: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .camp-door-flame {
-    animation: none;
-  }
-
-  .camp-door-lamp::before,
-  .camp-door-lamp::after,
-  .scene-label-note {
+  .cairn-stones img,
+  .cairn-note {
     transition: none;
   }
 }
 
 /*
- * The closing card going into today's camp and coming back out (a view transition, named only while it runs,
- * lib/view-morph.ts). The box travels and reshapes between the card and the camp's door, clipped to rounded
- * corners, and each picture keeps its own size inside it: the box closes over the card as it shrinks into the
- * tent and reveals it as it grows back, rather than stretching one into the other. What is leaving fades quickly;
- * what is arriving takes the whole move.
+ * The closing card going into today's cairn and coming back out (view transitions, named only while they run,
+ * lib/view-morph.ts; one name each way, since the card is the old picture going in and the new one coming out).
+ * The box travels and reshapes between the card and the cairn's stones, clipped to rounded corners. The card
+ * shrinks whole inside it, a miniature tucked in among the stones, and stays in sight for most of the way before
+ * the cairn takes over; coming out, the cairn steps aside at once and the card grows back from it. The cairn
+ * keeps its own size throughout, so it is never blown up to the card's.
  */
-::view-transition-group(closing-card) {
+:is(::view-transition-group(card-in), ::view-transition-group(card-out)) {
   overflow: clip;
   border-radius: 22px;
-  animation-duration: 460ms;
+  animation-duration: 480ms;
   animation-timing-function: var(--ease-soft);
 }
 
-::view-transition-old(closing-card),
-::view-transition-new(closing-card) {
+:is(
+  ::view-transition-old(card-in),
+  ::view-transition-new(card-in),
+  ::view-transition-old(card-out),
+  ::view-transition-new(card-out)
+) {
   height: 100%;
+  animation-duration: 480ms;
+  animation-timing-function: linear;
+}
+
+/* the card: shrinking whole, or growing back */
+:is(::view-transition-old(card-in), ::view-transition-new(card-out)) {
+  object-fit: contain;
+}
+
+/* the cairn: at its own size */
+:is(::view-transition-new(card-in), ::view-transition-old(card-out)) {
   object-fit: none;
-  object-position: 50% 50%;
 }
 
-::view-transition-old(closing-card) {
-  animation-duration: 220ms;
+::view-transition-old(card-in) {
+  animation-name: card-tuck;
 }
 
-::view-transition-new(closing-card) {
-  animation-duration: 460ms;
+::view-transition-new(card-in) {
+  animation-name: cairn-take-over;
+}
+
+::view-transition-old(card-out) {
+  animation-name: cairn-step-aside;
+}
+
+::view-transition-new(card-out) {
+  animation-name: card-unfold;
+}
+
+@keyframes card-tuck {
+  0%,
+  60% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes cairn-take-over {
+  0%,
+  45% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes cairn-step-aside {
+  0% {
+    opacity: 1;
+  }
+
+  25%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes card-unfold {
+  0% {
+    opacity: 0;
+  }
+
+  30%,
+  100% {
+    opacity: 1;
+  }
 }
 
 @media (min-width: 900px) {

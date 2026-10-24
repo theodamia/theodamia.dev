@@ -13,11 +13,11 @@ import {
   poseAt,
   SNOWLINE_CAMP,
   stageScale,
-  todayDoor,
+  todayCairn,
   usesPhoneArt,
   type View,
 } from '@/scene/camera';
-import { BACKDROP, campFlat, FLATS } from '@/scene/flats';
+import { BACKDROP, CAIRN, campFlat, FLATS } from '@/scene/flats';
 import { CAMP_COUNT, SIDES } from '@/scene/world';
 
 const WIDE: View = { width: 1440, height: 900, wide: true, laneGap: 720 };
@@ -239,7 +239,7 @@ describe('camera', () => {
     }
   });
 
-  it("keeps today's door on its camp, the lamp in the doorway and the name inside the box", () => {
+  it("keeps today's cairn by its camp, standing on its spot, with room for a finger around it", () => {
     for (const view of [WIDE, PHONE]) {
       const flat = campFlat(LAST)!;
       const { x, y, v } = anchorOnScreen(flat.id, LAST, view);
@@ -247,18 +247,18 @@ describe('camera', () => {
       expect(pose.today.x).toBeCloseTo(x, 3);
       expect(pose.today.y).toBeCloseTo(y, 3);
 
-      const { box, lamp } = todayDoor(view)!;
-      const [x0, y0, x1, y1] = flat.tent!;
-      /* the box covers the whole tent, and the name above it */
-      expect(box.left).toBeLessThanOrEqual(x0 * v + 0.01);
-      expect(box.left + box.width).toBeGreaterThanOrEqual(x1 * v - 0.01);
-      expect(box.top).toBeLessThan(y0 * v);
-      expect(box.top + box.height).toBeGreaterThanOrEqual(y1 * v - 0.01);
-      /* the lamp burns inside the tent */
-      expect(lamp.x).toBeGreaterThan(x0 * v);
-      expect(lamp.x).toBeLessThan(x1 * v);
-      expect(lamp.y).toBeGreaterThan(y0 * v);
-      expect(lamp.y).toBeLessThan(y1 * v);
+      const { box, stones } = todayCairn(view)!;
+      const { at, height } = flat.cairn!;
+      /* the picture is drawn `height` units tall, its stones on the snow at `at` */
+      expect(stones.height).toBeCloseTo(height * v, 3);
+      expect(box.left + stones.left + stones.width / 2).toBeCloseTo(at[0] * v, 3);
+      expect(box.top + stones.top + CAIRN.ground * stones.height).toBeCloseTo(at[1] * v, 3);
+      /* the box holds the stones with air around them, and is big enough to hit */
+      expect(stones.left).toBeGreaterThanOrEqual(10);
+      expect(stones.top).toBeGreaterThanOrEqual(10);
+      expect(box.width).toBeCloseTo(stones.left * 2 + stones.width, 3);
+      expect(box.height).toBeCloseTo(stones.top * 2 + stones.height, 3);
+      expect(Math.min(box.width, box.height)).toBeGreaterThanOrEqual(44);
     }
   });
 

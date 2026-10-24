@@ -20,8 +20,9 @@
  * columns of its own start after the end (the bleed), so the copies overlap on identical paint instead of
  * meeting on a hairline. Its phone file is the whole tile, smaller, since a tile cannot be cut.
  * The shared flag (raw/flag-parts-{day,night}.png) is split into its pole and its pennant the same way, and the
- * sky's clouds (raw/clouds-{day,night}.png, a row of separate clouds) into one picture each. The night's aurora
- * (raw/aurora-<n>.png) is painted on black instead: its brightness becomes its opacity.
+ * sky's clouds (raw/clouds-{day,night}.png, a row of separate clouds) into one picture each, and the cairn by
+ * today's camp (raw/cairn-{day,night}.png) is trimmed to its stones. The night's aurora (raw/aurora-<n>.png) is
+ * painted on black instead: its brightness becomes its opacity.
  *
  * public/scene/ belongs to this script: it is emptied first. Check PNGs go to art/scene/flats/check/.
  */
@@ -76,6 +77,7 @@ const ENCODE = {
   FLAG: { quality: 86, alphaQuality: 90, effort: 6 },
   CLOUD: { quality: 74, alphaQuality: 78, effort: 6, smartSubsample: true },
   AURORA: { quality: 78, effort: 6, smartSubsample: true },
+  CAIRN: { quality: 80, alphaQuality: 88, effort: 6 },
 };
 const BUDGET = { DESKTOP: 1_500_000, PHONE: 800_000 };
 /** The flag's cloth hangs this many pole pixels below the widest row of the cap. */
@@ -91,6 +93,13 @@ const CLOUDS = { EMPTY: 0.02, GAP: 24, SCALE: 0.75 };
  * pointer, so it has no phone file.
  */
 const AURORA = { COUNT: 2, FLOOR: 6, TRIM: 0.02, WIDTH: 1400 };
+/**
+ * The cairn: how tall it ships (it is drawn about 56 px tall at 1440 × 900 and 90 px at 2560 × 1440, so this
+ * covers a dense screen at either, near enough), and where its stones stand on the snow, as a share of the
+ * picture's height from the top (the patch of snow it is built on spreads below that line, in front of it).
+ * Measured on the painting.
+ */
+const CAIRN = { HEIGHT: 150, GROUND: 0.93 };
 
 /** Camp depths below the focus at each stop, in units (guides.json `OY`); the ridges' fades are measured from them. */
 const guides = JSON.parse(await fs.readFile(GUIDES, 'utf8'));
@@ -159,15 +168,14 @@ const FLATS = [
     ],
   },
   /*
-   * the dome's frame stands a little above its canvas. Today's camp also knows its whole outline (`tent`) and its
-   * doorway (`door`), both [x0, y0, x1, y1] in units from the trail point: the closing card folds into it, and the
-   * doorway is lit from inside until the card is taken out again (components/scene/camp-door.tsx). Measured on the
-   * painting (the slate of the opening, from the camp kit's colours).
+   * the dome's frame stands a little above its canvas. Today's camp also has a cairn by its path, where the
+   * closing card is kept while it is set aside (components/scene/cairn.tsx): `at` is where its stones stand on the
+   * snow, in units from the trail point (at the bend where the path leaves the camp and climbs on), and `height`
+   * how tall it is drawn, in units (a little over half the tent).
    */
   {
     ...ridge('deepsea', 5, 2026, -1, 34, [-42, -74]),
-    tent: [-130, -88, 44, 6],
-    door: [-40, -37, 10, 3],
+    cairn: { at: [160, -22], height: 56 },
   },
   /* the bell tent's peak */
   ridge('lead', 4, 2022, 1, -122, [72, -147]),
@@ -627,8 +635,8 @@ async function processFlat(flat) {
     entry.label = flat.label;
   }
 
-  if (flat.tent) {
-    Object.assign(entry, { tent: flat.tent, door: flat.door });
+  if (flat.cairn) {
+    entry.cairn = flat.cairn;
   }
 
   console.log(`${flat.id.padEnd(10)} ${trim.width}×${trim.height}  box ${entry.box.join(', ')}`);
@@ -855,6 +863,50 @@ async function processAurora() {
   return layers;
 }
 
+/**
+ * The cairn by today's camp: one small picture per theme, trimmed to its stones and their patch of snow, the night
+ * with the day's outline like every painting. `ground` is where the stones stand, as a share of its height.
+ */
+async function processCairn() {
+  const pair = await keyPair('cairn');
+  const { W, H } = pair.canvas;
+  const alpha = pair.day.alpha;
+  const box = { x0: W, y0: H, x1: 0, y1: 0 };
+
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      if (alpha[y * W + x] * 255 <= TRIM_ALPHA) continue;
+      box.x0 = Math.min(box.x0, x);
+      box.y0 = Math.min(box.y0, y);
+      box.x1 = Math.max(box.x1, x);
+      box.y1 = Math.max(box.y1, y);
+    }
+  }
+
+  const trim = {
+    left: box.x0,
+    top: box.y0,
+    width: box.x1 - box.x0 + 1,
+    height: box.y1 - box.y0 + 1,
+  };
+  const width = Math.round((trim.width * CAIRN.HEIGHT) / trim.height);
+  const art = {};
+
+  for (const theme of ['day', 'night']) {
+    const rgba = compose(pair[theme].rgb, alpha, { fades: [] }, null, pair.canvas);
+    const png = await sharp(rgba, { raw: { width: W, height: H, channels: 4 } })
+      .extract(trim)
+      .png()
+      .toBuffer();
+    await fs.writeFile(path.join(CHECK_DIR, `cairn-${theme}.png`), png);
+    art[theme] = await emit(png, `cairn-${theme}`, ENCODE.CAIRN, width);
+  }
+
+  console.log(`cairn      ${trim.width}×${trim.height}`);
+
+  return { w: width, h: CAIRN.HEIGHT, ground: CAIRN.GROUND, art };
+}
+
 await fs.rm(OUT_DIR, { recursive: true, force: true });
 await fs.mkdir(OUT_DIR, { recursive: true });
 await fs.mkdir(CHECK_DIR, { recursive: true });
@@ -874,10 +926,12 @@ const manifest = {
   flag: await processFlag(),
   clouds: await processClouds(),
   aurora: await processAurora(),
+  cairn: await processCairn(),
 };
 await fs.writeFile(MANIFEST, await format(JSON.stringify(manifest), { parser: 'json' }));
 
-/* what a visit costs, per theme and device: every flat's near and far versions, the flag and the clouds */
+/* what a visit costs, per theme and device: every flat's near and far versions, the flag, the clouds and the
+   cairn (fetched once the closing card comes into view, so only by whoever reaches the end, but counted) */
 const sizeOf = name => written.find(file => file.name === name)?.bytes ?? 0;
 
 for (const theme of ['day', 'night']) {
@@ -885,7 +939,8 @@ for (const theme of ['day', 'night']) {
   const flagBytes =
     sizeOf(flag.pole) +
     sizeOf(flag.cloth) +
-    manifest.clouds.reduce((sum, cloud) => sum + sizeOf(cloud.art[theme]), 0);
+    manifest.clouds.reduce((sum, cloud) => sum + sizeOf(cloud.art[theme]), 0) +
+    sizeOf(manifest.cairn.art[theme]);
   let desktop = flagBytes;
   let phone = flagBytes;
 

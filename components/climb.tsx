@@ -6,7 +6,7 @@ import { flushSync } from 'react-dom';
 import { Altimeter } from '@/components/altimeter';
 import { JobCard } from '@/components/job-card';
 import { AscentStage } from '@/components/scene/ascent-stage';
-import { CampDoor } from '@/components/scene/camp-door';
+import { Cairn } from '@/components/scene/cairn';
 import { SceneryContext } from '@/components/scenery';
 import { ScrollCue } from '@/components/scroll-cue';
 import { JOBS } from '@/content/jobs';
@@ -21,9 +21,9 @@ import { cn } from '@/utils/cn';
 const LEG_SCROLL_LVH = 140;
 /** Room under the last card before the page's closing section. */
 const LAST_CARD_LVH = 110;
-/** The view transition that carries the closing card into today's camp and out again. */
-const CARD_MORPH = 'closing-card';
-/** How long the way back is shown after the card is set aside ("Today's note" under the camp's name), in ms. */
+/** The view transitions that carry the closing card into today's cairn and out again (one name each way). */
+const CARD_MORPH = { IN: 'card-in', OUT: 'card-out' } as const;
+/** How long the way back is shown after the card is set aside ("Today's note" over the cairn), in ms. */
 const HINT_MS = 3200;
 
 type ClimbProps = {
@@ -59,10 +59,10 @@ export function Climb({ hero, children }: ClimbProps) {
   /* the closing card in view is what "the climb is over" means: the last job is behind you and the summit is off
      the top of the screen, so the label up there has nothing left to point at */
   const climbOver = useInView(closing);
-  /* taking in the view: the closing card set aside into today's camp (components/scenery.tsx) */
+  /* taking in the view: the closing card set aside into today's cairn (components/scenery.tsx) */
   const [viewing, setViewing] = useState(false);
   const card = useRef<HTMLElement>(null);
-  const door = useRef<HTMLButtonElement>(null);
+  const cairn = useRef<HTMLButtonElement>(null);
   const returning = useRef(false);
   const hint = useRef(0);
   const { stop, year, moving, scrollToStop } = useClimbScroll({
@@ -74,22 +74,24 @@ export function Climb({ hero, children }: ClimbProps) {
     walked,
   });
 
-  /* the card goes into the camp, or comes back out of it; the camp's name shows the way back for a moment */
+  const stones = () => cairn.current?.querySelector<HTMLElement>('[data-cairn-stones]') ?? null;
+
+  /* the card shrinks onto the cairn's stones, or grows back off them; the cairn names the way back for a moment */
   const fold = (next: boolean) => {
     returning.current = !next;
     morph(
-      next ? card.current : door.current,
-      () => (next ? door.current : card.current),
+      next ? card.current : stones(),
+      () => (next ? stones() : card.current),
       () => {
         flushSync(() => setViewing(next));
         if (!next) return;
-        const el = door.current;
+        const el = cairn.current;
         el?.focus({ preventScroll: true });
         el?.setAttribute('data-hint', '');
         window.clearTimeout(hint.current);
         hint.current = window.setTimeout(() => el?.removeAttribute('data-hint'), HINT_MS);
       },
-      CARD_MORPH
+      next ? CARD_MORPH.IN : CARD_MORPH.OUT
     );
   };
 
@@ -139,7 +141,7 @@ export function Climb({ hero, children }: ClimbProps) {
         reducedMotion={reducedMotion}
         stop={stop}
         climbOver={climbOver}
-        doorRef={door}
+        cairnRef={cairn}
       />
 
       <div
@@ -180,7 +182,7 @@ export function Climb({ hero, children }: ClimbProps) {
         walkedRef={walked}
       />
       <ScrollCue gone={moving} onStart={() => scrollToStop(campOf(0))} />
-      <CampDoor open={viewing} onOpen={() => fold(false)} ref={door} />
+      <Cairn open={viewing} warm={climbOver} onOpen={() => fold(false)} ref={cairn} />
     </main>
   );
 }

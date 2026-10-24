@@ -27,9 +27,11 @@ export type Flat = {
   flagDx?: number;
   /** The top centre of the camp itself (tent, cabin or chalets), in units from its trail point: its name's place. */
   label?: readonly [x: number, y: number];
-  /** Today's camp only: the tent's outline and its doorway, each [x0, y0, x1, y1] in units from its trail point. */
-  tent?: readonly [x0: number, y0: number, x1: number, y1: number];
-  door?: readonly [x0: number, y0: number, x1: number, y1: number];
+  /**
+   * Today's camp only: its cairn, where the closing card is kept while it is set aside. `at` is where the stones
+   * stand on the snow, in units from the trail point, and `height` how tall the picture is drawn, in units.
+   */
+  cairn?: { at: readonly [x: number, y: number]; height: number };
   /**
    * A seamless tile (the backdrop): the page lays copies a period apart. Its files hold the period plus `bleed`
    * pixels of its own start, so each copy overlaps the last on identical paint (pixels of the desktop file).
@@ -56,6 +58,7 @@ export type Flag = {
 
 const box = (values: number[]): Box => [values[0], values[1], values[2], values[3]];
 const span = (values?: number[]): Span | undefined => values && [values[0], values[1]];
+const point = (values: number[]) => [values[0], values[1]] as const;
 
 /**
  * The flats, back to front, from `scene/flats.json` (written by `pnpm flats`). JSON arrays come in as
@@ -73,8 +76,7 @@ export const FLATS: Flat[] = manifest.order.map(id => {
     solid: span('solid' in entry ? entry.solid : undefined),
     solidPhone: span('solidPhone' in entry ? entry.solidPhone : undefined),
     label: span('label' in entry ? entry.label : undefined),
-    tent: 'tent' in entry ? box(entry.tent) : undefined,
-    door: 'door' in entry ? box(entry.door) : undefined,
+    cairn: 'cairn' in entry ? { at: point(entry.cairn.at), height: entry.cairn.height } : undefined,
   };
 });
 
@@ -91,6 +93,15 @@ export const CLOUDS: Cloud[] = manifest.clouds;
 
 /** The night's aurora: its painted layers (night only, glow on black, blended as light), back to front. */
 export const AURORA: { w: number; h: number; art: string }[] = manifest.aurora;
+
+/**
+ * The cairn's picture: its size in pixels (its shape), where its stones stand on the snow as a share of its height
+ * from the top (its patch of snow spreads in front, below that line), and its file per theme.
+ */
+export type Cairn = { w: number; h: number; ground: number; art: Record<Theme, string> };
+
+/** The cairn by today's camp (components/scene/cairn.tsx). */
+export const CAIRN: Cairn = manifest.cairn;
 
 /** Camps are keyed by their start year, so adding or removing a job never shifts another camp's art. */
 const CAMP_YEARS = [TRAILHEAD.year, ...JOBS.map(job => job.start)];

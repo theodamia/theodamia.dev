@@ -12,9 +12,9 @@ const QUIET_LINK =
   'text-ink-3 hover:text-ink cursor-pointer text-[15px] font-semibold underline decoration-dotted underline-offset-4';
 
 /**
- * The card at the top of the climb, and a way to set it aside: "Or just take in the view" carries it into today's
- * camp, where a lamp is lit in the doorway until the camp is clicked and the card comes back out (the climb owns
- * the state and the door: components/climb.tsx, components/scene/camp-door.tsx).
+ * The card at the top of the climb, and a way to set it aside: "Or just take in the view" shrinks it into a
+ * cairn by the path above today's camp, kept there like a note under a stone until the cairn is clicked and the
+ * card comes back out (the climb owns the state and the cairn: components/climb.tsx, components/scene/cairn.tsx).
  *
  * Set aside, the card keeps its place in the page (hidden and inert, not removed), so the page's length, and with
  * it the climb's last stop, never move. When the reader brings it back, focus returns to the link they left from.

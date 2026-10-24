@@ -15,7 +15,7 @@ import {
   poseAt,
   SNOWLINE_CAMP,
   STAGE_SCALE_CSS,
-  todayDoor,
+  todayCairn,
   type View,
 } from '@/scene/camera';
 import { FLATS } from '@/scene/flats';
@@ -37,10 +37,10 @@ type AscentStageProps = {
   /** True once the climb is over and the closing card is up: the summit's line fades out. */
   climbOver: boolean;
   /**
-   * Today's camp's door (components/scene/camp-door.tsx): a button in the page, not in the stage, but the stage
+   * The cairn by today's camp (components/scene/cairn.tsx): a button in the page, not in the stage, but the stage
    * says where it stands, sizing it on resize and moving it with the camp each frame.
    */
-  doorRef?: React.RefObject<HTMLButtonElement | null>;
+  cairnRef?: React.RefObject<HTMLButtonElement | null>;
   ref: React.Ref<SceneHandle>;
 };
 
@@ -57,7 +57,7 @@ type Layers = {
  * variables, no layout reads, no React state. That is what keeps the scroll smooth. Nothing moves until the
  * paintings of the first view are decoded; after that each painting shows as soon as its own decode finishes.
  */
-export function AscentStage({ reducedMotion, stop, climbOver, doorRef, ref }: AscentStageProps) {
+export function AscentStage({ reducedMotion, stop, climbOver, cairnRef, ref }: AscentStageProps) {
   const stage = useRef<HTMLDivElement>(null);
   const day = useRef<HTMLDivElement>(null);
   const summit = useRef<HTMLDivElement>(null);
@@ -118,29 +118,27 @@ export function AscentStage({ reducedMotion, stop, climbOver, doorRef, ref }: As
     write(squall.current, 'opacity', pose.snow.thick.toFixed(3));
     /* dawn turns to day as you climb (by night, dusk to midnight) */
     write(day.current, 'opacity', pose.daylight.toFixed(3));
-    /* today's door stays on its camp: the page scrolls, the door does not drift off the tent */
+    /* today's cairn stays by its camp: the page scrolls, the cairn does not drift off the path */
     write(
-      doorRef?.current ?? null,
+      cairnRef?.current ?? null,
       'transform',
       `translate3d(${px(pose.today.x)},${px(pose.today.y)},0)`
     );
   };
 
-  /* the door's box and lamp, from today's camp at the summit: layout-time, never per frame */
-  const placeDoor = (el: HTMLElement | null | undefined) => {
-    const geometry = el && todayDoor(view.current);
+  /* the cairn's box and the air around its stones, from today's camp at the summit: layout-time, never per frame */
+  const placeCairn = (el: HTMLElement | null | undefined) => {
+    const geometry = el && todayCairn(view.current);
     if (!el || !geometry) return;
-    const { box, lamp } = geometry;
+    const { box, stones } = geometry;
     Object.assign(el.style, {
       marginLeft: `${box.left.toFixed(1)}px`,
       marginTop: `${box.top.toFixed(1)}px`,
       width: `${box.width.toFixed(1)}px`,
       height: `${box.height.toFixed(1)}px`,
     });
-    el.style.setProperty('--lamp-x', `${(lamp.x - box.left).toFixed(1)}px`);
-    el.style.setProperty('--lamp-y', `${(lamp.y - box.top).toFixed(1)}px`);
-    el.style.setProperty('--lamp-w', `${lamp.width.toFixed(1)}px`);
-    el.style.setProperty('--lamp-h', `${lamp.height.toFixed(1)}px`);
+    el.style.setProperty('--air-x', `${stones.left.toFixed(1)}px`);
+    el.style.setProperty('--air-y', `${stones.top.toFixed(1)}px`);
   };
 
   /* no dependency array: every frame must see the current props, and the rest lives in refs */
@@ -171,7 +169,7 @@ export function AscentStage({ reducedMotion, stop, climbOver, doorRef, ref }: As
         }),
         labels: Array.from(root.querySelectorAll<HTMLElement>('[data-scene-label]')),
       };
-      placeDoor(doorRef?.current);
+      placeCairn(cairnRef?.current);
     },
     applyFrame(frame: SceneFrame) {
       pending.current = frame;
@@ -276,8 +274,6 @@ export function AscentStage({ reducedMotion, stop, climbOver, doorRef, ref }: As
         <div key={camp.year} data-scene-label={i} data-reached={i <= stop} className='scene-label'>
           <span>
             {camp.place} <b>{camp.year}</b>
-            {/* today's camp keeps the closing card while it is set aside: the way back, named */}
-            {i === CAMPS.length - 1 && <small className='scene-label-note'>Today's note</small>}
           </span>
         </div>
       ))}

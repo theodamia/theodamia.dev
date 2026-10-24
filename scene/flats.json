@@ -73,8 +73,7 @@
       "side": -1,
       "flagDx": 34,
       "label": [-42, -74],
-      "tent": [-130, -88, 44, 6],
-      "door": [-40, -37, 10, 3]
+      "cairn": { "at": [160, -22], "height": 56 }
     },
     "camp-2022": {
       "kind": "camp",
@@ -245,5 +244,14 @@
   "aurora": [
     { "w": 1308, "h": 567, "art": "aurora-1.fdd0bf2f.webp" },
     { "w": 1297, "h": 317, "art": "aurora-2.3e62063e.webp" }
-  ]
+  ],
+  "cairn": {
+    "w": 115,
+    "h": 150,
+    "ground": 0.93,
+    "art": {
+      "day": "cairn-day.a2869e63.webp",
+      "night": "cairn-night.9cacbe18.webp"
+    }
+  }
 }
