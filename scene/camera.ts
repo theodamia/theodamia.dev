@@ -40,9 +40,8 @@ const LIFE = {
 } as const;
 /** Labels are shown only near: for the camp at hand and the next one. */
 const LABEL_SHOWN = [0.5, 0.75] as const;
-/** How high above its camp a label sits, and how far toward the outer side. */
-const LABEL_RISE = { CAMP: 98, TRAILHEAD: 92 } as const;
-const LABEL_SHIFT = -6;
+/** Units of clear air between the top of a camp (its tent, cabin or chalets) and the foot of its name. */
+const LABEL_GAP = 14;
 /** The summit line comes in over the last stretch of the climb. */
 const SUMMIT_FADE = [4.35, 4.95] as const;
 /**
@@ -254,8 +253,9 @@ export function poseAt(u: number, view: View): Pose {
       : 0;
     const near = smoothstep(LIFE.DETAIL[0], LIFE.DETAIL[1], p);
     const camp = flat.camp ?? 0;
-    const rise = camp === 0 ? LABEL_RISE.TRAILHEAD : LABEL_RISE.CAMP;
-    const [lx, ly] = [ax + (flat.side ?? 0) * LABEL_SHIFT, ay - rise];
+    /* just above the camp itself, centred on it: measured on each painting (flats.json `label`) */
+    const [dx, dy] = flat.label ?? [0, 0];
+    const [lx, ly] = [ax + dx, ay + dy - LABEL_GAP];
     /* placed in the box, like the flag: once the box stops growing, a name scaled by p would leave its tent */
     labels.push({
       camp,

@@ -116,16 +116,20 @@ function canvasOf(raw) {
 /**
  * One entry per flat, back to front. `raw` names the paintings, `camp` is the camp index (0 is the trailhead),
  * `side` the side its camp stands on (+1 right), `flagDx` where its flag stands from the trail point (units,
- * measured on the paintings: the Lead's pole stands left of its wide bell tent). Fades: [axis, alpha 1, alpha 0].
- * The ids follow the camps' start years, so adding a job never shifts another camp's art.
+ * measured on the paintings: the Lead's pole stands left of its wide bell tent), and `label` the top centre of
+ * the camp itself, the tent, cabin or chalets, as [x, y] units from the trail point: its name stands just above
+ * it. Measured on the paintings too, from the camp kit's colours, then centred on the structure by eye where a
+ * prop (a fire ring, a chest) pulled the measure aside. Fades: [axis, alpha 1, alpha 0]. The ids follow the
+ * camps' start years, so adding a job never shifts another camp's art.
  */
-const ridge = (raw, camp, year, side, flagDx) => ({
+const ridge = (raw, camp, year, side, flagDx, label) => ({
   id: `camp-${year}`,
   raw,
   kind: 'camp',
   camp,
   side,
   flagDx,
+  label,
   lod: true,
   fades: [
     ['x', side * 700, side * 1050],
@@ -154,17 +158,22 @@ const FLATS = [
       ['x', -400, -560],
     ],
   },
-  ridge('deepsea', 5, 2026, -1, 34),
-  ridge('lead', 4, 2022, 1, -122),
-  ridge('geekbot', 3, 2018, -1, 34),
-  ridge('ordereze', 2, 2016, 1, -34),
-  ridge('fedenet', 1, 2015, -1, 34),
+  /* the dome's frame stands a little above its canvas */
+  ridge('deepsea', 5, 2026, -1, 34, [-42, -74]),
+  /* the bell tent's peak */
+  ridge('lead', 4, 2022, 1, -122, [72, -147]),
+  ridge('geekbot', 3, 2018, -1, 34, [-86, -101]),
+  ridge('ordereze', 2, 2016, 1, -34, [59, -78]),
+  /* the cabin's chimney, over the middle of its roof */
+  ridge('fedenet', 1, 2015, -1, 34, [-93, -113]),
   {
     id: 'camp-2014',
     raw: 'village',
     kind: 'camp',
     camp: 0,
     side: 0,
+    /* the two chalets together: the trailhead's name stands over the village */
+    label: [-152, -105],
     /* no far version: the camera starts at the trailhead, so the village is never further than its stop */
     lod: false,
     /* painted wide, with bleed (compose-flats.mjs): the meadow reaches both edges at the hero up to 2.4:1 */
@@ -603,6 +612,10 @@ async function processFlat(flat) {
 
   if (flat.flagDx !== undefined) {
     entry.flagDx = flat.flagDx;
+  }
+
+  if (flat.label) {
+    entry.label = flat.label;
   }
 
   console.log(`${flat.id.padEnd(10)} ${trim.width}×${trim.height}  box ${entry.box.join(', ')}`);

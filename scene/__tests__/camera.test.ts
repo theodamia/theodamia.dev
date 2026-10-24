@@ -224,6 +224,20 @@ describe('camera', () => {
     expect(poseAt(LAST, WIDE).snow).toEqual({ falling: 1, thick: 1 });
   });
 
+  it("stands each camp's name just above its tent, cabin or chalets, centred on them, at its stop", () => {
+    for (let k = 0; k < CAMP_COUNT; k++) {
+      const flat = campFlat(k)!;
+      const { x, y, v, pose } = anchorOnScreen(flat.id, k, WIDE);
+      const label = pose.labels.find(item => item.camp === k)!;
+      const [dx, dy] = flat.label!;
+
+      expect(label.x).toBeCloseTo(x + dx * v, 3);
+      /* above the camp's top, with a little air between */
+      expect(label.y).toBeLessThan(y + dy * v);
+      expect(label.y).toBeGreaterThan(y + (dy - 30) * v);
+    }
+  });
+
   it('shows labels only for the camp at hand and the next one', () => {
     const labels = poseAt(2, WIDE).labels;
     expect(labels.find(label => label.camp === 2)?.opacity).toBe(1);

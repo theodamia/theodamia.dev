@@ -100,6 +100,17 @@ describe('painted flats', () => {
     }
   });
 
+  it('knows where every camp itself stands, above its trail point and inside its painting', () => {
+    for (const flat of FLATS.filter(item => item.kind === 'camp')) {
+      const [dx, dy] = flat.label!;
+      const ax = (flat.side ?? 0) * 150;
+      const [x, , width] = flat.box;
+      expect(dy, flat.id).toBeLessThan(0);
+      expect(ax + dx, flat.id).toBeGreaterThan(x);
+      expect(ax + dx, flat.id).toBeLessThan(x + width);
+    }
+  });
+
   it('keeps the phone version inside the desktop one', () => {
     for (const flat of FLATS) {
       const [x, y, w, h] = flat.box;

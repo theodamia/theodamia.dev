@@ -71,7 +71,8 @@
       "solidPhone": [-440.19, 441.15],
       "camp": 5,
       "side": -1,
-      "flagDx": 34
+      "flagDx": 34,
+      "label": [-42, -74]
     },
     "camp-2022": {
       "kind": "camp",
@@ -96,7 +97,8 @@
       "solidPhone": [-440.01, 441.33],
       "camp": 4,
       "side": 1,
-      "flagDx": -122
+      "flagDx": -122,
+      "label": [72, -147]
     },
     "camp-2018": {
       "kind": "camp",
@@ -121,7 +123,8 @@
       "solidPhone": [-440.19, 441.15],
       "camp": 3,
       "side": -1,
-      "flagDx": 34
+      "flagDx": 34,
+      "label": [-86, -101]
     },
     "camp-2016": {
       "kind": "camp",
@@ -146,7 +149,8 @@
       "solidPhone": [-440.01, 441.33],
       "camp": 2,
       "side": 1,
-      "flagDx": -34
+      "flagDx": -34,
+      "label": [59, -78]
     },
     "camp-2015": {
       "kind": "camp",
@@ -171,7 +175,8 @@
       "solidPhone": [-440.19, 441.15],
       "camp": 1,
       "side": -1,
-      "flagDx": 34
+      "flagDx": 34,
+      "label": [-93, -113]
     },
     "camp-2014": {
       "kind": "camp",
@@ -191,7 +196,8 @@
       "solid": [-1390, 780],
       "solidPhone": [-440.19, 441.51],
       "camp": 0,
-      "side": 0
+      "side": 0,
+      "label": [-152, -105]
     }
   },
   "flag": {
