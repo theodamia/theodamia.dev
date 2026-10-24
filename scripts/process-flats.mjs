@@ -5,7 +5,8 @@
  *
  * Every flat is one whole painting on flat magenta, made over a guide whose canvas covers a known rectangle of
  * design units (art/scene/flats/guides/guides.json). For each flat this script:
- *   1. keys the magenta out (the key colour is measured, generators drift from #FF00FF) and removes its spill;
+ *   1. keys the magenta out (the key colour is measured, generators drift from #FF00FF), removes its spill and
+ *      repaints the silhouette's outermost pixels from just inside it, where the generator's pink edge lives;
  *   2. applies the design fades, in units, so the ends and the foot dissolve and no edge is ever straight;
  *   3. gives the night painting the DAY alpha, so the two silhouettes match exactly through the theme reveal, and
  *      grows the night colours inward wherever the night painting drifted off its silhouette;
@@ -58,6 +59,12 @@ const SPILL_PULL = 0.3;
 const TRIM_ALPHA = 3;
 /** Passes of the inward fill that covers a night painting's drift off the day silhouette. */
 const FILL_PASSES = 10;
+/**
+ * The silhouette's edge band, in canvas pixels. Generators anti-alias the edge against the magenta with pinks too
+ * faint to key (min(red, blue) barely above green) at full opacity, which drew a pink hairline along every
+ * skyline. The band keeps its alpha and takes its colour from the paint just inside it instead.
+ */
+const EDGE = { BAND: 2, OPAQUE: 0.98 };
 const ENCODE = {
   NEAR: { quality: 76, alphaQuality: 80, effort: 6, smartSubsample: true },
   NEAR_PHONE: { quality: 72, alphaQuality: 80, effort: 6, smartSubsample: true },
@@ -370,12 +377,44 @@ async function emit(png, base, options, width) {
   return name;
 }
 
-/** Key a day/night pair: the day sets the silhouette for both. */
-async function keyPair(raw) {
+/** The opaque pixels at least EDGE.BAND pixels inside the silhouette: the colours that can be trusted. */
+function inside(alpha) {
+  const { W, H } = CANVAS;
+  let mask = Uint8Array.from(alpha, a => (a >= EDGE.OPAQUE ? 1 : 0));
+
+  for (let pass = 0; pass < EDGE.BAND; pass++) {
+    const next = new Uint8Array(mask.length);
+
+    for (let y = 1; y < H - 1; y++) {
+      for (let x = 1; x < W - 1; x++) {
+        const i = y * W + x;
+        next[i] = mask[i] & mask[i - 1] & mask[i + 1] & mask[i - W] & mask[i + W];
+      }
+    }
+
+    mask = next;
+  }
+
+  return mask;
+}
+
+/**
+ * Key a day/night pair: the day sets the silhouette for both, and the night's drift off it is painted inward
+ * from the night's own colours. A flat's edge band is repainted from inside too; the flag's is not (`edges:
+ * false`), because its pole is narrower than two bands and would take its colour from the stones.
+ */
+async function keyPair(raw, { edges = true } = {}) {
   const day = key(await load(path.join(RAW_DIR, `${raw}-day.png`)));
   const night = key(await load(path.join(RAW_DIR, `${raw}-night.png`)));
-  const trusted = Uint8Array.from(night.alpha, a => (a > 0.9 ? 1 : 0));
   const needed = Uint8Array.from(day.alpha, a => (a > 0 ? 1 : 0));
+
+  if (edges) {
+    fillInward(day.rgb, inside(day.alpha), needed);
+  }
+
+  const trusted = edges
+    ? inside(night.alpha)
+    : Uint8Array.from(night.alpha, a => (a > 0.9 ? 1 : 0));
   fillInward(night.rgb, trusted, needed);
 
   return { day, night };
@@ -466,7 +505,7 @@ async function processFlat(flat) {
 
 /** The flag sheet: the pole on the left half, the pennant on the right, each trimmed on its own. */
 async function processFlag() {
-  const pair = await keyPair('flag-parts');
+  const pair = await keyPair('flag-parts', { edges: false });
   const { W, H } = CANVAS;
   const split = Math.round(W * 0.42);
 

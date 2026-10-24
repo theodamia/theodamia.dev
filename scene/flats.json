@@ -18,12 +18,12 @@
       "px": [1664, 854],
       "art": {
         "day": {
-          "near": "far-near-day.20414186.webp",
-          "nearPhone": "far-near-day-phone.a72b9265.webp"
+          "near": "far-near-day.a62c2262.webp",
+          "nearPhone": "far-near-day-phone.e8ec6b74.webp"
         },
         "night": {
-          "near": "far-near-night.950052e3.webp",
-          "nearPhone": "far-near-night-phone.0b8df663.webp"
+          "near": "far-near-night.a1db428e.webp",
+          "nearPhone": "far-near-night-phone.85b71e46.webp"
         }
       }
     },
@@ -34,12 +34,12 @@
       "px": [1633, 578],
       "art": {
         "day": {
-          "near": "peak-near-day.c73f79bb.webp",
-          "nearPhone": "peak-near-day-phone.75c96e14.webp"
+          "near": "peak-near-day.c9c9cb70.webp",
+          "nearPhone": "peak-near-day-phone.8d6aa877.webp"
         },
         "night": {
-          "near": "peak-near-night.d6f0ff3d.webp",
-          "nearPhone": "peak-near-night-phone.23731963.webp"
+          "near": "peak-near-night.4d5d7fb4.webp",
+          "nearPhone": "peak-near-night-phone.df79eb10.webp"
         }
       }
     },
@@ -50,16 +50,16 @@
       "px": [1622, 887],
       "art": {
         "day": {
-          "near": "camp-2026-near-day.43c1bb3a.webp",
-          "nearPhone": "camp-2026-near-day-phone.74c053c0.webp",
-          "far": "camp-2026-far-day.01741c36.webp",
-          "farPhone": "camp-2026-far-day-phone.5ac16e8e.webp"
+          "near": "camp-2026-near-day.42f0befb.webp",
+          "nearPhone": "camp-2026-near-day-phone.862c76d3.webp",
+          "far": "camp-2026-far-day.0cc23ad9.webp",
+          "farPhone": "camp-2026-far-day-phone.7d92d618.webp"
         },
         "night": {
-          "near": "camp-2026-near-night.705b9fdb.webp",
-          "nearPhone": "camp-2026-near-night-phone.3abdc1d9.webp",
-          "far": "camp-2026-far-night.bbc48e17.webp",
-          "farPhone": "camp-2026-far-night-phone.53f6ede8.webp"
+          "near": "camp-2026-near-night.79ecdbfc.webp",
+          "nearPhone": "camp-2026-near-night-phone.a12eaeca.webp",
+          "far": "camp-2026-far-night.06c178ff.webp",
+          "farPhone": "camp-2026-far-night-phone.707722dd.webp"
         }
       },
       "camp": 5,
@@ -73,16 +73,16 @@
       "px": [1622, 884],
       "art": {
         "day": {
-          "near": "camp-2022-near-day.4970e250.webp",
-          "nearPhone": "camp-2022-near-day-phone.304e074d.webp",
-          "far": "camp-2022-far-day.11d2b6ce.webp",
-          "farPhone": "camp-2022-far-day-phone.21d8b3c8.webp"
+          "near": "camp-2022-near-day.e7dd0a68.webp",
+          "nearPhone": "camp-2022-near-day-phone.e9db03cd.webp",
+          "far": "camp-2022-far-day.661e2156.webp",
+          "farPhone": "camp-2022-far-day-phone.a52965aa.webp"
         },
         "night": {
-          "near": "camp-2022-near-night.db134c9b.webp",
-          "nearPhone": "camp-2022-near-night-phone.71792ad6.webp",
-          "far": "camp-2022-far-night.1cd2e908.webp",
-          "farPhone": "camp-2022-far-night-phone.e1da0e63.webp"
+          "near": "camp-2022-near-night.8935bd2d.webp",
+          "nearPhone": "camp-2022-near-night-phone.f387a46b.webp",
+          "far": "camp-2022-far-night.16c80ca2.webp",
+          "farPhone": "camp-2022-far-night-phone.bfdeaff8.webp"
         }
       },
       "camp": 4,
@@ -96,16 +96,16 @@
       "px": [1622, 867],
       "art": {
         "day": {
-          "near": "camp-2018-near-day.c4f2411c.webp",
-          "nearPhone": "camp-2018-near-day-phone.d31ef8b4.webp",
-          "far": "camp-2018-far-day.190e2483.webp",
-          "farPhone": "camp-2018-far-day-phone.660853d1.webp"
+          "near": "camp-2018-near-day.813d3941.webp",
+          "nearPhone": "camp-2018-near-day-phone.914d8f2f.webp",
+          "far": "camp-2018-far-day.66e39732.webp",
+          "farPhone": "camp-2018-far-day-phone.56b2d871.webp"
         },
         "night": {
-          "near": "camp-2018-near-night.38820df8.webp",
-          "nearPhone": "camp-2018-near-night-phone.ca26ea2b.webp",
-          "far": "camp-2018-far-night.0a80528c.webp",
-          "farPhone": "camp-2018-far-night-phone.f7784966.webp"
+          "near": "camp-2018-near-night.2e747afc.webp",
+          "nearPhone": "camp-2018-near-night-phone.9a06746d.webp",
+          "far": "camp-2018-far-night.b95e07d7.webp",
+          "farPhone": "camp-2018-far-night-phone.82ca9aec.webp"
         }
       },
       "camp": 3,
@@ -119,16 +119,16 @@
       "px": [1622, 865],
       "art": {
         "day": {
-          "near": "camp-2016-near-day.bc78d6ef.webp",
-          "nearPhone": "camp-2016-near-day-phone.b875dab9.webp",
-          "far": "camp-2016-far-day.897fd60a.webp",
-          "farPhone": "camp-2016-far-day-phone.74dcc6bf.webp"
+          "near": "camp-2016-near-day.812a5f32.webp",
+          "nearPhone": "camp-2016-near-day-phone.a0755e8c.webp",
+          "far": "camp-2016-far-day.f5350397.webp",
+          "farPhone": "camp-2016-far-day-phone.0a5be32a.webp"
         },
         "night": {
-          "near": "camp-2016-near-night.c40ecd93.webp",
-          "nearPhone": "camp-2016-near-night-phone.43637e42.webp",
-          "far": "camp-2016-far-night.f889d669.webp",
-          "farPhone": "camp-2016-far-night-phone.9b94cb9b.webp"
+          "near": "camp-2016-near-night.d7bc92d3.webp",
+          "nearPhone": "camp-2016-near-night-phone.d119324d.webp",
+          "far": "camp-2016-far-night.099ddde6.webp",
+          "farPhone": "camp-2016-far-night-phone.eeac44f6.webp"
         }
       },
       "camp": 2,
@@ -142,16 +142,16 @@
       "px": [1622, 868],
       "art": {
         "day": {
-          "near": "camp-2015-near-day.e2f99375.webp",
-          "nearPhone": "camp-2015-near-day-phone.499207d6.webp",
-          "far": "camp-2015-far-day.a25e5e6d.webp",
-          "farPhone": "camp-2015-far-day-phone.7508b348.webp"
+          "near": "camp-2015-near-day.4977f7f7.webp",
+          "nearPhone": "camp-2015-near-day-phone.524d6932.webp",
+          "far": "camp-2015-far-day.2481f069.webp",
+          "farPhone": "camp-2015-far-day-phone.52229663.webp"
         },
         "night": {
-          "near": "camp-2015-near-night.60f6074b.webp",
-          "nearPhone": "camp-2015-near-night-phone.fed33f6c.webp",
-          "far": "camp-2015-far-night.eadfd305.webp",
-          "farPhone": "camp-2015-far-night-phone.bdba6256.webp"
+          "near": "camp-2015-near-night.8a2cb830.webp",
+          "nearPhone": "camp-2015-near-night-phone.77c443aa.webp",
+          "far": "camp-2015-far-night.75555524.webp",
+          "farPhone": "camp-2015-far-night-phone.2df4bbb3.webp"
         }
       },
       "camp": 1,
@@ -165,16 +165,16 @@
       "px": [1642, 829],
       "art": {
         "day": {
-          "near": "camp-2014-near-day.451d883f.webp",
-          "nearPhone": "camp-2014-near-day-phone.c83962bd.webp",
-          "far": "camp-2014-far-day.287c609d.webp",
-          "farPhone": "camp-2014-far-day-phone.586b7d66.webp"
+          "near": "camp-2014-near-day.09e32695.webp",
+          "nearPhone": "camp-2014-near-day-phone.6c2c6f75.webp",
+          "far": "camp-2014-far-day.f8c74c83.webp",
+          "farPhone": "camp-2014-far-day-phone.50ff6402.webp"
         },
         "night": {
-          "near": "camp-2014-near-night.2b4e80a5.webp",
-          "nearPhone": "camp-2014-near-night-phone.34517a86.webp",
-          "far": "camp-2014-far-night.c710d72c.webp",
-          "farPhone": "camp-2014-far-night-phone.1dec7efb.webp"
+          "near": "camp-2014-near-night.e86bdc7f.webp",
+          "nearPhone": "camp-2014-near-night-phone.f8df936b.webp",
+          "far": "camp-2014-far-night.ea0f50e5.webp",
+          "farPhone": "camp-2014-far-night-phone.afaa3147.webp"
         }
       },
       "camp": 0,
