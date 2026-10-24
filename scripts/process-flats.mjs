@@ -158,8 +158,12 @@ const FLATS = [
       ['x', -400, -560],
     ],
   },
-  /* the dome's frame stands a little above its canvas */
-  ridge('deepsea', 5, 2026, -1, 34, [-42, -74]),
+  /*
+   * the dome's frame stands a little above its canvas. Today's camp also knows its whole outline (`tent`, units
+   * from the trail point) and its doorway (`door`): the closing card folds into it, and a lamp is lit there until
+   * the card is taken out again (components/scene/camp-door.tsx). Measured on the painting.
+   */
+  { ...ridge('deepsea', 5, 2026, -1, 34, [-42, -74]), tent: [-130, -88, 44, 6], door: [-15, -14] },
   /* the bell tent's peak */
   ridge('lead', 4, 2022, 1, -122, [72, -147]),
   ridge('geekbot', 3, 2018, -1, 34, [-86, -101]),
@@ -616,6 +620,10 @@ async function processFlat(flat) {
 
   if (flat.label) {
     entry.label = flat.label;
+  }
+
+  if (flat.tent) {
+    Object.assign(entry, { tent: flat.tent, door: flat.door });
   }
 
   console.log(`${flat.id.padEnd(10)} ${trim.width}×${trim.height}  box ${entry.box.join(', ')}`);

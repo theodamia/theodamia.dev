@@ -1,17 +1,31 @@
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { Climb } from '@/components/climb';
 import { ClosingCard } from '@/components/closing-card';
 
 const card = () =>
   screen.getByRole('heading', { name: 'The ascent never stops' }).closest('section')!;
-const folded = () => card().parentElement!.hasAttribute('inert');
+const setAside = () => card().parentElement!.hasAttribute('inert');
+const door = () => screen.queryByRole('button', { name: /Today's note/ });
+
+function climb() {
+  return render(
+    <Climb hero={null}>
+      <ClosingCard />
+    </Climb>
+  );
+}
 
 describe('ClosingCard', () => {
+  beforeEach(() => {
+    window.scrollTo = vi.fn();
+  });
+
   afterEach(() => document.documentElement.removeAttribute('data-scenery'));
 
-  it('offers the next page, the plain list, and the view', () => {
-    render(<ClosingCard />);
+  it('offers the next page, the plain list, and the view, and no way back until it is set aside', () => {
+    climb();
 
     expect(screen.getByRole('link', { name: 'About and skills' })).toHaveAttribute(
       'href',
@@ -19,39 +33,39 @@ describe('ClosingCard', () => {
     );
     expect(screen.getByRole('link', { name: /plain list/ })).toHaveAttribute('href', '/cv');
     expect(screen.getByRole('button', { name: 'Or just take in the view' })).toBeInTheDocument();
-    /* the tab only exists for a folded card */
-    expect(screen.queryByRole('button', { name: 'The ascent never stops' })).toBeNull();
+    expect(door()).toBeNull();
   });
 
-  it('folds into a tab that brings it back, with the summit line showing meanwhile', async () => {
-    render(<ClosingCard />);
+  it("goes into today's camp, and the camp brings it back out", async () => {
+    climb();
 
     await userEvent.click(screen.getByRole('button', { name: 'Or just take in the view' }));
-    expect(folded()).toBe(true);
+    expect(setAside()).toBe(true);
     expect(document.documentElement).toHaveAttribute('data-scenery');
-    const tab = screen.getByRole('button', { name: 'The ascent never stops' });
-    expect(tab).toHaveFocus();
-    expect(tab).toHaveAttribute('aria-expanded', 'false');
+    expect(door()).toHaveFocus();
+    /* the way back is named once, under the camp's name, for a moment */
+    expect(door()).toHaveAttribute('data-hint');
 
-    await userEvent.click(tab);
-    expect(folded()).toBe(false);
+    await userEvent.click(door()!);
+    expect(setAside()).toBe(false);
+    expect(door()).toBeNull();
     expect(document.documentElement).not.toHaveAttribute('data-scenery');
     expect(screen.getByRole('button', { name: 'Or just take in the view' })).toHaveFocus();
   });
 
-  it('opens again on Escape', async () => {
-    render(<ClosingCard />);
+  it('comes back on Escape', async () => {
+    climb();
 
     await userEvent.click(screen.getByRole('button', { name: 'Or just take in the view' }));
     await act(async () => {
       await userEvent.keyboard('{Escape}');
     });
 
-    expect(folded()).toBe(false);
+    expect(setAside()).toBe(false);
   });
 
-  it('keeps its place in the page while folded, so the page never changes length', async () => {
-    render(<ClosingCard />);
+  it('keeps its place in the page while set aside, so the page never changes length', async () => {
+    climb();
 
     await userEvent.click(screen.getByRole('button', { name: 'Or just take in the view' }));
 

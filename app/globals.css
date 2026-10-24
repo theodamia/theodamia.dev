@@ -52,6 +52,8 @@
   --color-halo: rgb(255 255 255 / 0.8);
   /* the foreground mist */
   --color-wisp: oklch(0.985 0.008 85);
+  /* the lamp lit in today's camp while the closing card is kept there */
+  --color-lamp: oklch(0.83 0.14 72);
   /* the snow that falls on the heights */
   --color-flake: oklch(0.99 0.008 250);
   /* a flake's shaded rim: what keeps a white flake visible against a white mountain, without an outline */
@@ -176,7 +178,8 @@
   --color-pine-front: oklch(0.2 0.025 215);
   --color-halo: rgb(10 16 24 / 0.75);
   --color-wisp: oklch(0.4 0.03 255);
-  /* by moonlight the snow still catches the light */
+  /* by moonlight the snow still catches the light, and the lamp burns brighter */
+  --color-lamp: oklch(0.85 0.16 70);
   --color-flake: oklch(0.93 0.012 250);
   --color-flake-shade: oklch(0.66 0.045 258);
 
@@ -454,10 +457,109 @@
 }
 
 /*
- * The closing card folding into its tab and back (a view transition, named only while it runs). The box travels
- * and reshapes, clipped to rounded corners, and each picture keeps its own size inside it: the box reveals the
- * card as it grows and closes over it as it shrinks, rather than stretching a tab into a card. What is leaving
- * fades quickly; what is arriving takes the whole move.
+ * Today's camp's door (components/scene/camp-door.tsx): laid over the tent and its name while the closing card is
+ * kept there. The door itself is invisible but for its focus ring. A lamp burns in the doorway, breathing slowly,
+ * brighter under the pointer or focus; and the camp's name says "Today's note" then, and for a moment right after
+ * the card goes in (`data-hint`), so the way back is shown once without being asked for.
+ */
+.camp-door {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  background: none;
+  cursor: pointer;
+}
+
+.camp-door:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 6px;
+}
+
+.camp-door-lamp {
+  position: absolute;
+  top: var(--lamp-y);
+  left: var(--lamp-x);
+  width: var(--lamp-size);
+  height: var(--lamp-size);
+  translate: -50% -50%;
+  opacity: 0.75;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  transition:
+    opacity 0.4s var(--ease-soft),
+    scale 0.4s var(--ease-soft);
+}
+
+.camp-door:is(:hover, :focus-visible) .camp-door-lamp {
+  opacity: 1;
+  scale: 1.15;
+}
+
+.camp-door-flame {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--color-lamp) 90%, transparent) 0,
+    color-mix(in oklab, var(--color-lamp) 40%, transparent) 34%,
+    transparent 70%
+  );
+  animation: lamp-breathe 3.2s ease-in-out infinite alternate;
+}
+
+@keyframes lamp-breathe {
+  from {
+    opacity: 0.7;
+    scale: 0.92;
+  }
+
+  to {
+    opacity: 1;
+    scale: 1.06;
+  }
+}
+
+.scene-label-note {
+  display: none;
+}
+
+:root[data-scenery] .scene-label-note {
+  display: block;
+  margin-top: 2px;
+  font-size: 11.5px;
+  font-weight: 650;
+  text-align: center;
+  color: var(--color-accent-text);
+  opacity: 0;
+  transition: opacity 0.35s var(--ease-soft);
+}
+
+:root:has(.camp-door:is(:hover, :focus-visible, [data-hint])) .scene-label-note {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .camp-door-flame {
+    animation: none;
+  }
+
+  .camp-door-lamp,
+  .scene-label-note {
+    transition: none;
+  }
+}
+
+/*
+ * The closing card going into today's camp and coming back out (a view transition, named only while it runs,
+ * lib/view-morph.ts). The box travels and reshapes between the card and the camp's door, clipped to rounded
+ * corners, and each picture keeps its own size inside it: the box closes over the card as it shrinks into the
+ * tent and reveals it as it grows back, rather than stretching one into the other. What is leaving fades quickly;
+ * what is arriving takes the whole move.
  */
 ::view-transition-group(closing-card) {
   overflow: clip;

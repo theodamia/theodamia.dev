@@ -13,6 +13,7 @@ import {
   poseAt,
   SNOWLINE_CAMP,
   stageScale,
+  todayDoor,
   usesPhoneArt,
   type View,
 } from '@/scene/camera';
@@ -235,6 +236,29 @@ describe('camera', () => {
       /* above the camp's top, with a little air between */
       expect(label.y).toBeLessThan(y + dy * v);
       expect(label.y).toBeGreaterThan(y + (dy - 30) * v);
+    }
+  });
+
+  it("keeps today's door on its camp, the lamp in the doorway and the name inside the box", () => {
+    for (const view of [WIDE, PHONE]) {
+      const flat = campFlat(LAST)!;
+      const { x, y, v } = anchorOnScreen(flat.id, LAST, view);
+      const pose = poseAt(LAST, view);
+      expect(pose.today.x).toBeCloseTo(x, 3);
+      expect(pose.today.y).toBeCloseTo(y, 3);
+
+      const { box, lamp } = todayDoor(view)!;
+      const [x0, y0, x1, y1] = flat.tent!;
+      /* the box covers the whole tent, and the name above it */
+      expect(box.left).toBeLessThanOrEqual(x0 * v + 0.01);
+      expect(box.left + box.width).toBeGreaterThanOrEqual(x1 * v - 0.01);
+      expect(box.top).toBeLessThan(y0 * v);
+      expect(box.top + box.height).toBeGreaterThanOrEqual(y1 * v - 0.01);
+      /* the lamp burns inside the tent */
+      expect(lamp.x).toBeGreaterThan(x0 * v);
+      expect(lamp.x).toBeLessThan(x1 * v);
+      expect(lamp.y).toBeGreaterThan(y0 * v);
+      expect(lamp.y).toBeLessThan(y1 * v);
     }
   });
 

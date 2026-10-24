@@ -189,6 +189,30 @@ describe('the climb stage', () => {
     expect(root.querySelector('.snow-layer')).toHaveAttribute('data-snowing');
   });
 
+  it("sizes today's door on resize and moves it with the camp by transform alone", async () => {
+    const doorRef = { current: document.createElement('button') };
+    document.body.append(doorRef.current);
+    const ref = createRef<SceneHandle>();
+    render(<AscentStage ref={ref} reducedMotion={false} stop={5} climbOver doorRef={doorRef} />);
+    act(() => ref.current!.resize({ laneGap: null }));
+
+    /* resize sets its box (layout-time); nothing has moved it yet */
+    const sized = propertiesOf(doorRef.current);
+    expect(sized).toEqual(expect.arrayContaining(['width', 'height', 'margin-left', 'margin-top']));
+    expect(sized).not.toContain('transform');
+
+    release();
+    await settle();
+    act(() => ref.current!.applyFrame({ leg: 4, f: 0.98 }));
+
+    /* a frame adds only its transform */
+    expect(propertiesOf(doorRef.current).filter(name => !sized.includes(name))).toEqual([
+      'transform',
+    ]);
+    expect(doorRef.current.style.transform).toMatch(/^translate3d\(/);
+    doorRef.current.remove();
+  });
+
   it('lays the backdrop as copies of one picture over its haze fill', () => {
     const { flat } = stage();
     const copies = Array.from(flat(BACKDROP.id).querySelectorAll<HTMLElement>('[data-tile]'));

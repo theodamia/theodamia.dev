@@ -111,6 +111,24 @@ describe('painted flats', () => {
     }
   });
 
+  it("knows today's tent and its doorway, inside its painting: the closing card is kept there", () => {
+    const today = FLATS.filter(flat => flat.kind === 'camp').reduce((a, b) =>
+      b.camp! > a.camp! ? b : a
+    );
+    const [x0, y0, x1, y1] = today.tent!;
+    const [dx, dy] = today.door!;
+    const ax = (today.side ?? 0) * 150;
+
+    expect(x0).toBeLessThan(x1);
+    expect(y0).toBeLessThan(y1);
+    expect(dx).toBeGreaterThan(x0);
+    expect(dx).toBeLessThan(x1);
+    expect(dy).toBeGreaterThan(y0);
+    expect(dy).toBeLessThan(y1);
+    expect(ax + x0).toBeGreaterThan(today.box[0]);
+    expect(ax + x1).toBeLessThan(today.box[0] + today.box[2]);
+  });
+
   it('keeps the phone version inside the desktop one', () => {
     for (const flat of FLATS) {
       const [x, y, w, h] = flat.box;

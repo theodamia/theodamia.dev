@@ -42,6 +42,10 @@ const LIFE = {
 const LABEL_SHOWN = [0.5, 0.75] as const;
 /** Units of clear air between the top of a camp (its tent, cabin or chalets) and the foot of its name. */
 const LABEL_GAP = 14;
+/** Room above today's camp's name that its door also covers: the name, and the note line under it. */
+const DOOR_NAME_ROOM = 34;
+/** The lamp glow in today's doorway: its size, in units. */
+const LAMP_SIZE = 64;
 /** The summit line comes in over the last stretch of the climb. */
 const SUMMIT_FADE = [4.35, 4.95] as const;
 /**
@@ -217,6 +221,8 @@ export type Pose = {
   summit: { x: number; y: number; opacity: number };
   /** How much of the snow is falling (0 below the snowline), and of the thicker fall near the summit. */
   snow: { falling: number; thick: number };
+  /** Today's camp (the last), as pixels: its trail point on screen, where its door is anchored. */
+  today: { x: number; y: number };
   /** Dawn turns to day as you climb (dusk to midnight by night). */
   daylight: number;
 };
@@ -228,6 +234,7 @@ export function poseAt(u: number, view: View): Pose {
   const z = cameraZ(u);
   const labels: LabelPose[] = [];
   let peakScale = 1;
+  let today = { x: 0, y: 0 };
 
   const flats = FLATS.map(flat => {
     const p = scaleOf(flat, z);
@@ -253,6 +260,11 @@ export function poseAt(u: number, view: View): Pose {
       : 0;
     const near = smoothstep(LIFE.DETAIL[0], LIFE.DETAIL[1], p);
     const camp = flat.camp ?? 0;
+
+    if (camp === LAST) {
+      today = { x: x + s * max * v * (ax - bx), y: y + s * max * v * (ay - by) };
+    }
+
     /* just above the camp itself, centred on it: measured on each painting (flats.json `label`) */
     const [dx, dy] = flat.label ?? [0, 0];
     const [lx, ly] = [ax + dx, ay + dy - LABEL_GAP];
@@ -283,7 +295,36 @@ export function poseAt(u: number, view: View): Pose {
       falling: smoothstep(SNOW_IN[0], SNOW_IN[1], u),
       thick: smoothstep(SNOW_THICKENS[0], SNOW_THICKENS[1], u),
     },
+    today,
     daylight: smoothstep(0, LAST, u),
+  };
+}
+
+/** Today's camp's door, in pixels from its trail point: the box it answers clicks in, and the lamp in its doorway. */
+export type TodayDoor = {
+  box: { left: number; top: number; width: number; height: number };
+  lamp: { x: number; y: number; size: number };
+};
+
+/**
+ * Where the door of today's camp stands at the summit, for the way back to the closing card: a box over the tent
+ * and its name (both answer the click), and the lamp's place in the doorway, in pixels from the camp's trail point
+ * (where the stage anchors the door each frame, `Pose.today`). It only needs the last stop, where the camp holds
+ * still, so the stage sizes the door once per resize and moves it with a transform. Null if today's camp has no
+ * measured tent.
+ */
+export function todayDoor(view: View): TodayDoor | null {
+  const flat = FLATS.find(item => item.camp === LAST);
+  if (!flat?.tent || !flat.door || !flat.label) return null;
+  const pose = poseAt(LAST, view);
+  const at = pose.flats.find(item => item.id === flat.id)!;
+  const k = at.scale * maxScale(flat) * pose.focus.v;
+  const [x0, , x1, y1] = flat.tent;
+  const top = flat.label[1] - LABEL_GAP - DOOR_NAME_ROOM;
+
+  return {
+    box: { left: x0 * k, top: top * k, width: (x1 - x0) * k, height: (y1 - top) * k },
+    lamp: { x: flat.door[0] * k, y: flat.door[1] * k, size: LAMP_SIZE * k },
   };
 }
 

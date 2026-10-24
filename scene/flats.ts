@@ -27,6 +27,9 @@ export type Flat = {
   flagDx?: number;
   /** The top centre of the camp itself (tent, cabin or chalets), in units from its trail point: its name's place. */
   label?: readonly [x: number, y: number];
+  /** Today's camp only: the tent's outline [x0, y0, x1, y1] and its doorway's centre, in units from its trail point. */
+  tent?: readonly [x0: number, y0: number, x1: number, y1: number];
+  door?: readonly [x: number, y: number];
   /**
    * A seamless tile (the backdrop): the page lays copies a period apart. Its files hold the period plus `bleed`
    * pixels of its own start, so each copy overlaps the last on identical paint (pixels of the desktop file).
@@ -70,6 +73,8 @@ export const FLATS: Flat[] = manifest.order.map(id => {
     solid: span('solid' in entry ? entry.solid : undefined),
     solidPhone: span('solidPhone' in entry ? entry.solidPhone : undefined),
     label: span('label' in entry ? entry.label : undefined),
+    tent: 'tent' in entry ? box(entry.tent) : undefined,
+    door: span('door' in entry ? entry.door : undefined),
   };
 });
 
