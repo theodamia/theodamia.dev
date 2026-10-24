@@ -339,6 +339,34 @@ export function todayCairn(view: View): TodayCairn | null {
   };
 }
 
+/** A flat fainter than this, coming into view or leaving it, does not hide the sky. */
+const SKY_HIDDEN_BY = 0.5;
+
+/**
+ * Whether a point on the screen shows the sky at this moment of the climb, `u`: above the paint of every flat in
+ * view, by each one's skyline (flats.json `sky`), so the far ranges, the cloud sea, the peak and every ridge all
+ * count as ground. The painted clouds and the moon are part of the sky. Below the backdrop is its haze fill, never
+ * sky. Pure arithmetic on the pose, so it costs nothing to ask on every pointer move.
+ */
+export function skyAt(x: number, y: number, u: number, view: View): boolean {
+  const pose = poseAt(u, view);
+
+  return pose.flats.every((at, i) => {
+    const flat = FLATS[i];
+    if (at.opacity < SKY_HIDDEN_BY) return true;
+    const k = at.scale * maxScale(flat) * pose.focus.v;
+    const [, , width, height] = flat.box;
+    const local = (x - at.x) / k;
+    const ux = flat.tile ? ((local % width) + width) % width : local;
+    const uy = (y - at.y) / k;
+    if (uy >= height) return !flat.tile;
+    if (uy < 0 || ux < 0 || ux >= width) return true;
+    const { step, top } = flat.sky;
+
+    return uy < top[Math.min(top.length - 1, Math.floor(ux / step))];
+  });
+}
+
 /** The flats (and which version of each) on screen at the hero: what must be decoded before the first frame. */
 export const FIRST_POSE: { id: string; lod: 'near' | 'far' }[] = poseAt(0, {
   width: 1440,

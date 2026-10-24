@@ -39,6 +39,11 @@ export type Flat = {
   tile?: { period: number; bleed: number };
   /** Where a tile's painting dissolves at its foot (units): the page fills below it with the haze. */
   foot?: number;
+  /**
+   * Its skyline: where its paint begins, in units below the top of its box, sampled every `step` units across it
+   * (the highest point of each run). What tells the sky from the paintings under the pointer (`skyAt`).
+   */
+  sky: { step: number; top: readonly number[] };
   /** The span this flat paints solid, and its phone file's: what the camera tests check the screen against. */
   solid?: Span;
   solidPhone?: Span;

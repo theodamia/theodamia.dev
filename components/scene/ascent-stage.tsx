@@ -13,6 +13,7 @@ import { prepareArt, sceneTheme, watchArt } from '@/lib/scene-art';
 import {
   FIRST_POSE,
   poseAt,
+  skyAt,
   SNOWLINE_CAMP,
   STAGE_SCALE_CSS,
   todayCairn,
@@ -73,6 +74,8 @@ export function AscentStage({ reducedMotion, stop, climbOver, cairnRef, ref }: A
   const ready = useRef(false);
   const pending = useRef<SceneFrame | null>(null);
   const decoding = useRef<Promise<void> | null>(null);
+  /** The moment of the climb on screen, for telling the sky from the paintings under the pointer. */
+  const shown = useRef(0);
 
   const write = (el: HTMLElement | null, property: 'transform' | 'opacity', value: string) => {
     if (!el) return;
@@ -86,6 +89,7 @@ export function AscentStage({ reducedMotion, stop, climbOver, cairnRef, ref }: A
 
   const paint = (u: number) => {
     if (!view.current.height) return;
+    shown.current = u;
     const pose = poseAt(u, view.current);
     const px = (value: number) => `${snap.current(value)}px`;
 
@@ -253,7 +257,7 @@ export function AscentStage({ reducedMotion, stop, climbOver, cairnRef, ref }: A
           Phones have no clear sky up there, so no sun or moon */}
       <Celestial className='top-[6%] right-[19%] max-sm:hidden' />
       {/* in the air, so in front of the moon and behind the clouds and the mountains */}
-      <Aurora />
+      <Aurora isSky={(x, y) => skyAt(x, y, shown.current, view.current)} />
       <Clouds />
 
       <div

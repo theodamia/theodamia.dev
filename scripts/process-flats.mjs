@@ -14,7 +14,8 @@
  *   5. trims, and writes WebP at desktop size and as a phone set, plus each ridge's far version: smaller,
  *      softened and 38% hazed, which is both the level of detail and the atmospheric perspective;
  *   6. names every file by a hash of its bytes (so public/scene can be cached forever) and writes
- *      scene/flats.json with each flat's box in design units, and the part of it that is solid paint.
+ *      scene/flats.json with each flat's box in design units, the part of it that is solid paint, and its
+ *      skyline (where its paint begins, across its width).
  * The backdrop is a seamless tile (`tile`): the page repeats it side by side, so no screen is ever wider than it.
  * It is never trimmed sideways (its width is the period), its edge repair wraps round, and its files carry a few
  * columns of its own start after the end (the bleed), so the copies overlap on identical paint instead of
@@ -30,7 +31,7 @@ import { createHash } from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { format } from 'prettier';
+import { format, resolveConfig } from 'prettier';
 import sharp from 'sharp';
 import { clampByte, key, smooth } from './flat-key.mjs';
 import { sceneTokenRgb } from './scene-token-rgb.mjs';
@@ -60,6 +61,12 @@ const PHONE = { HALF_WIDTH: 520, FADE: 80, SCALE: 0.85, FAR_SCALE: 0.5 };
 const TILE = { BLEED: 8, PHONE_SCALE: 0.875, PAD: 16 };
 /** A ridge's far version: its size against the full painting, its softening and how far it is hazed. */
 const FAR = { SCALE: 0.55, BLUR: 1.2, HAZE: 0.38 };
+/**
+ * Each flat's skyline, for telling the sky from the paintings under the pointer (the aurora answers only the sky):
+ * one sample per STEP pixels of its width, each the top of its paint in that run of columns (the highest, so a
+ * peak is never shaved), where it is at least ALPHA opaque.
+ */
+const SKYLINE = { STEP: 12, ALPHA: 0.5 };
 /** Pixels fainter than this do not count when trimming. */
 const TRIM_ALPHA = 3;
 /** Passes of the inward fill that covers a night painting's drift off the day silhouette. */
@@ -293,6 +300,31 @@ function fadedAlpha(alpha, flat, rect, canvas) {
   }
 
   return { faded, box, pxPerUnit };
+}
+
+/**
+ * The top of a flat's paint across its trimmed width, in units below the top of its box: one sample per
+ * SKYLINE.STEP pixels (`step`, in units). A run of columns with no paint at all reads as the box's whole height.
+ */
+function skyline(faded, trim, canvas, pxPerUnit) {
+  const { W } = canvas;
+  const samples = [];
+
+  for (let x0 = 0; x0 < trim.width; x0 += SKYLINE.STEP) {
+    let top = trim.height;
+
+    for (let x = x0; x < Math.min(x0 + SKYLINE.STEP, trim.width); x++) {
+      for (let y = 0; y < top; y++) {
+        if (faded[(trim.top + y) * W + trim.left + x] < SKYLINE.ALPHA) continue;
+        top = y;
+        break;
+      }
+    }
+
+    samples.push(Math.floor(top / pxPerUnit));
+  }
+
+  return { step: +(SKYLINE.STEP / pxPerUnit).toFixed(4), top: samples };
 }
 
 /** RGBA for one theme, hazed where the flat asks for it. */
@@ -610,6 +642,7 @@ async function processFlat(flat) {
       +(trim.height / pxPerUnit).toFixed(2),
     ],
     px: [trim.width, trim.height],
+    sky: skyline(faded, trim, canvas, pxPerUnit),
     art,
   };
 
@@ -928,7 +961,11 @@ const manifest = {
   aurora: await processAurora(),
   cairn: await processCairn(),
 };
-await fs.writeFile(MANIFEST, await format(JSON.stringify(manifest), { parser: 'json' }));
+/* formatted as the repo formats it (its line width), so `pnpm check` passes on what this writes */
+await fs.writeFile(
+  MANIFEST,
+  await format(JSON.stringify(manifest), { ...(await resolveConfig(MANIFEST)), parser: 'json' })
+);
 
 /* what a visit costs, per theme and device: every flat's near and far versions, the flag, the clouds and the
    cairn (fetched once the closing card comes into view, so only by whoever reaches the end, but counted) */

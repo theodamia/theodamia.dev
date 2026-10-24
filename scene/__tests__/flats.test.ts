@@ -132,6 +132,19 @@ describe('painted flats', () => {
     }
   });
 
+  it("knows each flat's skyline, across its whole box and inside its height", () => {
+    for (const flat of FLATS) {
+      const [, , width, height] = flat.box;
+      const { step, top } = flat.sky;
+      expect(step * top.length, flat.id).toBeGreaterThanOrEqual(width);
+      expect(step * (top.length - 1), flat.id).toBeLessThan(width);
+      expect(Math.min(...top), flat.id).toBeGreaterThanOrEqual(0);
+      expect(Math.max(...top), flat.id).toBeLessThanOrEqual(height);
+      /* every painting has some paint high enough to stand against the sky */
+      expect(Math.min(...top), flat.id).toBeLessThan(height / 2);
+    }
+  });
+
   it('keeps the phone version inside the desktop one', () => {
     for (const flat of FLATS) {
       const [x, y, w, h] = flat.box;

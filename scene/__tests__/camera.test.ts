@@ -13,6 +13,8 @@ import {
   poseAt,
   SNOWLINE_CAMP,
   stageScale,
+  skyAt,
+  SUMMIT_HEIGHT,
   todayCairn,
   usesPhoneArt,
   type View,
@@ -260,6 +262,27 @@ describe('camera', () => {
       expect(box.height).toBeCloseTo(stones.top * 2 + stones.height, 3);
       expect(Math.min(box.width, box.height)).toBeGreaterThanOrEqual(44);
     }
+  });
+
+  it('tells the open sky from the paintings, by their skylines', () => {
+    for (const view of [WIDE, PHONE]) {
+      /* at the hero: sky across the top, the village's meadow at the foot */
+      expect(skyAt(view.width / 2, 12, 0, view)).toBe(true);
+      expect(skyAt(view.width / 2, view.height - 12, 0, view)).toBe(false);
+
+      /* at the summit: above the tip is sky, just under it is the peak */
+      const { focus, flats } = poseAt(LAST, view);
+      const peak = flats.find(flat => flat.id === 'peak')!;
+      const scale = peak.scale * maxScale(FLATS.find(flat => flat.kind === 'peak')!);
+      const tip = focus.y - scale * focus.v * SUMMIT_HEIGHT;
+      expect(skyAt(focus.x, tip - 30 * focus.v, LAST, view)).toBe(true);
+      expect(skyAt(focus.x, tip + 60 * focus.v, LAST, view)).toBe(false);
+    }
+  });
+
+  it('never calls the haze under the backdrop sky, however tall the screen', () => {
+    const tall: View = { width: 390, height: 2400, wide: false, laneGap: null };
+    expect(skyAt(195, 2390, LAST, tall)).toBe(false);
   });
 
   it('shows labels only for the camp at hand and the next one', () => {
