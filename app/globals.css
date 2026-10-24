@@ -42,6 +42,8 @@
   --color-day-low: oklch(0.97 0.012 160);
   --color-sun-disc: oklch(0.98 0.04 85);
   --color-sun-glow: oklch(0.96 0.05 80 / 0.45);
+  /* what far things fade toward: baked into the painted flats by scripts/process-flats.mjs, never applied at runtime */
+  --color-scene-haze: oklch(0.9188 0.0231 258.36);
   --color-roof: #2e6b57;
   --color-hut-wall: oklch(0.96 0.015 90);
   --color-hut-window: oklch(0.86 0.1 90);
@@ -177,6 +179,7 @@
   /* by night the sun's tokens hold the moon */
   --color-sun-disc: oklch(0.93 0.02 245);
   --color-sun-glow: oklch(0.85 0.04 245 / 0.2);
+  --color-scene-haze: oklch(0.4014 0.0646 261.15);
   --color-roof: #1d4a3d;
   --color-hut-wall: oklch(0.45 0.02 250);
   --color-hut-window: oklch(0.86 0.13 82);

@@ -3,10 +3,15 @@ import { SocialLinks } from '@/components/social-links';
 import { Eyebrow, Heading, Lede } from '@/components/ui/text';
 import { SITE } from '@/content/site';
 
-/** The top of the climb page: who this is, what the page is, and the three ways to reach me. */
+/**
+ * The top of the climb page: who this is, what the page is, and the three ways to reach me.
+ *
+ * The words float over the painted meadow and the path, so they wear the scene's text halo, as the altimeter's
+ * labels do. A wider glow would read as a cloud and wash them out.
+ */
 export function Hero() {
   return (
-    <section className='max-wide:pt-[84px] min-h-screen pt-[92px]'>
+    <section className='max-wide:pt-[84px] text-shadow-halo min-h-screen pt-[92px]'>
       <Eyebrow className='text-[17px]'>
         {SITE.title} · {SITE.location}
       </Eyebrow>

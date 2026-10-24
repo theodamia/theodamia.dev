@@ -1,0 +1,39 @@
+{
+  "canvas": [1664, 936],
+  "note": "rect = [x, y, w, h] in design units relative to the focus of expansion at p = 1; canvas px = (unit - rect.xy) * pxPerUnit",
+  "OY": [290, 272.8, 255.6, 238.4, 221.2, 204],
+  "flats": {
+    "far": {
+      "rect": [-1100, -330, 2200, 1238],
+      "pxPerUnit": 0.7564
+    },
+    "peak": {
+      "rect": [-560, -230, 1120, 630],
+      "pxPerUnit": 1.4857
+    },
+    "village": {
+      "rect": [-1100, 60, 1800, 1012],
+      "pxPerUnit": 0.9244
+    },
+    "fedenet": {
+      "rect": [-1050, 12.800000000000011, 1900, 1068],
+      "pxPerUnit": 0.8758
+    },
+    "ordereze": {
+      "rect": [-850, -4.399999999999977, 1900, 1068],
+      "pxPerUnit": 0.8758
+    },
+    "geekbot": {
+      "rect": [-1050, -21.600000000000023, 1900, 1068],
+      "pxPerUnit": 0.8758
+    },
+    "lead": {
+      "rect": [-850, -38.80000000000001, 1900, 1068],
+      "pxPerUnit": 0.8758
+    },
+    "deepsea": {
+      "rect": [-1050, -56, 1900, 1068],
+      "pxPerUnit": 0.8758
+    }
+  }
+}

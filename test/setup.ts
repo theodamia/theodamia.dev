@@ -69,3 +69,8 @@ global.IntersectionObserver = class IntersectionObserver {
   rootMargin = '';
   thresholds = [];
 } as unknown as typeof IntersectionObserver;
+
+Object.defineProperty(HTMLImageElement.prototype, 'decode', {
+  configurable: true,
+  value: () => Promise.resolve(),
+});

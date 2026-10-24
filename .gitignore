@@ -50,3 +50,10 @@ coverage
 # camp artwork: full-size originals from the image generator stay local
 /art/camps/raw/*
 !/art/camps/raw/.gitkeep
+
+# The forward climb's paintings, sheets and check composites stay local; guides, prompts and processed WebPs are reviewable.
+/art/scene/flats/raw/*
+/art/scene/flats/*.png
+/art/scene/flats/check/
+/art/scene/style/**/*.png
+/art/scene/review/
