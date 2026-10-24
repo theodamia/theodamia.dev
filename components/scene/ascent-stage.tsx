@@ -3,7 +3,7 @@
 import type React from 'react';
 import { useEffect, useEffectEvent, useImperativeHandle, useRef } from 'react';
 import { SceneFlat } from '@/components/scene/scene-flat';
-import { Celestial, Cloud, Daylight, Sky, Stars } from '@/components/scene/sky';
+import { Celestial, Clouds, Daylight, Sky, Stars } from '@/components/scene/sky';
 import { WeatherLayer } from '@/components/scene/weather-layer';
 import { WIDE_QUERY } from '@/constants';
 import { JOBS, TRAILHEAD } from '@/content/jobs';
@@ -168,6 +168,9 @@ export function AscentStage({ reducedMotion, stop, climbOver, ref }: AscentStage
       const flat = img.closest<HTMLElement>('[data-scene-flat]')?.dataset.sceneFlat;
       const lod = img.closest<HTMLElement>('[data-lod]')?.dataset.lod;
 
+      /* the clouds are small and in view from the start: they are part of the first frame too */
+      if (img.closest('.scene-cloud')) return true;
+
       return firstView.has(`${flat}:${lod}`) && !img.closest('.scene-flag-part');
     });
 
@@ -211,8 +214,7 @@ export function AscentStage({ reducedMotion, stop, climbOver, ref }: AscentStage
       {/* a fixed place at the top right, where the light comes from: just left of the altimeter's card.
           Phones have no clear sky up there, so no sun or moon */}
       <Celestial className='top-[6%] right-[19%] max-sm:hidden' />
-      <Cloud className='motion-safe:animate-drift top-[7%] left-[40%] w-[190px]' />
-      <Cloud className='motion-safe:animate-drift-slow top-[24%] left-[70%] w-[120px] opacity-80' />
+      <Clouds />
 
       <div
         data-scene-flats

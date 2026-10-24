@@ -48,7 +48,6 @@
   --color-hut-wall: oklch(0.96 0.015 90);
   --color-hut-window: oklch(0.86 0.1 90);
   --color-pine-front: oklch(0.4 0.045 155);
-  --color-cloud: #ffffff;
   /* the soft white stroke behind the scene's labels */
   --color-halo: rgb(255 255 255 / 0.8);
   /* the foreground mist */
@@ -184,7 +183,6 @@
   --color-hut-wall: oklch(0.45 0.02 250);
   --color-hut-window: oklch(0.86 0.13 82);
   --color-pine-front: oklch(0.2 0.025 215);
-  --color-cloud: oklch(0.4 0.035 265);
   --color-halo: rgb(10 16 24 / 0.75);
   --color-wisp: oklch(0.4 0.03 255);
   /* by moonlight the snow still catches the light; leaf and petal sink towards the dark they fall through */
@@ -302,7 +300,7 @@
 }
 
 /* each painting its own layer: the compositor then draws the decoded image as it is, with nothing to raster */
-.scene-flat img {
+:is(.scene-flat, .scene-cloud) img {
   position: absolute;
   top: 0;
   left: 0;
@@ -320,17 +318,25 @@
   width: var(--phone-width, 100%);
 }
 
-:root:not([data-theme='dark']) .scene-flat img[data-art='day'][data-ready],
-:root[data-theme='dark'] .scene-flat img[data-art='night'][data-ready],
+:root:not([data-theme='dark']) :is(.scene-flat, .scene-cloud) img[data-art='day'][data-ready],
+:root[data-theme='dark'] :is(.scene-flat, .scene-cloud) img[data-art='night'][data-ready],
 :root[data-theme='dark']
-  .scene-flat
-  :is([data-lod], [data-tile], .scene-flag-part):not(:has(> img[data-art='night'][data-ready]))
+  :is(.scene-flat [data-lod], .scene-flat [data-tile], .scene-flag-part, .scene-cloud):not(
+    :has(> img[data-art='night'][data-ready])
+  )
   > img[data-art='day'][data-ready],
 :root:not([data-theme='dark'])
-  .scene-flat
-  :is([data-lod], [data-tile], .scene-flag-part):not(:has(> img[data-art='day'][data-ready]))
+  :is(.scene-flat [data-lod], .scene-flat [data-tile], .scene-flag-part, .scene-cloud):not(
+    :has(> img[data-art='day'][data-ready])
+  )
   > img[data-art='night'][data-ready] {
   display: block;
+}
+
+/* the sky's painted clouds: placed and drifted by components/scene/sky.tsx, their two pictures shown like a flat's */
+.scene-cloud {
+  position: absolute;
+  pointer-events: none;
 }
 
 /* the backdrop's copies, a period apart (each is the period plus its bleed wide), over its haze fill */

@@ -5,7 +5,7 @@ import { AscentStage } from '@/components/scene/ascent-stage';
 import { WIDE_QUERY } from '@/constants';
 import { CAMP_COUNT, type SceneHandle } from '@/scene/world';
 import { BACKDROP_TILES, FIRST_POSE, poseAt } from '@/scene/camera';
-import { BACKDROP, FLATS } from '@/scene/flats';
+import { BACKDROP, CLOUDS, FLATS } from '@/scene/flats';
 
 const VIEW = { width: 1440, height: 900 };
 
@@ -92,7 +92,7 @@ describe('the climb stage', () => {
     delete document.documentElement.dataset.theme;
   });
 
-  it("fetches only the hero's paintings, in the visit's theme, before anything moves", () => {
+  it("fetches only the hero's paintings and the sky's clouds, in the visit's theme, before anything moves", () => {
     document.documentElement.dataset.theme = 'dark';
     const { root } = stage();
 
@@ -100,6 +100,7 @@ describe('the climb stage', () => {
     expect(fetched.length).toBeGreaterThan(0);
     fetched.forEach(img => {
       expect(img.dataset.art).toBe('night');
+      if (img.closest('.scene-cloud')) return;
       const id = img.closest<HTMLElement>('[data-scene-flat]')!.dataset.sceneFlat;
       const lod = img.closest<HTMLElement>('[data-lod]')!.dataset.lod;
       expect(FIRST_POSE).toContainEqual({ id, lod });
@@ -154,6 +155,18 @@ describe('the climb stage', () => {
     const again = recordWrites(root);
     handle().applyFrame({ leg: 4, f: 0.9 });
     expect(again()).toHaveLength(0);
+  });
+
+  it('paints its clouds: a day and a night picture each, decoded with the first view', () => {
+    document.documentElement.dataset.theme = 'dark';
+    const { root } = stage();
+    const clouds = Array.from(root.querySelectorAll('.scene-cloud'));
+
+    expect(clouds.length).toBe(Math.min(CLOUDS.length, 3));
+    clouds.forEach(cloud => {
+      expect(cloud.querySelectorAll("img[data-art='day']")).toHaveLength(1);
+      expect(cloud.querySelector("img[data-art='night']")).toHaveAttribute('src');
+    });
   });
 
   it('lays the backdrop as copies of one picture over its haze fill', () => {

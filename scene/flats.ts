@@ -38,6 +38,9 @@ export type Flat = {
   art: Record<Theme, FlatArt>;
 };
 
+/** One of the sky's painted clouds: its painted size in pixels (its shape), and its picture per theme. */
+export type Cloud = { w: number; h: number; art: Record<Theme, string> };
+
 export type Flag = {
   /** Pixel sizes of the pole picture, and where on it the pennant's hem hangs (just under the cap). */
   pole: { w: number; h: number; ax: number; ay: number };
@@ -74,6 +77,9 @@ export const BACKDROP: Flat = FLATS.find(flat => flat.tile)!;
 export const PHONE_ART = manifest.phone;
 
 export const FLAG: Flag = manifest.flag;
+
+/** The sky's clouds, left to right as they were painted. */
+export const CLOUDS: Cloud[] = manifest.clouds;
 
 /** Camps are keyed by their start year, so adding or removing a job never shifts another camp's art. */
 const CAMP_YEARS = [TRAILHEAD.year, ...JOBS.map(job => job.start)];

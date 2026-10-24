@@ -2,7 +2,7 @@ import { existsSync, statSync } from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 import { describe, expect, it } from 'vitest';
-import { BACKDROP, FLAG, FLATS, type Theme } from '@/scene/flats';
+import { BACKDROP, CLOUDS, FLAG, FLATS, type Theme } from '@/scene/flats';
 
 const PUBLIC = path.resolve(__dirname, '../../public/scene');
 const THEMES: Theme[] = ['day', 'night'];
@@ -56,6 +56,15 @@ describe('painted flats', () => {
       expect(existsSync(path.join(PUBLIC, FLAG.art[theme].pole))).toBe(true);
       expect(existsSync(path.join(PUBLIC, FLAG.art[theme].cloth))).toBe(true);
     }
+
+    /* the sky's clouds: painted, each with a night picture of the same outline */
+    expect(CLOUDS.length).toBeGreaterThanOrEqual(2);
+
+    for (const cloud of CLOUDS) {
+      for (const theme of THEMES) {
+        expect(existsSync(path.join(PUBLIC, cloud.art[theme])), cloud.art[theme]).toBe(true);
+      }
+    }
   });
 
   it('gives every ridge ahead a far version, and the far world and the trailhead none', () => {
@@ -103,7 +112,10 @@ describe('painted flats', () => {
 
   it('stays within the scene budget for a visit, per theme and device', () => {
     for (const theme of THEMES) {
-      const flag = bytes(FLAG.art[theme].pole) + bytes(FLAG.art[theme].cloth);
+      const flag =
+        bytes(FLAG.art[theme].pole) +
+        bytes(FLAG.art[theme].cloth) +
+        CLOUDS.reduce((sum, cloud) => sum + bytes(cloud.art[theme]), 0);
       const desktop = FLATS.reduce(
         (sum, flat) => sum + bytes(flat.art[theme].near) + bytes(flat.art[theme].far),
         flag

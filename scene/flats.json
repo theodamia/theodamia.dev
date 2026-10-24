@@ -207,5 +207,31 @@
         "cloth": "flag-cloth-night.5dd2f987.webp"
       }
     }
-  }
+  },
+  "clouds": [
+    {
+      "w": 600,
+      "h": 200,
+      "art": {
+        "day": "cloud-1-day.7e2eee92.webp",
+        "night": "cloud-1-night.e721bea7.webp"
+      }
+    },
+    {
+      "w": 420,
+      "h": 160,
+      "art": {
+        "day": "cloud-2-day.01fa4efc.webp",
+        "night": "cloud-2-night.92ca7933.webp"
+      }
+    },
+    {
+      "w": 300,
+      "h": 110,
+      "art": {
+        "day": "cloud-3-day.4d07ed97.webp",
+        "night": "cloud-3-night.c327f090.webp"
+      }
+    }
+  ]
 }

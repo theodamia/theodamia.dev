@@ -1,4 +1,6 @@
 import type React from 'react';
+import { STAGE_SCALE_CSS } from '@/scene/camera';
+import { artUrl, CLOUDS, type Theme } from '@/scene/flats';
 import { starField } from '@/scene/stars';
 import { cn } from '@/utils/cn';
 
@@ -78,14 +80,56 @@ export function Celestial({ className }: { className?: string }) {
   );
 }
 
-/** A cloud from three pills: the body and two bumps that inherit its colour. */
-export function Cloud({ className }: { className: string }) {
+const THEMES: Theme[] = ['day', 'night'];
+
+/**
+ * Where each painted cloud drifts, in the order they were painted (largest first): its place on the stage and its
+ * width in design units, so it keeps its size against the mountains on every screen. Placed in the open sky of the
+ * hero at the 1440 × 900 reference: the big one above the title, clear of its first line, drifting behind the
+ * peak's left flank; the middle one tucked behind the peak's right shoulder under the sun; the small one high on
+ * the left. They pass behind the mountains (the stage draws them first), so a bigger peak later simply covers more.
+ */
+const CLOUD_PLACES = [
+  { top: '1.5%', left: '44%', width: 230, drift: 'motion-safe:animate-drift' },
+  { top: '10%', left: '68%', width: 150, drift: 'motion-safe:animate-drift-slow' },
+  { top: '2.5%', left: '15%', width: 110, drift: 'motion-safe:animate-drift-slow' },
+] as const;
+
+/**
+ * The sky's clouds: painted like the cloud sea below them, each a day and a night picture with one outline, drifting
+ * slowly in place (a transform, so the compositor moves them). They stand behind the mountains, not in the world:
+ * the sky is at infinity, so the climb does not move them. Their pictures show once decoded, like every painting.
+ */
+export function Clouds() {
   return (
-    <div
-      className={cn(
-        'bg-cloud/70 absolute h-[26px] rounded-full before:absolute before:bottom-[35%] before:left-[20%] before:h-[150%] before:w-[42%] before:rounded-full before:bg-inherit after:absolute after:bottom-[35%] after:left-[48%] after:h-[105%] after:w-[30%] after:rounded-full after:bg-inherit',
-        className
-      )}
-    />
+    <div className='absolute inset-0' style={{ '--v': STAGE_SCALE_CSS } as React.CSSProperties}>
+      {CLOUDS.slice(0, CLOUD_PLACES.length).map((cloud, i) => {
+        const place = CLOUD_PLACES[i];
+
+        return (
+          <div
+            key={cloud.art.day}
+            className={cn('scene-cloud', place.drift)}
+            style={{
+              top: place.top,
+              left: place.left,
+              width: `calc(var(--v) * ${place.width})`,
+              aspectRatio: `${cloud.w} / ${cloud.h}`,
+            }}
+          >
+            {THEMES.map(theme => (
+              <img
+                key={theme}
+                alt=''
+                data-art={theme}
+                data-src={artUrl(cloud.art[theme])}
+                decoding='async'
+                draggable={false}
+              />
+            ))}
+          </div>
+        );
+      })}
+    </div>
   );
 }

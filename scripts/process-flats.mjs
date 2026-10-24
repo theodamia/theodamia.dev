@@ -19,7 +19,8 @@
  * It is never trimmed sideways (its width is the period), its edge repair wraps round, and its files carry a few
  * columns of its own start after the end (the bleed), so the copies overlap on identical paint instead of
  * meeting on a hairline. Its phone file is the whole tile, smaller, since a tile cannot be cut.
- * The shared flag (raw/flag-parts-{day,night}.png) is split into its pole and its pennant the same way.
+ * The shared flag (raw/flag-parts-{day,night}.png) is split into its pole and its pennant the same way, and the
+ * sky's clouds (raw/clouds-{day,night}.png, a row of separate clouds) into one picture each.
  *
  * public/scene/ belongs to this script: it is emptied first. Check PNGs go to art/scene/flats/check/.
  */
@@ -72,10 +73,16 @@ const ENCODE = {
   NEAR_PHONE: { quality: 72, alphaQuality: 80, effort: 6, smartSubsample: true },
   FAR: { quality: 80, alphaQuality: 85, effort: 6, smartSubsample: true },
   FLAG: { quality: 86, alphaQuality: 90, effort: 6 },
+  CLOUD: { quality: 74, alphaQuality: 78, effort: 6, smartSubsample: true },
 };
 const BUDGET = { DESKTOP: 1_500_000, PHONE: 800_000 };
 /** The flag's cloth hangs this many pole pixels below the widest row of the cap. */
 const FLAG_HANG_PX = 6;
+/**
+ * The cloud sheet: a column counts as empty below this alpha, a run of this many empty columns parts two clouds,
+ * and each cloud ships at this share of its painted size (painted large, so it stays crisp on a dense screen).
+ */
+const CLOUDS = { EMPTY: 0.02, GAP: 24, SCALE: 0.75 };
 
 /** Camp depths below the focus at each stop, in units (guides.json `OY`); the ridges' fades are measured from them. */
 const guides = JSON.parse(await fs.readFile(GUIDES, 'utf8'));
@@ -677,6 +684,82 @@ async function processFlag() {
   };
 }
 
+/**
+ * The sky's clouds: one sheet, cut into one picture per cloud where a run of empty columns parts them, left to
+ * right. Night uses the day alpha, like every painting, so a cloud keeps its outline through the theme reveal.
+ */
+async function processClouds() {
+  const pair = await keyPair('clouds');
+  const { W, H } = pair.canvas;
+  const alpha = pair.day.alpha;
+  const filled = Array.from({ length: W }, (_, x) => {
+    for (let y = 0; y < H; y++) {
+      if (alpha[y * W + x] > CLOUDS.EMPTY) return true;
+    }
+
+    return false;
+  });
+  const runs = [];
+  let start = -1;
+  let gap = 0;
+
+  for (let x = 0; x <= W; x++) {
+    if (x < W && filled[x]) {
+      if (start < 0) {
+        start = x;
+      }
+
+      gap = 0;
+      continue;
+    }
+
+    gap++;
+
+    if (start >= 0 && (gap >= CLOUDS.GAP || x === W)) {
+      runs.push([start, x - gap + 1]);
+      start = -1;
+    }
+  }
+
+  const clouds = [];
+
+  for (const [x0, x1] of runs) {
+    let [y0, y1] = [H, 0];
+
+    for (let y = 0; y < H; y++) {
+      for (let x = x0; x < x1; x++) {
+        if (alpha[y * W + x] <= CLOUDS.EMPTY) continue;
+        y0 = Math.min(y0, y);
+        y1 = Math.max(y1, y);
+      }
+    }
+
+    const box = { left: x0, top: y0, width: x1 - x0, height: y1 - y0 + 1 };
+    const index = clouds.length + 1;
+    const art = {};
+
+    for (const theme of ['day', 'night']) {
+      const rgba = compose(pair[theme].rgb, alpha, { fades: [] }, null, pair.canvas);
+      const png = await sharp(rgba, { raw: { width: W, height: H, channels: 4 } })
+        .extract(box)
+        .png()
+        .toBuffer();
+      await fs.writeFile(path.join(CHECK_DIR, `cloud-${index}-${theme}.png`), png);
+      art[theme] = await emit(
+        png,
+        `cloud-${index}-${theme}`,
+        ENCODE.CLOUD,
+        Math.round(box.width * CLOUDS.SCALE)
+      );
+    }
+
+    clouds.push({ w: box.width, h: box.height, art });
+    console.log(`cloud-${index}    ${box.width}×${box.height}`);
+  }
+
+  return clouds;
+}
+
 await fs.rm(OUT_DIR, { recursive: true, force: true });
 await fs.mkdir(OUT_DIR, { recursive: true });
 await fs.mkdir(CHECK_DIR, { recursive: true });
@@ -694,15 +777,19 @@ const manifest = {
   order: FLATS.map(flat => flat.id),
   flats,
   flag: await processFlag(),
+  clouds: await processClouds(),
 };
 await fs.writeFile(MANIFEST, await format(JSON.stringify(manifest), { parser: 'json' }));
 
-/* what a visit costs, per theme and device: every flat's near and far versions plus the flag */
+/* what a visit costs, per theme and device: every flat's near and far versions, the flag and the clouds */
 const sizeOf = name => written.find(file => file.name === name)?.bytes ?? 0;
 
 for (const theme of ['day', 'night']) {
   const flag = manifest.flag.art[theme];
-  const flagBytes = sizeOf(flag.pole) + sizeOf(flag.cloth);
+  const flagBytes =
+    sizeOf(flag.pole) +
+    sizeOf(flag.cloth) +
+    manifest.clouds.reduce((sum, cloud) => sum + sizeOf(cloud.art[theme]), 0);
   let desktop = flagBytes;
   let phone = flagBytes;
 
