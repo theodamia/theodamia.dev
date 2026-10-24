@@ -81,6 +81,9 @@ export const FLAG: Flag = manifest.flag;
 /** The sky's clouds, left to right as they were painted. */
 export const CLOUDS: Cloud[] = manifest.clouds;
 
+/** The night's aurora: its painted layers (night only, glow on black, blended as light), back to front. */
+export const AURORA: { w: number; h: number; art: string }[] = manifest.aurora;
+
 /** Camps are keyed by their start year, so adding or removing a job never shifts another camp's art. */
 const CAMP_YEARS = [TRAILHEAD.year, ...JOBS.map(job => job.start)];
 

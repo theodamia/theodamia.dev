@@ -2,6 +2,7 @@
 
 import type React from 'react';
 import { useEffect, useEffectEvent, useImperativeHandle, useRef } from 'react';
+import { Aurora } from '@/components/scene/aurora';
 import { SceneFlat } from '@/components/scene/scene-flat';
 import { SnowLayer } from '@/components/scene/snow-layer';
 import { Celestial, Clouds, Daylight, Meteors, Sky, Stars } from '@/components/scene/sky';
@@ -217,6 +218,8 @@ export function AscentStage({ reducedMotion, stop, climbOver, ref }: AscentStage
       {/* a fixed place at the top right, where the light comes from: just left of the altimeter's card.
           Phones have no clear sky up there, so no sun or moon */}
       <Celestial className='top-[6%] right-[19%] max-sm:hidden' />
+      {/* in the air, so in front of the moon and behind the clouds and the mountains */}
+      <Aurora />
       <Clouds />
 
       <div

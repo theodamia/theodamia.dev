@@ -1059,6 +1059,106 @@
 }
 
 /*
+ * The aurora (components/scene/aurora.tsx): by night, while the pointer is over the sky, two painted layers glow in
+ * across the top of it and fold slowly against each other, the second shimmering; it leans a little toward the
+ * pointer (`--lean`) and, once the pointer leaves, lingers and fades over a few seconds. It is wider than the stage
+ * so the lean never shows an edge. The paintings are glow on black, blended as light: the group screens onto the
+ * sky (black adds nothing, so the stars and the moon show through), and the second layer screens onto the first
+ * inside it. Transform and opacity only; paused whenever it is not lit. With reduced motion it still glows in, but
+ * nothing in it moves.
+ */
+.aurora {
+  position: absolute;
+  top: 0;
+  left: -8%;
+  width: 116%;
+  height: 46%;
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  translate: var(--lean, 0px) 0;
+  transition:
+    opacity 3.2s var(--ease-soft),
+    translate 2.6s var(--ease-soft);
+}
+
+:root[data-theme='dark'] .aurora[data-lit] {
+  opacity: 1;
+  transition-duration: 1.6s, 2.6s;
+}
+
+.aurora-curtain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 30%;
+  visibility: hidden;
+  transform-origin: 50% 100%;
+}
+
+.aurora-curtain[data-ready] {
+  visibility: visible;
+}
+
+.aurora-curtain[data-layer='1'] {
+  animation: aurora-fold 19s ease-in-out infinite alternate paused;
+}
+
+.aurora-curtain[data-layer='2'] {
+  mix-blend-mode: screen;
+  animation:
+    aurora-drift 27s ease-in-out infinite alternate paused,
+    aurora-shimmer 7s ease-in-out infinite alternate paused;
+}
+
+.aurora[data-lit] .aurora-curtain {
+  animation-play-state: running;
+}
+
+@keyframes aurora-fold {
+  from {
+    transform: translateX(-2.5%) scaleY(0.92) skewX(-5deg);
+  }
+
+  to {
+    transform: translateX(2.5%) scaleY(1.08) skewX(4deg);
+  }
+}
+
+@keyframes aurora-drift {
+  from {
+    transform: translateX(3%) scaleY(1.05) skewX(4deg);
+  }
+
+  to {
+    transform: translateX(-3%) scaleY(0.94) skewX(-3deg);
+  }
+}
+
+@keyframes aurora-shimmer {
+  from {
+    opacity: 0.55;
+  }
+
+  to {
+    opacity: 0.9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora {
+    translate: none;
+    transition: opacity 1.6s linear;
+  }
+
+  .aurora-curtain {
+    animation: none;
+  }
+}
+
+/*
  * Shooting stars: night only, now and then. Each streak waits out most of its cycle unseen, then in its last
  * 2.4% (about a second) runs its course and burns out, head first. Two cycles that share no beat, so they never
  * fall into a rhythm.

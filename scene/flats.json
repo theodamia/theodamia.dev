@@ -233,5 +233,9 @@
         "night": "cloud-3-night.c327f090.webp"
       }
     }
+  ],
+  "aurora": [
+    { "w": 1308, "h": 567, "art": "aurora-1.fdd0bf2f.webp" },
+    { "w": 1297, "h": 317, "art": "aurora-2.3e62063e.webp" }
   ]
 }

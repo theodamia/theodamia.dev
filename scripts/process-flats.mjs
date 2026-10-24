@@ -20,7 +20,8 @@
  * columns of its own start after the end (the bleed), so the copies overlap on identical paint instead of
  * meeting on a hairline. Its phone file is the whole tile, smaller, since a tile cannot be cut.
  * The shared flag (raw/flag-parts-{day,night}.png) is split into its pole and its pennant the same way, and the
- * sky's clouds (raw/clouds-{day,night}.png, a row of separate clouds) into one picture each.
+ * sky's clouds (raw/clouds-{day,night}.png, a row of separate clouds) into one picture each. The night's aurora
+ * (raw/aurora-<n>.png) is painted on black instead: its brightness becomes its opacity.
  *
  * public/scene/ belongs to this script: it is emptied first. Check PNGs go to art/scene/flats/check/.
  */
@@ -74,6 +75,7 @@ const ENCODE = {
   FAR: { quality: 80, alphaQuality: 85, effort: 6, smartSubsample: true },
   FLAG: { quality: 86, alphaQuality: 90, effort: 6 },
   CLOUD: { quality: 74, alphaQuality: 78, effort: 6, smartSubsample: true },
+  AURORA: { quality: 78, effort: 6, smartSubsample: true },
 };
 const BUDGET = { DESKTOP: 1_500_000, PHONE: 800_000 };
 /** The flag's cloth hangs this many pole pixels below the widest row of the cap. */
@@ -83,6 +85,12 @@ const FLAG_HANG_PX = 6;
  * and each cloud ships at this share of its painted size (painted large, so it stays crisp on a dense screen).
  */
 const CLOUDS = { EMPTY: 0.02, GAP: 24, SCALE: 0.75 };
+/**
+ * The aurora: how many paintings, the black that still counts as black (generators leave a little noise in it),
+ * the faintest glow kept when trimming, and the widest each ships. It is only ever seen on a screen with a
+ * pointer, so it has no phone file.
+ */
+const AURORA = { COUNT: 2, FLOOR: 6, TRIM: 0.02, WIDTH: 1400 };
 
 /** Camp depths below the focus at each stop, in units (guides.json `OY`); the ridges' fades are measured from them. */
 const guides = JSON.parse(await fs.readFile(GUIDES, 'utf8'));
@@ -760,6 +768,67 @@ async function processClouds() {
   return clouds;
 }
 
+/**
+ * The aurora, painted on black. A glow is light added to the sky, so it ships as it was painted, black and all,
+ * and the page blends it as light (`mix-blend-mode: screen`), where black adds nothing. With no transparency to
+ * encode it is a tenth of the size, and its soft gradients do not band. The generator's near-black noise is taken
+ * down to black first, or it would faintly brighten the whole sky; each painting is trimmed to its glow.
+ */
+async function processAurora() {
+  const layers = [];
+
+  for (let n = 1; n <= AURORA.COUNT; n++) {
+    const file = path.join(RAW_DIR, `aurora-${n}.png`);
+    const { data, info } = await sharp(file)
+      .removeAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    const { width: W, height: H } = info;
+    const rgb = Buffer.alloc(W * H * 3);
+    const box = { x0: W, y0: H, x1: 0, y1: 0 };
+
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const i = y * W + x;
+        let brightest = 0;
+
+        for (let c = 0; c < 3; c++) {
+          const value = Math.max(0, data[i * 3 + c] - AURORA.FLOOR) * (255 / (255 - AURORA.FLOOR));
+          rgb[i * 3 + c] = clampByte(value);
+          brightest = Math.max(brightest, value / 255);
+        }
+
+        if (brightest <= AURORA.TRIM) continue;
+        box.x0 = Math.min(box.x0, x);
+        box.y0 = Math.min(box.y0, y);
+        box.x1 = Math.max(box.x1, x);
+        box.y1 = Math.max(box.y1, y);
+      }
+    }
+
+    const trim = {
+      left: box.x0,
+      top: box.y0,
+      width: box.x1 - box.x0 + 1,
+      height: box.y1 - box.y0 + 1,
+    };
+    const png = await sharp(rgb, { raw: { width: W, height: H, channels: 3 } })
+      .extract(trim)
+      .png()
+      .toBuffer();
+    await fs.writeFile(path.join(CHECK_DIR, `aurora-${n}.png`), png);
+    const width = Math.min(AURORA.WIDTH, trim.width);
+    layers.push({
+      w: width,
+      h: Math.round((trim.height * width) / trim.width),
+      art: await emit(png, `aurora-${n}`, ENCODE.AURORA, width),
+    });
+    console.log(`aurora-${n}   ${trim.width}×${trim.height}`);
+  }
+
+  return layers;
+}
+
 await fs.rm(OUT_DIR, { recursive: true, force: true });
 await fs.mkdir(OUT_DIR, { recursive: true });
 await fs.mkdir(CHECK_DIR, { recursive: true });
@@ -778,6 +847,7 @@ const manifest = {
   flats,
   flag: await processFlag(),
   clouds: await processClouds(),
+  aurora: await processAurora(),
 };
 await fs.writeFile(MANIFEST, await format(JSON.stringify(manifest), { parser: 'json' }));
 
@@ -797,6 +867,11 @@ for (const theme of ['day', 'night']) {
     const art = entry.art[theme];
     desktop += sizeOf(art.near) + sizeOf(art.far);
     phone += sizeOf(art.nearPhone) + sizeOf(art.farPhone);
+  }
+
+  /* the aurora: night, and only where there is a pointer to call it */
+  if (theme === 'night') {
+    desktop += manifest.aurora.reduce((sum, layer) => sum + sizeOf(layer.art), 0);
   }
 
   const row = (label, bytes, budget) =>
