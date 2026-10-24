@@ -10,7 +10,7 @@ describe('WeatherLayer', () => {
     const { container } = render(<WeatherLayer belowFirstCamp />);
 
     expect(container.querySelectorAll('.weather-bit')).toHaveLength(weatherField().length);
-    ['snow', 'leaf', 'petal'].forEach(kind => {
+    ['leaf', 'petal'].forEach(kind => {
       expect(container.querySelectorAll(`[data-kind='${kind}']`).length).toBeGreaterThan(0);
     });
   });

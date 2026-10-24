@@ -1,7 +1,10 @@
 import { rnd } from '@/scene/noise';
 
-/** What falls in a season. Summer has none: a clear day is the summer weather. */
-export type WeatherKind = 'snow' | 'leaf' | 'petal';
+/**
+ * What falls low on the mountain in a season: leaves in autumn, blossom in spring. Summer and winter are clear down
+ * here; snow belongs to the heights in every season (scene/snow.ts).
+ */
+export type WeatherKind = 'leaf' | 'petal';
 
 type Bit = {
   /** Unique across all kinds, and the key the page renders it under. */
@@ -17,15 +20,15 @@ type Bit = {
   fall: number;
   /** How far into that fall it starts, in seconds, so the sky is never empty and never lands all at once. */
   phase: number;
-  /** Degrees turned over one fall; 0 for snow, which does not tumble. */
+  /** Degrees turned over one fall. */
   spin: number;
   /** 0 to 1. */
   alpha: number;
 };
 
 /**
- * One kind's weather. `seed` keeps each kind's stream apart, and the ranges are what make snow drift and leaves
- * tumble without either needing its own code.
+ * One kind's weather. `seed` keeps each kind's stream apart, and the ranges are what make leaves tumble and blossom
+ * float without either needing its own code.
  */
 type Fall = {
   seed: number;
@@ -38,16 +41,6 @@ type Fall = {
 };
 
 const FALLS: Record<WeatherKind, Fall> = {
-  /* small, slow and nearly straight down */
-  snow: {
-    seed: 8100,
-    count: 60,
-    size: [3, 6.5],
-    fall: [9, 17],
-    drift: [-46, 46],
-    spin: [0, 0],
-    alpha: [0.5, 1],
-  },
   /* bigger, quicker, and blown much further sideways as they turn over */
   leaf: {
     seed: 8300,

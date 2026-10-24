@@ -13,8 +13,8 @@ describe('weatherField', () => {
     expect(new Set(bits.map(bit => bit.key)).size).toBe(bits.length);
   });
 
-  it('carries all three kinds, since the page holds every season at once', () => {
-    (['snow', 'leaf', 'petal'] as WeatherKind[]).forEach(kind => {
+  it('carries both kinds, since the page holds every season at once', () => {
+    (['leaf', 'petal'] as WeatherKind[]).forEach(kind => {
       expect(ofKind(kind).length).toBeGreaterThan(0);
     });
   });
@@ -31,11 +31,8 @@ describe('weatherField', () => {
     });
   });
 
-  it('lets snow fall straight and the others tumble', () => {
-    ofKind('snow').forEach(flake => expect(flake.spin).toBe(0));
+  it('lets leaves and blossom tumble as they fall', () => {
     ofKind('leaf').forEach(leaf => expect(leaf.spin).toBeGreaterThan(0));
-    /* a leaf is blown further sideways than a flake is */
-    const widest = (kind: WeatherKind) => Math.max(...ofKind(kind).map(b => Math.abs(b.drift)));
-    expect(widest('leaf')).toBeGreaterThan(widest('snow'));
+    ofKind('petal').forEach(petal => expect(petal.spin).toBeGreaterThan(0));
   });
 });

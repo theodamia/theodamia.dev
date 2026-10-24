@@ -3,13 +3,14 @@
 import type React from 'react';
 import { useEffect, useEffectEvent, useImperativeHandle, useRef } from 'react';
 import { SceneFlat } from '@/components/scene/scene-flat';
+import { SnowLayer } from '@/components/scene/snow-layer';
 import { Celestial, Clouds, Daylight, Meteors, Sky, Stars } from '@/components/scene/sky';
 import { WeatherLayer } from '@/components/scene/weather-layer';
 import { WIDE_QUERY } from '@/constants';
 import { JOBS, TRAILHEAD } from '@/content/jobs';
 import { SUMMIT_LINE } from '@/content/site';
 import { prepareArt, sceneTheme, watchArt } from '@/lib/scene-art';
-import { FIRST_POSE, poseAt, STAGE_SCALE_CSS, type View } from '@/scene/camera';
+import { FIRST_POSE, poseAt, SNOWLINE_CAMP, STAGE_SCALE_CSS, type View } from '@/scene/camera';
 import { FLATS } from '@/scene/flats';
 import type { SceneFrame, SceneHandle, SceneLayout } from '@/scene/world';
 
@@ -51,6 +52,8 @@ export function AscentStage({ reducedMotion, stop, climbOver, ref }: AscentStage
   const day = useRef<HTMLDivElement>(null);
   const summit = useRef<HTMLDivElement>(null);
   const veil = useRef<HTMLDivElement>(null);
+  const snow = useRef<HTMLDivElement>(null);
+  const squall = useRef<HTMLDivElement>(null);
   const layers = useRef<Layers>({ flats: [], labels: [] });
   const view = useRef<View>({ width: 0, height: 0, wide: true, laneGap: null });
   const snap = useRef((value: number) => value);
@@ -101,6 +104,8 @@ export function AscentStage({ reducedMotion, stop, climbOver, ref }: AscentStage
 
     write(summit.current, 'transform', `translate3d(${px(pose.summit.x)},${px(pose.summit.y)},0)`);
     write(summit.current, 'opacity', pose.summit.opacity.toFixed(3));
+    write(snow.current, 'opacity', pose.snow.falling.toFixed(3));
+    write(squall.current, 'opacity', pose.snow.thick.toFixed(3));
     /* dawn turns to day as you climb (by night, dusk to midnight) */
     write(day.current, 'opacity', pose.daylight.toFixed(3));
   };
@@ -229,6 +234,8 @@ export function AscentStage({ reducedMotion, stop, climbOver, ref }: AscentStage
 
       {/* in front of the ridges, behind the labels */}
       <WeatherLayer belowFirstCamp={stop < FIRST_CAMP} />
+      {/* from the camp below the snowline on, so the flakes are already falling when they come into view */}
+      <SnowLayer running={stop >= SNOWLINE_CAMP - 1} snowRef={snow} squallRef={squall} />
 
       {CAMPS.map((camp, i) => (
         <div key={camp.year} data-scene-label={i} data-reached={i <= stop} className='scene-label'>

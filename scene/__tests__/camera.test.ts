@@ -11,6 +11,7 @@ import {
   maxScale,
   PAINTED_ASPECT,
   poseAt,
+  SNOWLINE_CAMP,
   stageScale,
   usesPhoneArt,
   type View,
@@ -213,6 +214,14 @@ describe('camera', () => {
 
     expect(poseAt(4.3, WIDE).summit.opacity).toBe(0);
     expect(poseAt(LAST, WIDE).summit.opacity).toBe(1);
+  });
+
+  it('brings the snow in on the approach to the snowline, and thickens it toward the summit', () => {
+    expect(poseAt(SNOWLINE_CAMP - 1, WIDE).snow.falling).toBe(0);
+    expect(poseAt(SNOWLINE_CAMP - 0.25, WIDE).snow.falling).toBeGreaterThan(0);
+    expect(poseAt(SNOWLINE_CAMP, WIDE).snow.falling).toBe(1);
+    expect(poseAt(SNOWLINE_CAMP, WIDE).snow.thick).toBe(0);
+    expect(poseAt(LAST, WIDE).snow).toEqual({ falling: 1, thick: 1 });
   });
 
   it('shows labels only for the camp at hand and the next one', () => {

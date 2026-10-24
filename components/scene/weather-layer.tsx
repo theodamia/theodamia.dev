@@ -5,14 +5,15 @@ import { weatherField } from '@/scene/weather';
 const BITS = weatherField();
 
 /**
- * Every season's weather at once; CSS shows one kind and leaves the rest `display: none`, so only the current
- * weather animates and it all arrives in the served HTML without JavaScript.
+ * Every season's weather low on the mountain at once; CSS shows one kind and leaves the rest `display: none`, so
+ * only the current weather animates and it all arrives in the served HTML without JavaScript. (Snow is the
+ * weather of the heights in every season: `SnowLayer`.)
  *
  * Mounted between the near slopes and the foreground, so it falls in front of the mountain and behind the framing
  * pines — the thing a canvas over the page could not do, and why this is spans rather than a particle library.
  * Each bit moves on `translate` and `rotate`, never `transform`, which the stage writes on the layers either side.
  *
- * `belowFirstCamp` stops the leaves and blossom above the treeline; snow ignores it. It follows the camp reached,
+ * `belowFirstCamp` stops the leaves and blossom above the treeline. It follows the camp reached,
  * not the scroll, so crossing it costs one opacity and the bits underneath pause rather than restart.
  */
 export function WeatherLayer({ belowFirstCamp }: { belowFirstCamp: boolean }) {

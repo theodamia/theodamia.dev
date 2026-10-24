@@ -172,6 +172,23 @@ describe('the climb stage', () => {
     });
   });
 
+  it('fades the snow in with the climb, and lets it fall only from the camp below the snowline', async () => {
+    const { root, handle, rerender } = stage({ stop: 1 });
+    act(() => handle().resize({ laneGap: null }));
+    release();
+    await settle();
+
+    const layers = Array.from(root.querySelectorAll<HTMLElement>('.snow-density'));
+    expect(layers).toHaveLength(2);
+    expect(root.querySelector('.snow-layer')).not.toHaveAttribute('data-snowing');
+
+    act(() => handle().applyFrame({ leg: 4, f: 0 }));
+    expect(layers.map(layer => Number(layer.style.opacity))).toEqual([1, 0]);
+
+    rerender({ stop: 3 });
+    expect(root.querySelector('.snow-layer')).toHaveAttribute('data-snowing');
+  });
+
   it('lays the backdrop as copies of one picture over its haze fill', () => {
     const { flat } = stage();
     const copies = Array.from(flat(BACKDROP.id).querySelectorAll<HTMLElement>('[data-tile]'));

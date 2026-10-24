@@ -45,6 +45,14 @@ const LABEL_RISE = { CAMP: 98, TRAILHEAD: 92 } as const;
 const LABEL_SHIFT = -6;
 /** The summit line comes in over the last stretch of the climb. */
 const SUMMIT_FADE = [4.35, 4.95] as const;
+/**
+ * The snow of the heights (scene/snow.ts) begins where the paintings turn snowy: the Lead camp, the first ridge
+ * with snow on it. It comes in over the last stretch of the approach and is full at the camp; a thicker fall
+ * joins it over the last stretch before the summit.
+ */
+export const SNOWLINE_CAMP = 4;
+const SNOW_IN = [SNOWLINE_CAMP - 0.5, SNOWLINE_CAMP - 0.05] as const;
+const SNOW_THICKENS = [CAMP_COUNT - 1.65, CAMP_COUNT - 1.1] as const;
 /** Where the summit line sits from the tip, in units at scale 1: left of it on wide screens, on the snow on phones. */
 const SUMMIT_LINE = { WIDE: [-40, 30], PHONE: [0, 70] } as const;
 /** A flat this close to the camera (or behind it) is gone. */
@@ -208,6 +216,8 @@ export type Pose = {
   flats: FlatPose[];
   labels: LabelPose[];
   summit: { x: number; y: number; opacity: number };
+  /** How much of the snow is falling (0 below the snowline), and of the thicker fall near the summit. */
+  snow: { falling: number; thick: number };
   /** Dawn turns to day as you climb (dusk to midnight by night). */
   daylight: number;
 };
@@ -268,6 +278,10 @@ export function poseAt(u: number, view: View): Pose {
       x: fx + sx * peakScale * v,
       y: tip + sy * peakScale * v,
       opacity: smoothstep(SUMMIT_FADE[0], SUMMIT_FADE[1], u),
+    },
+    snow: {
+      falling: smoothstep(SNOW_IN[0], SNOW_IN[1], u),
+      thick: smoothstep(SNOW_THICKENS[0], SNOW_THICKENS[1], u),
     },
     daylight: smoothstep(0, LAST, u),
   };
