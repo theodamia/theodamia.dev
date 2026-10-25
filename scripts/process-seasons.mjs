@@ -21,6 +21,10 @@
  *   6. names every file by a hash of its bytes (so public/seasons can be cached forever) and writes
  *      scene/seasons.json: the files, the meadow's share of the height and the tile's width.
  *
+ * The weather is painted too (raw/weather-{day,night}.png): a kit of small things on a grid, a row per season
+ * (sakura petals, dandelion seeds, golden larch tufts and leaves, snowflakes). Each is cut from its cell, trimmed
+ * and packed into one small atlas per theme, and the manifest says where each one is.
+ *
  * public/seasons/ belongs to this script: it is emptied first.
  */
 import { createHash } from 'node:crypto';
@@ -54,8 +58,6 @@ const BAND = 192;
 const SPECK = 48;
 /** The width, in pixels from the outline, where a pink grass tip counts as the skyline's. */
 const SKYLINE = 10;
-/** Kept pixels at least this opaque, two pixels in from the edge, are trusted to lend their colour. */
-const OPAQUE = 0.98;
 const ENCODE = { quality: 80, alphaQuality: 85, effort: 6, smartSubsample: true, exact: true };
 
 /**
@@ -88,28 +90,23 @@ function copyColour(rgb, to, from) {
   rgb[to * 3 + 2] = rgb[from * 3 + 2];
 }
 
+/** Red and blue both above green by more than this: a pixel with the magenta's cast. */
+const CAST = 4;
+
 /**
- * Every pixel `use` keeps takes the colour of the nearest trusted one (opaque in `use` and in the painting's `own`
- * alpha, two pixels in from the edge), grown inward until all are covered. The edge band is where the generator's
- * pink lives; for a night, `own` is its own alpha, so the fill also covers wherever it drifted off the day.
+ * Repaints the pixels whose colour cannot be trusted, each from the nearest one that can, grown inward until all are
+ * covered: those within two pixels of the outline that still carry the magenta's cast (the generator anti-aliases
+ * its edge with pinks too faint to key), and, for a night, every pixel the day keeps (`use`) but the night's own
+ * painting (`own`) left out, where it drifted off the day. Everything else keeps its own colour: a twig two or three
+ * pixels thin is all edge, and repainting all of it smears colour along it from wherever paint is solid.
  */
 function repair(rgb, use, own = use) {
-  let trusted = Uint8Array.from(use, (a, i) => (a >= OPAQUE && own[i] >= OPAQUE ? 1 : 0));
-
-  for (let pass = 0; pass < 2; pass++) {
-    const next = new Uint8Array(trusted.length);
-
-    for (let y = 1; y < H - 1; y++) {
-      for (let x = 1; x < W - 1; x++) {
-        const i = y * W + x;
-        next[i] = trusted[i] & trusted[i - 1] & trusted[i + 1] & trusted[i - W] & trusted[i + W];
-      }
-    }
-
-    trusted = next;
-  }
-
-  const need = Uint8Array.from(use, (a, i) => (a > 0 && !trusted[i] ? 1 : 0));
+  const band = nearOutline(use, 2);
+  const cast = i => Math.min(rgb[i * 3], rgb[i * 3 + 2]) - rgb[i * 3 + 1] > CAST;
+  const need = Uint8Array.from(use, (a, i) =>
+    a > 0 && (own[i] < 0.5 || (band[i] && cast(i))) ? 1 : 0
+  );
+  const trusted = Uint8Array.from(use, (a, i) => (a >= 0.5 && !need[i] ? 1 : 0));
 
   for (let pass = 0; pass < W; pass++) {
     const grow = [];
@@ -156,13 +153,13 @@ function nearOutline(alpha, reach) {
 }
 
 /**
- * Any magenta tint left (red and blue both above green) is pulled out. Spring's meadow has real purple, its
- * crocuses, so there it is only done near the outline.
+ * Any magenta tint left (red and blue both above green) is pulled out, from pixel `from` on. Spring's meadow has
+ * real purple, its crocuses, so there it is only done near the outline.
  */
-function despill(rgb, alpha, everywhere) {
+function despill(rgb, alpha, everywhere, from = 0) {
   const near = everywhere ? null : nearOutline(alpha, 4);
 
-  for (let i = 0; i < W * H; i++) {
+  for (let i = from; i < W * H; i++) {
     if (alpha[i] <= 0 || (near && !near[i])) continue;
     const spill = Math.min(rgb[i * 3], rgb[i * 3 + 2]) - rgb[i * 3 + 1];
     if (spill <= 0) continue;
@@ -411,7 +408,7 @@ function bleed(rgb, alpha, width) {
   }
 }
 
-async function encode({ rgb, alpha, width }, base) {
+async function encode({ rgb, alpha, width, height = H }, base) {
   bleed(rgb, alpha, width);
   const n = alpha.length;
   const data = Buffer.alloc(n * 4);
@@ -423,14 +420,14 @@ async function encode({ rgb, alpha, width }, base) {
     data[i * 4 + 3] = clampByte(alpha[i] * 255);
   }
 
-  const bytes = await sharp(data, { raw: { width, height: H, channels: 4 } })
+  const bytes = await sharp(data, { raw: { width, height, channels: 4 } })
     .webp(ENCODE)
     .toBuffer();
   const hash = createHash('sha256').update(bytes).digest('hex').slice(0, 8);
   const name = `${base}.${hash}.webp`;
   await fs.writeFile(path.join(OUT_DIR, name), bytes);
   console.log(
-    `${name.padEnd(36)} ${String(width).padStart(4)} × ${H}  ${(bytes.length / 1000).toFixed(0)} KB`
+    `${name.padEnd(36)} ${String(width).padStart(4)} × ${height}  ${(bytes.length / 1000).toFixed(0)} KB`
   );
 
   return { name, size: bytes.length };
@@ -507,7 +504,177 @@ for (const season of SEASONS) {
   }
 }
 
-const manifest = { ground, tile: W - BAND, canvas: [W, H], art };
+/**
+ * The weather kit's grid and its atlas: COLUMNS things per season, a row each in KIT_ROWS order, each trimmed
+ * (with PAD pixels of air) and fitted into a SPRITE-pixel square, GAP pixels apart so no sprite bleeds into the next
+ * when the page scales it.
+ */
+const KIT = { COLUMNS: 5, SPRITE: 64, GAP: 4, PAD: 3, FAINT: 0.04 };
+const KIT_ROWS = ['spring', 'summer', 'autumn', 'winter'];
+
+/** The box of everything at least FAINT opaque inside one cell of the kit, with PAD pixels of air. */
+function trimmedCell(alpha, column, row) {
+  const cellW = Math.floor(W / KIT.COLUMNS);
+  const cellH = Math.floor(H / KIT_ROWS.length);
+  let [left, top, right, bottom] = [cellW, cellH, -1, -1];
+
+  for (let y = 0; y < cellH; y++) {
+    for (let x = 0; x < cellW; x++) {
+      if (alpha[(row * cellH + y) * W + column * cellW + x] < KIT.FAINT) continue;
+      left = Math.min(left, x);
+      right = Math.max(right, x);
+      top = Math.min(top, y);
+      bottom = Math.max(bottom, y);
+    }
+  }
+
+  if (right < 0) throw new Error(`weather kit: cell ${column + 1} of row ${row + 1} is empty`);
+  const x0 = Math.max(0, left - KIT.PAD);
+  const y0 = Math.max(0, top - KIT.PAD);
+
+  return {
+    left: column * cellW + x0,
+    top: row * cellH + y0,
+    width: Math.min(cellW, right + KIT.PAD + 1) - x0,
+    height: Math.min(cellH, bottom + KIT.PAD + 1) - y0,
+  };
+}
+
+/** Autumn's gold, as [hue, the most saturation it may have]: by day the larch gold, by night a muted moonlit one. */
+const GOLD = { day: [40, 0.85], night: [38, 0.4] };
+
+/** An autumn colour outside the golds (green or pink needles) as the gold it should be, or null. */
+function goldOnly(theme, [r, g, b]) {
+  const [h, s] = hsl(r, g, b);
+  if (s < 0.12 || (h >= 18 && h <= 62)) return null;
+
+  return GOLD[theme];
+}
+
+/**
+ * Snow's colour, or null: winter's own rule for the wood (`retint`), and the blue-violet a painter shades crystals
+ * with, which reads lavender at the size a flake is shown, goes to the snow's blue shade (the moon's by night).
+ */
+function snowOnly(theme, colour) {
+  const wood = retint('winter', theme, colour);
+  if (wood) return wood;
+  const [h, s] = hsl(...colour);
+  if (s <= 0.06 || h < 222 || h >= 330) return null;
+
+  return theme === 'day' ? SNOW_SHADE : MOONLIT;
+}
+
+/** Retints one row of the kit pixel by pixel, keeping each one's lightness. */
+function retintRow(rgb, alpha, row, recolour) {
+  const rowH = H / KIT_ROWS.length;
+
+  for (let i = row * rowH * W; i < (row + 1) * rowH * W; i++) {
+    if (alpha[i] <= 0) continue;
+    const colour = [rgb[i * 3], rgb[i * 3 + 1], rgb[i * 3 + 2]];
+    const to = recolour(colour);
+    if (!to) continue;
+    const [, s, l] = hsl(...colour);
+    rgb.set(rgbOf(to[0], Math.min(s, to[1]), l), i * 3);
+  }
+}
+
+/** One painting's crop as straight RGBA bytes, with the day's alpha. */
+function cropRgba(rgb, alpha, box) {
+  const out = Buffer.alloc(box.width * box.height * 4);
+
+  for (let y = 0; y < box.height; y++) {
+    for (let x = 0; x < box.width; x++) {
+      const from = (box.top + y) * W + box.left + x;
+      const to = (y * box.width + x) * 4;
+      out[to] = clampByte(rgb[from * 3]);
+      out[to + 1] = clampByte(rgb[from * 3 + 1]);
+      out[to + 2] = clampByte(rgb[from * 3 + 2]);
+      out[to + 3] = clampByte(alpha[from] * 255);
+    }
+  }
+
+  return out;
+}
+
+async function weatherKit() {
+  const day = key(await load(path.join(RAW_DIR, 'weather-day.png')), { W, H });
+  const night = key(await load(path.join(RAW_DIR, 'weather-night.png')), { W, H });
+  dropSpecks(day.alpha);
+  repair(day.rgb, day.alpha);
+  repair(night.rgb, day.alpha, night.alpha);
+  /* the petals' soft pink is their own: only the rows below them lose any magenta tint */
+  const petalRows = H / KIT_ROWS.length;
+
+  for (const painting of [day, night]) {
+    despill(painting.rgb, day.alpha, true, petalRows * W);
+  }
+
+  /* the colours the painter let drift: autumn's tufts and leaves keep only gold (no green or pink needles), and
+     winter's flakes lose their lilac as the winter wood does */
+  const autumn = KIT_ROWS.indexOf('autumn');
+  const winter = KIT_ROWS.indexOf('winter');
+
+  for (const [theme, painting] of [
+    ['day', day],
+    ['night', night],
+  ]) {
+    retintRow(painting.rgb, day.alpha, autumn, colour => goldOnly(theme, colour));
+    retintRow(painting.rgb, day.alpha, winter, colour => snowOnly(theme, colour));
+  }
+
+  const width = KIT.COLUMNS * (KIT.SPRITE + KIT.GAP) + KIT.GAP;
+  const height = KIT_ROWS.length * (KIT.SPRITE + KIT.GAP) + KIT.GAP;
+  const sprites = Object.fromEntries(KIT_ROWS.map(season => [season, []]));
+  const layers = { day: [], night: [] };
+
+  for (const [row, season] of KIT_ROWS.entries()) {
+    for (let column = 0; column < KIT.COLUMNS; column++) {
+      const box = trimmedCell(day.alpha, column, row);
+      const x = KIT.GAP + column * (KIT.SPRITE + KIT.GAP);
+      const y = KIT.GAP + row * (KIT.SPRITE + KIT.GAP);
+      let size = null;
+
+      for (const [theme, painting] of [
+        ['day', day],
+        ['night', night],
+      ]) {
+        const raw = { width: box.width, height: box.height, channels: 4 };
+        const { data, info } = await sharp(cropRgba(painting.rgb, day.alpha, box), { raw })
+          .resize({ width: KIT.SPRITE, height: KIT.SPRITE, fit: 'inside' })
+          .raw()
+          .toBuffer({ resolveWithObject: true });
+        size = [info.width, info.height];
+        layers[theme].push({ input: data, raw: { ...info, channels: 4 }, left: x, top: y });
+      }
+
+      sprites[season].push([x, y, ...size]);
+    }
+  }
+
+  const atlas = {};
+
+  for (const theme of THEMES) {
+    const blank = { width, height, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } };
+    const { data } = await sharp({ create: blank })
+      .composite(layers[theme])
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    const rgb = new Float32Array(width * height * 3);
+    const alpha = new Float32Array(width * height);
+
+    for (let i = 0; i < width * height; i++) {
+      rgb.set([data[i * 4], data[i * 4 + 1], data[i * 4 + 2]], i * 3);
+      alpha[i] = data[i * 4 + 3] / 255;
+    }
+
+    atlas[theme] = (await encode({ rgb, alpha, width, height }, `weather-${theme}`)).name;
+  }
+
+  return { atlas, size: [width, height], sprite: KIT.SPRITE, sprites };
+}
+
+const weather = await weatherKit();
+const manifest = { ground, tile: W - BAND, canvas: [W, H], art, weather };
 await fs.writeFile(
   MANIFEST,
   await format(JSON.stringify(manifest), { ...(await resolveConfig(MANIFEST)), parser: 'json' })

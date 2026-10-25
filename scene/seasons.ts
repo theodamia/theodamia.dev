@@ -1,6 +1,7 @@
 import { JOBS } from '@/content/jobs';
 import type { Theme } from '@/scene/flats';
 import { rnd } from '@/scene/noise';
+import { wave } from '@/scene/snow';
 import manifest from './seasons.json';
 
 /**
@@ -63,51 +64,40 @@ export const seasonUrl = (file: string) => `/seasons/${file}`;
 /* ------------------------------------------------------------------------------------------------------------ */
 
 /**
- * Each season's weather: a few petals in spring, slow motes rising in summer, larch needles twirling down in
- * autumn, snow in winter. Few and slow on purpose: it is weather beside a list somebody is reading.
+ * Each season's weather, painted (scripts/process-seasons.mjs packs the kit into one small atlas per theme):
+ * cherry petals and small blossoms in spring, dandelion seeds rising off the meadow in summer, golden larch tufts and
+ * leaves in autumn, snow in winter. Few and slow on purpose: it is weather beside a list somebody is reading.
  */
-export type WeatherKind = 'petal' | 'mote' | 'needle' | 'flake';
+export type WeatherKind = 'petal' | 'seed' | 'leaf' | 'flake';
+
+/** The kit's atlas: its files, its size in px, the square every sprite was fitted into, and each season's boxes. */
+export type WeatherAtlas = {
+  atlas: Record<Theme, string>;
+  size: [number, number];
+  sprite: number;
+  sprites: Record<Season, [x: number, y: number, w: number, h: number][]>;
+};
+
+export const WEATHER_ATLAS = manifest.weather as WeatherAtlas;
 
 type WeatherSpec = {
   kind: WeatherKind;
   seed: number;
   count: number;
-  /** One pass across the screen, in seconds; a mote's is upward. */
+  /** One pass across the screen, in seconds; a seed's is upward. */
   pass: [number, number];
-  /** Px across, and the opacity range. */
+  /** On-screen size of the sprite's longest side, px: the smaller, the further off, and the fainter. */
   size: [number, number];
-  alpha: [number, number];
 };
 
 const WEATHER: Record<Season, WeatherSpec> = {
-  winter: { kind: 'flake', seed: 7100, count: 30, pass: [9, 16], size: [3.5, 6], alpha: [0.75, 1] },
-  spring: {
-    kind: 'petal',
-    seed: 7300,
-    count: 14,
-    pass: [11, 19],
-    size: [6, 8],
-    alpha: [0.75, 0.95],
-  },
-  summer: {
-    kind: 'mote',
-    seed: 7500,
-    count: 10,
-    pass: [16, 26],
-    size: [2.5, 3.5],
-    alpha: [0.5, 0.8],
-  },
-  autumn: {
-    kind: 'needle',
-    seed: 7700,
-    count: 18,
-    pass: [11, 19],
-    size: [8, 10],
-    alpha: [0.85, 1],
-  },
+  winter: { kind: 'flake', seed: 7100, count: 32, pass: [10, 17], size: [10, 19] },
+  spring: { kind: 'petal', seed: 7300, count: 20, pass: [12, 20], size: [17, 27] },
+  summer: { kind: 'seed', seed: 7500, count: 12, pass: [22, 32], size: [24, 34] },
+  autumn: { kind: 'leaf', seed: 7700, count: 22, pass: [11, 18], size: [19, 30] },
 };
 
-/** Each kind has this many paths, so neighbours never drift in step. */
+/** Each kind has this many paths, so neighbours never fall in step. */
 export const WEATHER_PATHS = 4;
 
 /**
@@ -115,20 +105,23 @@ export const WEATHER_PATHS = 4;
  * cycle ends (the climb's snow, scene/snow.ts), so one cycle carries it across twice, in two lanes.
  */
 const PASSES_PER_CYCLE = 2;
+/** Keyframe stops per pass: enough for the sway to read as a curve. */
+const STEPS_PER_PASS = 12;
 /** The second pass of a cycle runs this many px to the side of the first. */
 const LANE = 31;
-/** Where a fall starts and ends, as a share of the weather box's height: just above it, and just below it. */
-const FALL_FROM = -0.1;
-const FALL_TO = 1.06;
 
 export type WeatherBit = {
   key: number;
   kind: WeatherKind;
   /** Which of its kind's paths it follows, from 1. */
   path: number;
+  /** Which of its season's sprites it is. */
+  sprite: number;
   /** Across the weather box, in %. */
   x: number;
+  /** Its sprite's longest side on screen, px. */
   size: number;
+  /** Its strength: smaller bits are further off, so fainter. */
   alpha: number;
   /** One cycle, and how far into it the bit starts, in seconds. */
   cycle: number;
@@ -137,21 +130,24 @@ export type WeatherBit = {
 
 const between = ([low, high]: [number, number], t: number) => low + (high - low) * t;
 
-/** One season's weather. Deterministic, like the stars and the snow, so server and browser agree. */
+/** One season's weather. Deterministic, like the stars and the snow. */
 export function weatherField(season: Season): WeatherBit[] {
   const spec = WEATHER[season];
+  const sprites = WEATHER_ATLAS.sprites[season].length;
 
   return Array.from({ length: spec.count }, (_, i) => {
     const r = (draw: number) => rnd(spec.seed + i * 13 + draw);
     const cycle = between(spec.pass, r(1)) * PASSES_PER_CYCLE;
+    const near = r(3);
 
     return {
       key: i,
       kind: spec.kind,
       path: 1 + Math.floor(r(2) * WEATHER_PATHS),
+      sprite: Math.floor(r(6) * sprites),
       x: r(0) * 100,
-      size: between(spec.size, r(3)),
-      alpha: between(spec.alpha, r(4)),
+      size: between(spec.size, near),
+      alpha: 0.7 + 0.3 * near,
       cycle,
       /* anywhere in its cycle, so the sky has weather from the first frame */
       phase: cycle * r(5),
@@ -159,48 +155,105 @@ export function weatherField(season: Season): WeatherBit[] {
   });
 }
 
-/** Sideways drift over one pass, px, per kind and path: snow drifts least, petals and needles most. */
-const DRIFT: Record<WeatherKind, number[]> = {
-  flake: [34, 52, 70, 88],
-  petal: [76, 98, 120, 142],
-  mote: [40, 62, -30, -52],
-  needle: [70, 92, 114, 136],
+type Motion = {
+  /** Sideways travel over one pass, px, per path. */
+  drift: number[];
+  /** The sway either side of that travel, px, and how many sways a pass. */
+  sway: number;
+  sways: number;
+  /** Degrees turned over one pass, about each path's axis: a tilted axis makes a flat thing flip as it falls. */
+  spin: number;
+  axes: [number, number, number][];
+  /** Where a pass starts and ends, as shares of the weather box's height. */
+  from: number;
+  to: number;
+  /** A seed rises in mid-air and settles back, so it fades in and out instead of popping. */
+  fades?: boolean;
 };
+
+const MOTION: Record<WeatherKind, Motion> = {
+  petal: {
+    drift: [60, 90, 120, 150],
+    sway: 26,
+    sways: 2.5,
+    spin: 540,
+    axes: [
+      [1, 0.4, 0.2],
+      [0.3, 1, 0.15],
+      [0.6, 0.6, 0.5],
+      [1, 0.15, 0.6],
+    ],
+    from: -0.1,
+    to: 1.06,
+  },
+  leaf: {
+    drift: [70, 100, 130, 160],
+    sway: 36,
+    sways: 2,
+    spin: 720,
+    axes: [
+      [0.8, 1, 0.3],
+      [1, 0.3, 0.4],
+      [0.4, 0.8, 0.8],
+      [1, 0.6, 0.1],
+    ],
+    from: -0.1,
+    to: 1.06,
+  },
+  seed: {
+    drift: [180, 230, -160, -210],
+    sway: 18,
+    sways: 1.5,
+    spin: 0,
+    axes: [[0, 0, 1]],
+    from: 0.95,
+    to: 0.2,
+    fades: true,
+  },
+  flake: {
+    drift: [30, 46, 62, 78],
+    sway: 14,
+    sways: 2,
+    spin: 180,
+    axes: [[0, 0, 1]],
+    from: -0.08,
+    to: 1.06,
+  },
+};
+
+/** A seed does not spin: it rocks under its parachute, this many degrees either way. */
+const SEED_ROCK = 16;
+
+const n = (value: number, digits = 1) => Number(value.toFixed(digits));
 
 /**
  * The weather's keyframes, one set per kind and path. Heights are in `cqh` (the weather box is a size container),
- * every value a plain number. Each set carries a bit across PASSES_PER_CYCLE times; the jump back is between two
- * stops a hair apart, outside the box. Needles turn as they fall; motes rise.
+ * every value a plain number. Each set carries a bit across PASSES_PER_CYCLE times, swaying either side of its drift
+ * (scene/snow.ts's `wave`) and turning about its path's axis; the jump back is between two stops a hair apart,
+ * outside the box.
  */
 export function weatherKeyframes(): string {
   const rules: string[] = [];
 
-  (Object.keys(DRIFT) as WeatherKind[]).forEach(kind => {
-    DRIFT[kind].forEach((drift, p) => {
-      const rise = kind === 'mote';
-      const [from, to] = rise ? [FALL_TO, 0.2] : [FALL_FROM, FALL_TO];
+  (Object.keys(MOTION) as WeatherKind[]).forEach(kind => {
+    const motion = MOTION[kind];
+
+    motion.drift.forEach((drift, p) => {
+      const [ax, ay, az] = motion.axes[p % motion.axes.length];
       const stops: string[] = [];
 
       for (let pass = 0; pass < PASSES_PER_CYCLE; pass++) {
-        const start = (pass / PASSES_PER_CYCLE) * 100;
-        const end = ((pass + 1) / PASSES_PER_CYCLE) * 100 - 0.01;
-        const lane = pass * LANE;
-        const turn = kind === 'needle' ? ` rotate: ${pass * 720}deg;` : '';
-        const turned = kind === 'needle' ? ` rotate: ${(pass + 1) * 720}deg;` : '';
-        stops.push(
-          `${start.toFixed(2)}% { translate: ${lane}px ${(from * 100).toFixed(1)}cqh;${turn} }`
-        );
-        stops.push(
-          `${end.toFixed(2)}% { translate: ${lane + drift}px ${(to * 100).toFixed(1)}cqh;${turned} }`
-        );
-
-        /* a mote stops rising in mid-air, so it fades in and out instead of popping */
-        if (rise) {
-          const span = end - start;
-          stops.push(`${start.toFixed(2)}%, ${end.toFixed(2)}% { opacity: 0; }`);
-          stops.push(
-            `${(start + span * 0.2).toFixed(2)}%, ${(start + span * 0.75).toFixed(2)}% { opacity: 1; }`
-          );
+        for (let step = 0; step <= STEPS_PER_PASS; step++) {
+          const t = step / STEPS_PER_PASS;
+          const at = ((pass + t) / PASSES_PER_CYCLE) * 100 - (step === STEPS_PER_PASS ? 0.01 : 0);
+          const x = pass * LANE + drift * t + motion.sway * wave(t * motion.sways + p * 0.25);
+          const y = (motion.from + (motion.to - motion.from) * t) * 100;
+          const turn =
+            kind === 'seed'
+              ? `rotate: ${n(SEED_ROCK * wave(t * motion.sways + 0.25))}deg;`
+              : `rotate: ${ax} ${ay} ${az} ${n((pass + t) * motion.spin)}deg;`;
+          const fade = motion.fades ? ` opacity: ${n(Math.min(1, t * 5, (1 - t) * 4), 2)};` : '';
+          stops.push(`${n(at, 2)}% { translate: ${n(x)}px ${n(y)}cqh; ${turn}${fade} }`);
         }
       }
 

@@ -127,9 +127,9 @@ export function snowField(): Flake[] {
 
 /**
  * A smooth wave, -1 to 1 over one period, from arithmetic only: a triangle wave rounded at its turns. No
- * trigonometry, so the server and every browser write exactly the same keyframes.
+ * trigonometry, so the server and every browser write exactly the same keyframes. /cv's weather sways on it too.
  */
-function wave(u: number): number {
+export function wave(u: number): number {
   const triangle = 1 - 2 * Math.abs(2 * (u - Math.floor(u)) - 1);
 
   return triangle * (1.5 - 0.5 * triangle * triangle);

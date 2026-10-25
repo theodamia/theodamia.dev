@@ -6,6 +6,8 @@ import { YearFade } from '@/components/scene/year-fade';
 import {
   DEFAULT_START,
   seasonOf,
+  seasonUrl,
+  WEATHER_ATLAS,
   weatherField,
   weatherKeyframes,
   YEAR_STATES,
@@ -21,34 +23,48 @@ const subscribe = () => () => {};
 const readStart = () => Number(document.documentElement.dataset.yearStart ?? DEFAULT_START);
 const noStart = () => null;
 
-/** One season's weather, in the box right of the list (`.year-weather`). */
+const px = (value: number) => `${value.toFixed(2)}px`;
+
+/**
+ * One season's weather, in the box right of the list (`.year-weather`): each bit is one sprite of the painted kit,
+ * cut from the atlas by its background's position and size, scaled so its longest side is the bit's size.
+ */
 function Weather({ season }: { season: Season }) {
+  const [atlasW, atlasH] = WEATHER_ATLAS.size;
+
   return (
     <div className='year-weather'>
-      {weatherField(season).map(bit => (
-        <span
-          key={bit.key}
-          data-kind={bit.kind}
-          className='weather-bit'
-          style={
-            {
+      {weatherField(season).map(bit => {
+        const [x, y, w, h] = WEATHER_ATLAS.sprites[season][bit.sprite];
+        const scale = bit.size / WEATHER_ATLAS.sprite;
+
+        return (
+          <span
+            key={bit.key}
+            data-kind={bit.kind}
+            className='weather-bit'
+            style={{
               left: `${bit.x.toFixed(2)}%`,
-              '--size': `${bit.size.toFixed(2)}px`,
-              '--alpha': bit.alpha.toFixed(2),
+              width: px(w * scale),
+              height: px(h * scale),
+              backgroundPosition: `${px(-x * scale)} ${px(-y * scale)}`,
+              backgroundSize: `${px(atlasW * scale)} ${px(atlasH * scale)}`,
+              /* a seed's keyframes fade it in and out, which would overwrite this */
+              opacity: bit.kind === 'seed' ? undefined : bit.alpha,
               animationName: `weather-${bit.kind}-${bit.path}`,
               animationDuration: `${bit.cycle.toFixed(2)}s`,
               animationDelay: `-${bit.phase.toFixed(2)}s`,
-            } as React.CSSProperties
-          }
-        />
-      ))}
+            }}
+          />
+        );
+      })}
     </div>
   );
 }
 
 /**
- * The year's weather, one stack of states over the land, each with its own season's: petals, motes, larch needles,
- * snow. Drawn in the browser only, once the year's start is known (`data-year-start`, written before the first
+ * The year's weather, one stack of states over the land, each with its own season's: cherry petals, dandelion
+ * seeds, golden larch tufts and leaves, snow. Drawn in the browser only, once the year's start is known (`data-year-start`, written before the first
  * paint), so each state carries the one season it shows: rendered on the server it would have to carry all four,
  * a few hundred particles twice over (the HTML and React's payload) for weather nobody needs before it is seen.
  */
@@ -57,7 +73,15 @@ export function YearWeather() {
   if (start === null) return null;
 
   return (
-    <div className='year-stack'>
+    <div
+      className='year-stack'
+      style={
+        {
+          '--atlas-day': `url(${seasonUrl(WEATHER_ATLAS.atlas.day)})`,
+          '--atlas-night': `url(${seasonUrl(WEATHER_ATLAS.atlas.night)})`,
+        } as React.CSSProperties
+      }
+    >
       {/* the weather's keyframes, generated with the fields; React hoists and dedupes them */}
       <style href='year-weather' precedence='default'>
         {WEATHER_CSS}

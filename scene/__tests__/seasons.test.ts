@@ -8,6 +8,7 @@ import {
   SEASON_SCRIPT,
   SEASONS,
   seasonIndexOn,
+  WEATHER_ATLAS,
   seasonOf,
   weatherField,
   weatherKeyframes,
@@ -26,6 +27,8 @@ const MONTHS: [number, string][] = [
   [10, 'autumn'],
   [11, 'winter'],
 ];
+
+const THEMES_ON_DISK = Object.values(WEATHER_ATLAS.atlas);
 
 describe('the year behind /cv', () => {
   it.each(MONTHS)('month %i is %s', (month, season) => {
@@ -80,6 +83,28 @@ describe('the year behind /cv', () => {
         expect(bit.x).toBeGreaterThanOrEqual(0);
         expect(bit.x).toBeLessThan(100);
         expect(bit.phase).toBeLessThanOrEqual(bit.cycle);
+      });
+    });
+  });
+
+  it("draws every bit from its own season's row of the painted kit, in both themes", () => {
+    THEMES_ON_DISK.forEach(file =>
+      expect(existsSync(path.join(process.cwd(), 'public/seasons', file))).toBe(true)
+    );
+
+    SEASONS.forEach(season => {
+      const sprites = WEATHER_ATLAS.sprites[season];
+      expect(sprites.length).toBeGreaterThan(0);
+
+      weatherField(season).forEach(bit => {
+        expect(bit.sprite).toBeGreaterThanOrEqual(0);
+        expect(bit.sprite).toBeLessThan(sprites.length);
+      });
+
+      sprites.forEach(([x, y, w, h]) => {
+        expect(x + w).toBeLessThanOrEqual(WEATHER_ATLAS.size[0]);
+        expect(y + h).toBeLessThanOrEqual(WEATHER_ATLAS.size[1]);
+        expect(Math.max(w, h)).toBe(WEATHER_ATLAS.sprite);
       });
     });
   });

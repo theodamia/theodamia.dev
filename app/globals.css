@@ -50,10 +50,6 @@
   --color-autumn-top: oklch(0.82 0.052 252);
   --color-autumn-mid: oklch(0.9 0.042 72);
   --color-autumn-low: oklch(0.965 0.028 80);
-  /* and its weather: spring's petals, summer's motes, autumn's larch needles (winter falls in --color-flake) */
-  --color-petal: oklch(0.93 0.04 350);
-  --color-mote: oklch(0.97 0.05 95);
-  --color-needle: #e0a83a;
   --color-sun-disc: oklch(0.98 0.04 85);
   --color-sun-glow: oklch(0.96 0.05 80 / 0.45);
   /* what far things fade toward: baked into the painted flats by scripts/process-flats.mjs, never applied at runtime */
@@ -189,10 +185,6 @@
   --color-autumn-top: oklch(0.17 0.035 262);
   --color-autumn-mid: oklch(0.22 0.04 258);
   --color-autumn-low: oklch(0.29 0.04 250);
-  /* moonlit weather: still the season's, only dim */
-  --color-petal: oklch(0.72 0.03 340);
-  --color-mote: oklch(0.8 0.03 240);
-  --color-needle: #9a7a3e;
   /* by night the sun's tokens hold the moon */
   --color-sun-disc: oklch(0.93 0.02 245);
   --color-sun-glow: oklch(0.85 0.04 245 / 0.2);
@@ -1640,8 +1632,9 @@
 }
 
 /*
- * The weather falls only right of the list, never over the text. Heights in the keyframes are `cqh`, so the box is
- * a size container. Each bit's strength is in its colour, which leaves its opacity to the keyframes (motes fade).
+ * The weather falls only right of the list, never over the text: small painted things from one atlas per theme
+ * (scene/seasons.ts), each placed and sized by its own style. Heights in the keyframes are `cqh`, so the box is a
+ * size container. Petals and leaves turn about a tilted axis as they fall, which flips them edge-on and back.
  */
 .year-weather {
   position: absolute;
@@ -1654,33 +1647,15 @@
 .weather-bit {
   position: absolute;
   top: 0;
-  width: var(--size);
-  height: var(--size);
-  border-radius: 50%;
-  background: color-mix(in oklab, var(--weather) calc(var(--alpha) * 100%), transparent);
+  background-image: var(--atlas-day);
+  background-repeat: no-repeat;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
 }
 
-.weather-bit[data-kind='petal'] {
-  --weather: var(--color-petal);
-  height: calc(var(--size) * 0.7);
-  border-radius: 50% 50% 50% 0;
-}
-
-.weather-bit[data-kind='mote'] {
-  --weather: var(--color-mote);
-}
-
-.weather-bit[data-kind='needle'] {
-  --weather: var(--color-needle);
-  width: 2px;
-  border-radius: 2px;
-}
-
-.weather-bit[data-kind='flake'] {
-  --weather: var(--color-flake);
-  box-shadow: 0 0 2px var(--color-flake-shade);
+/* by night the kit's moonlit atlas: displayed only then, so downloaded only then */
+:root[data-theme='dark'] .weather-bit {
+  background-image: var(--atlas-night);
 }
 
 /*

@@ -5,43 +5,78 @@
   "art": {
     "winter": {
       "day": {
-        "grove": "grove-winter-day.8c4f04c4.webp",
-        "meadow": "meadow-winter-day.c5e7be4d.webp"
+        "grove": "grove-winter-day.1ab93409.webp",
+        "meadow": "meadow-winter-day.a67f42da.webp"
       },
       "night": {
-        "grove": "grove-winter-night.2bc41c88.webp",
-        "meadow": "meadow-winter-night.b0bbc180.webp"
+        "grove": "grove-winter-night.750d532f.webp",
+        "meadow": "meadow-winter-night.ad282291.webp"
       }
     },
     "spring": {
       "day": {
-        "grove": "grove-spring-day.4e9c9daa.webp",
-        "meadow": "meadow-spring-day.84c8dcad.webp"
+        "grove": "grove-spring-day.0877cf07.webp",
+        "meadow": "meadow-spring-day.a6a6fe5b.webp"
       },
       "night": {
-        "grove": "grove-spring-night.de548a74.webp",
-        "meadow": "meadow-spring-night.87901c6f.webp"
+        "grove": "grove-spring-night.fb5624f3.webp",
+        "meadow": "meadow-spring-night.299d41d5.webp"
       }
     },
     "summer": {
       "day": {
-        "grove": "grove-summer-day.dae46b68.webp",
-        "meadow": "meadow-summer-day.d7849304.webp"
+        "grove": "grove-summer-day.dfb70eb4.webp",
+        "meadow": "meadow-summer-day.1369e148.webp"
       },
       "night": {
-        "grove": "grove-summer-night.0ef95479.webp",
-        "meadow": "meadow-summer-night.cffb2833.webp"
+        "grove": "grove-summer-night.3c2c7268.webp",
+        "meadow": "meadow-summer-night.2ba2b578.webp"
       }
     },
     "autumn": {
       "day": {
-        "grove": "grove-autumn-day.0da54947.webp",
-        "meadow": "meadow-autumn-day.068c5365.webp"
+        "grove": "grove-autumn-day.89da18a7.webp",
+        "meadow": "meadow-autumn-day.1ca55600.webp"
       },
       "night": {
-        "grove": "grove-autumn-night.ac52135a.webp",
-        "meadow": "meadow-autumn-night.5208e05c.webp"
+        "grove": "grove-autumn-night.b29614a8.webp",
+        "meadow": "meadow-autumn-night.740f27e3.webp"
       }
+    }
+  },
+  "weather": {
+    "atlas": { "day": "weather-day.285a1a7b.webp", "night": "weather-night.18f254f1.webp" },
+    "size": [344, 276],
+    "sprite": 64,
+    "sprites": {
+      "spring": [
+        [4, 4, 48, 64],
+        [72, 4, 64, 56],
+        [140, 4, 28, 64],
+        [208, 4, 63, 64],
+        [276, 4, 64, 57]
+      ],
+      "summer": [
+        [4, 72, 53, 64],
+        [72, 72, 61, 64],
+        [140, 72, 46, 64],
+        [208, 72, 63, 64],
+        [276, 72, 61, 64]
+      ],
+      "autumn": [
+        [4, 140, 64, 62],
+        [72, 140, 64, 54],
+        [140, 140, 64, 60],
+        [208, 140, 63, 64],
+        [276, 140, 64, 55]
+      ],
+      "winter": [
+        [4, 208, 58, 64],
+        [72, 208, 58, 64],
+        [140, 208, 64, 52],
+        [208, 208, 64, 49],
+        [276, 208, 58, 64]
+      ]
     }
   }
 }
