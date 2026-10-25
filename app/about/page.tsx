@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import { TrailLink } from '@/components/trail-link';
 import { ContactRows } from '@/components/contact-rows';
 import { FactList } from '@/components/fact-list';
 import { OpinionBars } from '@/components/opinion-bars';
@@ -42,9 +42,9 @@ export default function About() {
           </Heading>
           <Lede>Who carries the pack, how the work gets done and what is in it.</Lede>
           <div className='mt-7'>
-            <Link href='/' className={buttonVariants({ variant: 'quiet' })}>
+            <TrailLink href='/' className={buttonVariants({ variant: 'quiet' })}>
               <span aria-hidden='true'>←</span> Back to the climb
-            </Link>
+            </TrailLink>
           </div>
         </header>
 
@@ -90,9 +90,9 @@ export default function About() {
         </div>
 
         <footer className='pt-14 pb-[130px] text-center'>
-          <Link href='/' className={buttonVariants({ variant: 'quiet', size: 'sm' })}>
+          <TrailLink href='/' className={buttonVariants({ variant: 'quiet', size: 'sm' })}>
             <span aria-hidden='true'>←</span> Back to the climb
-          </Link>
+          </TrailLink>
         </footer>
       </div>
     </main>

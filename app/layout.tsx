@@ -1,4 +1,5 @@
 import type React from 'react';
+import { ViewTransition } from 'react';
 import type { Metadata } from 'next';
 import { Bricolage_Grotesque, Instrument_Sans } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
@@ -96,8 +97,18 @@ export default function RootLayout({
       </head>
       {/* overflow-x: clip, not hidden — hidden would make the body a scroll container and break the sticky stage */}
       <body className='overflow-x-clip'>
-        {children}
-        <Dock />
+        {/* the move between pages: up or down the mountain, named by the link (components/trail-link.tsx); the
+            dock stays out of it, still */}
+        <ViewTransition
+          default='none'
+          update={{ 'trail-up': 'trail-up', 'trail-down': 'trail-down', default: 'trail-across' }}
+        >
+          {children}
+        </ViewTransition>
+        {/* the dock is its own still layer in that move, or the page's picture would cover it while it moves */}
+        <ViewTransition name='dock' default='none' update='dock-still'>
+          <Dock />
+        </ViewTransition>
         <Analytics />
         <SpeedInsights />
       </body>

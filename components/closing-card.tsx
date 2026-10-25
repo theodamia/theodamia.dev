@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useRef } from 'react';
+import { TrailLink } from '@/components/trail-link';
 import { SectionCard } from '@/components/section-card';
 import { useScenery } from '@/components/scenery';
 import { buttonVariants } from '@/components/ui/button';
@@ -45,16 +45,16 @@ export function ClosingCard() {
           one. Who I am, how I work and what is in my pack: it is all on the next page.
         </p>
         <div className='mt-7 flex flex-wrap items-center justify-center gap-2.5'>
-          <Link href='/about' className={buttonVariants()}>
+          <TrailLink href='/about' className={buttonVariants()}>
             About and skills
-          </Link>
+          </TrailLink>
         </div>
         {/* whoever walked the whole climb can still have the short version, or simply stay for the view;
             a row on wide screens, stacked on phones, where the dot between them would dangle */}
         <div className='max-wide:flex-col mt-5 flex items-center justify-center gap-x-3 gap-y-2.5'>
-          <Link href='/cv' className={QUIET_LINK}>
+          <TrailLink href='/cv' className={QUIET_LINK}>
             Every role, on one page
-          </Link>
+          </TrailLink>
           <span aria-hidden='true' className='text-ink-3 max-wide:hidden'>
             ·
           </span>

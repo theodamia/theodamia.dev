@@ -30,9 +30,11 @@ const localStorageMock = (() => {
 })();
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
-// Mock Next.js navigation — the dock reads the path to light its current item, and tests move it
+// Mock Next.js navigation — the dock reads the path to light its current item, and tests move it; the links
+// between pages navigate through the router (components/trail-link.tsx)
 vi.mock('next/navigation', () => ({
   usePathname: vi.fn(() => '/'),
+  useRouter: vi.fn(() => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn() })),
 }));
 
 // Mock window.matchMedia

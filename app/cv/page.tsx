@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import { TrailLink } from '@/components/trail-link';
 import { ContactRows } from '@/components/contact-rows';
 import { FieldLog } from '@/components/field-log';
 import { YearBackdrop } from '@/components/scene/year-backdrop';
@@ -73,9 +73,9 @@ export default function Cv() {
             {/* the years say the order on paper, and the climb is not somewhere a sheet of paper can go */}
             <p className='text-ink-3 mt-7 mb-9 text-[15px] print:hidden'>
               Newest first ·{' '}
-              <Link href='/' className={QUIET_LINK}>
+              <TrailLink href='/' className={QUIET_LINK}>
                 Walk the same ten years as a climb
-              </Link>
+              </TrailLink>
             </p>
           </header>
 
@@ -102,9 +102,9 @@ export default function Cv() {
           </SectionCard>
 
           <p className='text-ink-3 mt-10 text-[15px] print:hidden'>
-            <Link href='/' className={QUIET_LINK}>
+            <TrailLink href='/' className={QUIET_LINK}>
               <span aria-hidden='true'>←</span> Back to the climb
-            </Link>
+            </TrailLink>
           </p>
         </div>
       </div>

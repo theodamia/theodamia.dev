@@ -1026,6 +1026,110 @@
 }
 
 /*
+ * Moving between the pages (components/trail-link.tsx, the <ViewTransition> around every page in app/layout.tsx).
+ * The three pages are three heights on one mountain: /cv the valley at its foot, / the climb, /about the summit.
+ * Going up, the page leaves upward and the next rises in from below, the way the climb's cards move as you climb;
+ * going down, the reverse. The old page leaves quickly, softening as it goes; the new one eases in a beat later, on
+ * the site's own curve. The dock is outside the page and stays still. The boxes of two pages are never morphed into
+ * each other (their heights differ): only the pictures move. Reduced motion: a plain cross-fade.
+ */
+::view-transition-group(.trail-up),
+::view-transition-group(.trail-down),
+::view-transition-group(.trail-across) {
+  animation-duration: 0s;
+}
+
+::view-transition-old(.trail-up) {
+  animation: trail-leave-up 240ms cubic-bezier(0.4, 0, 0.6, 1) both;
+}
+
+::view-transition-new(.trail-up) {
+  animation: trail-rise-in 560ms var(--ease-soft) 70ms both;
+}
+
+::view-transition-old(.trail-down) {
+  animation: trail-leave-down 240ms cubic-bezier(0.4, 0, 0.6, 1) both;
+}
+
+::view-transition-new(.trail-down) {
+  animation: trail-sink-in 560ms var(--ease-soft) 70ms both;
+}
+
+::view-transition-old(.trail-across) {
+  animation: trail-fade-out 220ms ease both;
+}
+
+::view-transition-new(.trail-across) {
+  animation: trail-fade-in 420ms var(--ease-soft) 40ms both;
+}
+
+/* the dock, its own layer for the move: shown as it now is, at once, above the moving page */
+::view-transition-group(.dock-still),
+::view-transition-new(.dock-still) {
+  animation: none;
+}
+
+::view-transition-old(.dock-still) {
+  display: none;
+}
+
+@keyframes trail-leave-up {
+  to {
+    opacity: 0;
+    translate: 0 -20px;
+    filter: blur(3px);
+  }
+}
+
+@keyframes trail-leave-down {
+  to {
+    opacity: 0;
+    translate: 0 20px;
+    filter: blur(3px);
+  }
+}
+
+@keyframes trail-rise-in {
+  from {
+    opacity: 0;
+    translate: 0 36px;
+  }
+}
+
+@keyframes trail-sink-in {
+  from {
+    opacity: 0;
+    translate: 0 -36px;
+  }
+}
+
+@keyframes trail-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes trail-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(.trail-up),
+  ::view-transition-old(.trail-down),
+  ::view-transition-old(.trail-across) {
+    animation: trail-fade-out 160ms ease both;
+  }
+
+  ::view-transition-new(.trail-up),
+  ::view-transition-new(.trail-down),
+  ::view-transition-new(.trail-across) {
+    animation: trail-fade-in 240ms ease both;
+  }
+}
+
+/*
  * Switching day and night (lib/theme.ts). A view transition keeps the old page still and shows the new one through
  * a soft-edged circle that grows from the toggle: `--reveal-r` is animated from script, the rest is set there
  * before the switch. The browser's own cross-fade is off. Outside a reveal (reduced motion) it is left alone.

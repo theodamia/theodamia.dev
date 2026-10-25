@@ -2,13 +2,13 @@
 
 import type React from 'react';
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { DOCK_ICON_STROKE, SECTION_SCROLL_OFFSET_PX } from '@/constants';
 
 /** The dock lights the section under this share of the screen height. */
 const DOCK_PROBE_RATIO = 0.5;
 import { Map, NotebookPen, RadioTower, Tent } from 'lucide-react';
+import { TrailLink } from '@/components/trail-link';
 import { DockBubble } from '@/components/dock-bubble';
 import { IceAxeIcon } from '@/components/icons/ice-axe-icon';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -129,7 +129,7 @@ export function Dock() {
           const isOn = item.section ? item.section === active : !isHome && item.page === pathname;
 
           return (
-            <Link
+            <TrailLink
               key={item.id}
               href={dockHref(item)}
               aria-label={item.label}
@@ -147,7 +147,7 @@ export function Dock() {
               <Icon className='shrink-0' strokeWidth={DOCK_ICON_STROKE} aria-hidden='true' />
               {isOn && <span className='touch:inline hidden'>{item.label}</span>}
               <DockBubble>{item.label}</DockBubble>
-            </Link>
+            </TrailLink>
           );
         })}
       </nav>
