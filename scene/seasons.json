@@ -1,0 +1,47 @@
+{
+  "ground": 0.25,
+  "tile": 1344,
+  "canvas": [1536, 1024],
+  "art": {
+    "winter": {
+      "day": {
+        "grove": "grove-winter-day.8c4f04c4.webp",
+        "meadow": "meadow-winter-day.c5e7be4d.webp"
+      },
+      "night": {
+        "grove": "grove-winter-night.2bc41c88.webp",
+        "meadow": "meadow-winter-night.b0bbc180.webp"
+      }
+    },
+    "spring": {
+      "day": {
+        "grove": "grove-spring-day.4e9c9daa.webp",
+        "meadow": "meadow-spring-day.84c8dcad.webp"
+      },
+      "night": {
+        "grove": "grove-spring-night.de548a74.webp",
+        "meadow": "meadow-spring-night.87901c6f.webp"
+      }
+    },
+    "summer": {
+      "day": {
+        "grove": "grove-summer-day.dae46b68.webp",
+        "meadow": "meadow-summer-day.d7849304.webp"
+      },
+      "night": {
+        "grove": "grove-summer-night.0ef95479.webp",
+        "meadow": "meadow-summer-night.cffb2833.webp"
+      }
+    },
+    "autumn": {
+      "day": {
+        "grove": "grove-autumn-day.0da54947.webp",
+        "meadow": "meadow-autumn-day.068c5365.webp"
+      },
+      "night": {
+        "grove": "grove-autumn-night.ac52135a.webp",
+        "meadow": "meadow-autumn-night.5208e05c.webp"
+      }
+    }
+  }
+}

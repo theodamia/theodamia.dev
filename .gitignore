@@ -58,3 +58,6 @@ coverage
 /art/scene/flats/edits/
 /art/scene/style/**/*.png
 /art/scene/review/
+
+# The paintings behind /cv stay local too; their prompts (art/cv/*.md) and processed WebPs are reviewable.
+/art/cv/raw/
