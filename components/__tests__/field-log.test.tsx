@@ -29,18 +29,14 @@ describe('FieldLog', () => {
     expect(entries()).toHaveLength(JOBS.length);
   });
 
-  it('dates every entry like a log, numbered as the climb counts its camps', () => {
+  it('dates every entry like a log, with no entry numbers', () => {
     render(<FieldLog />);
 
-    newestFirst.forEach((job, position) => {
-      const number = String(JOBS.length - position).padStart(2, '0');
-      expect(
-        within(screen.getByRole('article', { name: job.role })).getByText(
-          `· ${job.period} · ${job.duration}`,
-          { exact: false }
-        )
-      ).toHaveTextContent(`Entry ${number} · ${job.period} · ${job.duration}`);
+    newestFirst.forEach(job => {
+      const article = screen.getByRole('article', { name: job.role });
+      expect(within(article).getByText(`${job.period} · ${job.duration}`)).toBeInTheDocument();
     });
+    expect(screen.queryByText(/Entry \d/)).not.toBeInTheDocument();
   });
 
   it('says no "Now": the date line already says "present"', () => {
@@ -56,9 +52,7 @@ describe('FieldLog', () => {
     const list = screen.getByRole('list', { name: 'Experience, newest first' });
     const top = screen.getByText(SUMMIT_LINE, { exact: false });
     const foot = screen.getByText(`${TRAILHEAD.year} · where the trail starts`);
-    expect(top).toHaveTextContent(
-      `Entry ${String(JOBS.length + 1).padStart(2, '0')} · ${SUMMIT_LINE}`
-    );
+    expect(top).toHaveTextContent(SUMMIT_LINE);
     expect(list).not.toContainElement(top);
     expect(list).not.toContainElement(foot);
   });

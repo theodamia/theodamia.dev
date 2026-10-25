@@ -1,4 +1,4 @@
-import { entryNumber, LogEntry } from '@/components/log-entry';
+import { LogEntry } from '@/components/log-entry';
 import { JOBS, TRAILHEAD } from '@/content/jobs';
 import { SUMMIT_LINE } from '@/content/site';
 import { YEAR_STATES, yearTimeline } from '@/scene/seasons';
@@ -16,8 +16,8 @@ const LINE = 'bg-line absolute inset-y-0 left-1/2 w-px -translate-x-1/2';
 const NODE = 'absolute left-1/2 size-2.5 -translate-x-1/2 rounded-full';
 
 /**
- * The field log on /cv: every job newest first down one hairline rail, as numbered entries. The top of the rail is
- * the entry not written yet, "Entry 06 · The peak is still ahead": the site's stance, as a log would put it. The
+ * The field log on /cv: every job newest first down one hairline rail. The top of the rail is the entry not written
+ * yet, "The peak is still ahead": the site's stance, as a log would put it. The
  * foot is where the trail starts, a place and not a job, so it closes the rail from outside the list.
  *
  * Every entry, and the foot, names the view timeline of the hairline above it (scene/seasons.ts): that is what turns
@@ -34,7 +34,7 @@ export function FieldLog() {
           />
         </span>
         <p className='text-ink-3 pb-[22px] text-[14.5px] leading-[1.4] font-semibold print:hidden'>
-          <span className='text-ink-2'>{entryNumber(JOBS.length + 1)}</span> · {SUMMIT_LINE}
+          {SUMMIT_LINE}
         </p>
       </div>
 
@@ -55,7 +55,7 @@ export function FieldLog() {
                 )}
               />
             </span>
-            <LogEntry job={job} number={index + 1} />
+            <LogEntry job={job} />
           </li>
         ))}
       </ol>
