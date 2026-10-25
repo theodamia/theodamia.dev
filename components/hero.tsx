@@ -20,8 +20,8 @@ export function Hero() {
         {SITE.name}
       </Heading>
       <Lede>
-        Ten years of software engineering, built on frontend fundamentals: a camp for every job and
-        the summit still ahead.
+        Ten years of software engineering, built on frontend fundamentals. A camp for every role,
+        from intern to&nbsp;lead, and the summit still ahead.
       </Lede>
       <SocialLinks />
       {/*
