@@ -40,6 +40,20 @@
   --color-day-top: oklch(0.84 0.05 240);
   --color-day-mid: oklch(0.91 0.03 228);
   --color-day-low: oklch(0.97 0.012 160);
+  /* /cv's year (scene/seasons.ts): each season's day sky, summer being the day sky above; by night all share one */
+  --color-winter-top: oklch(0.8 0.045 248);
+  --color-winter-mid: oklch(0.89 0.025 238);
+  --color-winter-low: oklch(0.965 0.008 230);
+  --color-spring-top: oklch(0.85 0.055 233);
+  --color-spring-mid: oklch(0.92 0.032 218);
+  --color-spring-low: oklch(0.975 0.016 148);
+  --color-autumn-top: oklch(0.82 0.052 252);
+  --color-autumn-mid: oklch(0.9 0.042 72);
+  --color-autumn-low: oklch(0.965 0.028 80);
+  /* and its weather: spring's petals, summer's motes, autumn's larch needles (winter falls in --color-flake) */
+  --color-petal: oklch(0.93 0.04 350);
+  --color-mote: oklch(0.97 0.05 95);
+  --color-needle: #e0a83a;
   --color-sun-disc: oklch(0.98 0.04 85);
   --color-sun-glow: oklch(0.96 0.05 80 / 0.45);
   /* what far things fade toward: baked into the painted flats by scripts/process-flats.mjs, never applied at runtime */
@@ -166,6 +180,19 @@
   --color-day-top: oklch(0.17 0.035 262);
   --color-day-mid: oklch(0.22 0.04 258);
   --color-day-low: oklch(0.29 0.04 250);
+  --color-winter-top: oklch(0.17 0.035 262);
+  --color-winter-mid: oklch(0.22 0.04 258);
+  --color-winter-low: oklch(0.29 0.04 250);
+  --color-spring-top: oklch(0.17 0.035 262);
+  --color-spring-mid: oklch(0.22 0.04 258);
+  --color-spring-low: oklch(0.29 0.04 250);
+  --color-autumn-top: oklch(0.17 0.035 262);
+  --color-autumn-mid: oklch(0.22 0.04 258);
+  --color-autumn-low: oklch(0.29 0.04 250);
+  /* moonlit weather: still the season's, only dim */
+  --color-petal: oklch(0.72 0.03 340);
+  --color-mote: oklch(0.8 0.03 240);
+  --color-needle: #9a7a3e;
   /* by night the sun's tokens hold the moon */
   --color-sun-disc: oklch(0.93 0.02 245);
   --color-sun-glow: oklch(0.85 0.04 245 / 0.2);
@@ -1448,9 +1475,273 @@
 }
 
 /*
+ * The year behind /cv (components/scene/year-backdrop.tsx, season-window.tsx, scene/seasons.ts). Seven states, one
+ * per stretch of reading, each carrying all four seasons as columns; `data-year-start` on <html> (written before the
+ * first paint) shows one column, so the page opens on today's season and every hairline turns to the next.
+ */
+.year-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /* where the log's column ends: the page's 1180px track and 28px gutter, plus the column's 620px */
+  --log-right: calc(max(28px, (100vw - 1180px) / 2 + 28px) + 620px);
+}
+
+:is(.year-stack, .year-fade, .year-state, .year-season) {
+  position: absolute;
+  inset: 0;
+}
+
+.year-season {
+  display: none;
+}
+
+:root[data-year-start='0'] .year-season[data-j='0'],
+:root[data-year-start='1'] .year-season[data-j='1'],
+:root[data-year-start='2'] .year-season[data-j='2'],
+:root[data-year-start='3'] .year-season[data-j='3'],
+/* no script ran: the year starts in summer (DEFAULT_START) */
+:root:not([data-year-start]) .year-season[data-j='2'] {
+  display: block;
+}
+
+/* the later states wait for the page to load (year-ready.tsx): today's season downloads first, on its own */
+:root:not([data-year-ready]) .year-state:not([data-k='0']) .year-season {
+  display: none;
+}
+
+/*
+ * The turn of the year. Each state fades in on its hairline's view timeline, from half-way down the screen to a fifth
+ * of the way down, and the state under it fades out once it is covered, so nothing below ever shows through.
+ * One opacity on a whole layer, run by the browser's own scrolling.
+ */
+.year-fade {
+  animation-duration: auto;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+}
+
+.year-fade[data-fade='in'] {
+  animation-name: year-in;
+  animation-range: cover 50vh cover 80vh;
+}
+
+.year-fade[data-fade='out'] {
+  animation-name: year-out;
+  animation-range: cover 78vh cover 80vh;
+}
+
+@keyframes year-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes year-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* without scroll timelines the year stays where it starts: today's season, still */
+@supports not ((animation-timeline: view()) and (timeline-scope: --year)) {
+  .year-fade {
+    animation: none;
+  }
+
+  .year-fade[data-fade='in'] {
+    display: none;
+  }
+}
+
+.year-sky {
+  --sky-top: var(--color-day-top);
+  --sky-mid: var(--color-day-mid);
+  --sky-low: var(--color-day-low);
+  background: linear-gradient(to bottom, var(--sky-top), var(--sky-mid) 55%, var(--sky-low));
+}
+
+.year-sky[data-season='winter'] {
+  --sky-top: var(--color-winter-top);
+  --sky-mid: var(--color-winter-mid);
+  --sky-low: var(--color-winter-low);
+}
+
+.year-sky[data-season='spring'] {
+  --sky-top: var(--color-spring-top);
+  --sky-mid: var(--color-spring-mid);
+  --sky-low: var(--color-spring-low);
+}
+
+.year-sky[data-season='autumn'] {
+  --sky-top: var(--color-autumn-top);
+  --sky-mid: var(--color-autumn-mid);
+  --sky-low: var(--color-autumn-low);
+}
+
+/*
+ * The land: the meadow repeated across the bottom from the right, the grove on the right, the screen's top and right
+ * edges cropping the wood (it carries on beyond them). Set back a little: it is scenery, the list is the subject.
+ * Only the theme on screen is displayed, so only its paintings download.
+ */
+/* set back as a pair, not each painting: a night painting over its day must cover it, not blend with it */
+.year-lands {
+  opacity: 0.88;
+}
+
+.year-land {
+  position: absolute;
+  inset: 0;
+  display: none;
+}
+
+.year-meadow {
+  position: absolute;
+  inset: 0;
+  background-repeat: repeat-x;
+  background-position: right bottom;
+  background-size: auto 100%;
+}
+
+.year-grove {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  background-size: 100% 100%;
+}
+
+/*
+ * On narrower wide screens the grove would bring its young larch in behind the list, a ghost tree under the text.
+ * It slides right instead, enough to keep that larch's trunk (62.5% across a grove 1.5 screens tall wide, so
+ * 56.25vh from its right edge) 120px clear of the column, past where its crown and the veil's soft edge would reach.
+ * The wood loses a little more off the screen's edge; from about 1280px wide nothing moves.
+ */
+.year-backdrop .year-grove {
+  right: min(0px, calc(100vw - var(--log-right) - 120px - 56.25vh));
+}
+
+:root:not([data-theme='dark']) .year-land[data-art='day'],
+:root[data-theme='dark'] .year-land[data-art='night'] {
+  display: block;
+  z-index: 1;
+}
+
+/*
+ * A theme already on screen once stays underneath the other (`data-year-seen`, year-ready.tsx). Switching day and
+ * night then shows the old theme's paintings until the new one's arrive, never a meadow with no wood; its files are
+ * downloaded already. A theme nobody has seen is never displayed, so never downloaded.
+ */
+:root[data-year-seen~='day'] .year-land[data-art='day'],
+:root[data-year-seen~='night'] .year-land[data-art='night'] {
+  display: block;
+}
+
+/*
+ * The weather falls only right of the list, never over the text. Heights in the keyframes are `cqh`, so the box is
+ * a size container. Each bit's strength is in its colour, which leaves its opacity to the keyframes (motes fade).
+ */
+.year-weather {
+  position: absolute;
+  inset: 0 0 0 calc(var(--log-right) + 64px);
+  overflow: hidden;
+  container-type: size;
+  mask-image: linear-gradient(to right, transparent, black 96px);
+}
+
+.weather-bit {
+  position: absolute;
+  top: 0;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--weather) calc(var(--alpha) * 100%), transparent);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.weather-bit[data-kind='petal'] {
+  --weather: var(--color-petal);
+  height: calc(var(--size) * 0.7);
+  border-radius: 50% 50% 50% 0;
+}
+
+.weather-bit[data-kind='mote'] {
+  --weather: var(--color-mote);
+}
+
+.weather-bit[data-kind='needle'] {
+  --weather: var(--color-needle);
+  width: 2px;
+  border-radius: 2px;
+}
+
+.weather-bit[data-kind='flake'] {
+  --weather: var(--color-flake);
+  box-shadow: 0 0 2px var(--color-flake-shade);
+}
+
+/*
+ * What the log reads on: the page itself, with a little of the season's sky through it, fading out just right of
+ * the column. Over the meadow it eases off to a little over half, so the ground runs edge to edge under the list.
+ */
+.year-veil {
+  position: absolute;
+  inset: 0;
+  --veil: color-mix(in oklab, var(--color-page) 88%, transparent);
+  background: linear-gradient(
+    to right,
+    var(--veil),
+    var(--veil) calc(var(--log-right) + 24px),
+    transparent calc(var(--log-right) + 170px)
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    black calc(100% - var(--year-ground) - 24px),
+    rgb(0 0 0 / 0.55) calc(100% - var(--year-ground) + 56px)
+  );
+}
+
+/*
+ * A phone's window onto the year: a full-width band that clips a fixed, full-screen copy of one state, so the page
+ * slides over a picture that stays put. Its edges dissolve; the last one ends the page, soft only at its top.
+ */
+.season-window {
+  position: relative;
+  height: min(calc(52vw + 90px), 320px);
+  margin-block: 12px 26px;
+  clip-path: inset(0);
+  mask-image: linear-gradient(transparent, black 36px, black calc(100% - 36px), transparent);
+}
+
+.season-window[data-end] {
+  height: 46vh;
+  margin-bottom: 0;
+  mask-image: linear-gradient(transparent, black 48px);
+}
+
+.season-window-view {
+  position: fixed;
+  inset: 0;
+}
+
+/* reduced motion: the year steps from season to season at the same hairlines, and no weather falls */
+@media (prefers-reduced-motion: reduce) {
+  .year-fade {
+    animation-timing-function: steps(1, end);
+  }
+
+  .year-weather {
+    display: none;
+  }
+}
+
+/*
  * Printing. The Experience page is the one that gets saved as a PDF, and browsers keep text colour while dropping
  * background colours: a night page would print as pale grey on nothing. So the interface tokens go back to the day
- * (the scene's own are never needed — the valley is `print:hidden`, like the dock), shadows are cast in nothing,
+ * (the scene's own are never needed — the year behind the log is `print:hidden`, like the dock), shadows are cast in nothing,
  * and no card is broken across two sheets.
  */
 @media print {

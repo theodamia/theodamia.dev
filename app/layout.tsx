@@ -6,6 +6,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Dock } from '@/components/dock';
 import { SITE } from '@/content/site';
 import { THEME_SCRIPT } from '@/lib/theme';
+import { SEASON_SCRIPT } from '@/scene/seasons';
 import './globals.css';
 
 /* Variable, with the optical-size axis: the big headings need the narrower display cut. */
@@ -90,6 +91,8 @@ export default function RootLayout({
       <head>
         {/* before the first paint: day or night, so the page never flashes the wrong sky */}
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        {/* and the season it is, which /cv's year starts from; on <html>, so it survives client navigation */}
+        <script dangerouslySetInnerHTML={{ __html: SEASON_SCRIPT }} />
       </head>
       {/* overflow-x: clip, not hidden — hidden would make the body a scroll container and break the sticky stage */}
       <body className='overflow-x-clip'>
