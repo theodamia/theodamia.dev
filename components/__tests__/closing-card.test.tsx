@@ -24,22 +24,25 @@ describe('ClosingCard', () => {
 
   afterEach(() => document.documentElement.removeAttribute('data-scenery'));
 
-  it('offers the next page, the plain list, and the view, and no way back until it is set aside', () => {
+  it('offers the next page, every role on one page, and the view, and no way back until it is set aside', () => {
     climb();
 
     expect(screen.getByRole('link', { name: 'About and skills' })).toHaveAttribute(
       'href',
       '/about'
     );
-    expect(screen.getByRole('link', { name: /plain list/ })).toHaveAttribute('href', '/cv');
-    expect(screen.getByRole('button', { name: 'Or just take in the view' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Every role, on one page' })).toHaveAttribute(
+      'href',
+      '/cv'
+    );
+    expect(screen.getByRole('button', { name: 'Take in the view' })).toBeInTheDocument();
     expect(cairn()).toBeNull();
   });
 
   it("goes into the cairn by today's camp, and the cairn brings it back out", async () => {
     climb();
 
-    await userEvent.click(screen.getByRole('button', { name: 'Or just take in the view' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Take in the view' }));
     expect(setAside()).toBe(true);
     expect(document.documentElement).toHaveAttribute('data-scenery');
     expect(cairn()).toHaveFocus();
@@ -50,13 +53,13 @@ describe('ClosingCard', () => {
     expect(setAside()).toBe(false);
     expect(cairn()).toBeNull();
     expect(document.documentElement).not.toHaveAttribute('data-scenery');
-    expect(screen.getByRole('button', { name: 'Or just take in the view' })).toHaveFocus();
+    expect(screen.getByRole('button', { name: 'Take in the view' })).toHaveFocus();
   });
 
   it('comes back on Escape', async () => {
     climb();
 
-    await userEvent.click(screen.getByRole('button', { name: 'Or just take in the view' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Take in the view' }));
     await act(async () => {
       await userEvent.keyboard('{Escape}');
     });
@@ -67,7 +70,7 @@ describe('ClosingCard', () => {
   it('keeps its place in the page while set aside, so the page never changes length', async () => {
     climb();
 
-    await userEvent.click(screen.getByRole('button', { name: 'Or just take in the view' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Take in the view' }));
 
     expect(card()).toBeInTheDocument();
     expect(card().parentElement).toHaveClass('invisible');

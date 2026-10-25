@@ -12,9 +12,12 @@ const QUIET_LINK =
   'text-ink-3 hover:text-ink cursor-pointer text-[15px] font-semibold underline decoration-dotted underline-offset-4';
 
 /**
- * The card at the top of the climb, and a way to set it aside: "Or just take in the view" shrinks it into a
- * cairn by the path above today's camp, kept there like a note under a stone until the cairn is clicked and the
- * card comes back out (the climb owns the state and the cairn: components/climb.tsx, components/scene/cairn.tsx).
+ * The card at the top of the climb, and a way to set it aside: "Take in the view" shrinks it into a cairn by the
+ * path above today's camp, kept there like a note under a stone until the cairn is clicked and the card comes back
+ * out (the climb owns the state and the cairn: components/climb.tsx, components/scene/cairn.tsx).
+ *
+ * Under the button, two quieter ways on, side by side as one group rather than two "Or…" lines in a row: the
+ * same ten years on one page, named as the hero names it ("Every role, on one page"), and the view.
  *
  * Set aside, the card keeps its place in the page (hidden and inert, not removed), so the page's length, and with
  * it the climb's last stop, never move. When the reader brings it back, focus returns to the link they left from.
@@ -46,17 +49,19 @@ export function ClosingCard() {
             About and skills
           </Link>
         </div>
-        {/* whoever walked the whole climb can still have the short version, or simply stay for the view */}
-        <p className='mt-5'>
+        {/* whoever walked the whole climb can still have the short version, or simply stay for the view;
+            a row on wide screens, stacked on phones, where the dot between them would dangle */}
+        <div className='max-wide:flex-col mt-5 flex items-center justify-center gap-x-3 gap-y-2.5'>
           <Link href='/cv' className={QUIET_LINK}>
-            Or read the same ten years as a plain list
+            Every role, on one page
           </Link>
-        </p>
-        <p className='mt-2.5'>
+          <span aria-hidden='true' className='text-ink-3 max-wide:hidden'>
+            ·
+          </span>
           <button ref={aside} type='button' className={QUIET_LINK} onClick={() => fold(true)}>
-            Or just take in the view
+            Take in the view
           </button>
-        </p>
+        </div>
       </SectionCard>
     </div>
   );
