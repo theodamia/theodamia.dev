@@ -64,9 +64,10 @@ export const seasonUrl = (file: string) => `/seasons/${file}`;
 /* ------------------------------------------------------------------------------------------------------------ */
 
 /**
- * Each season's weather, painted (scripts/process-seasons.mjs packs the kit into one small atlas per theme):
- * cherry petals and small blossoms in spring, dandelion seeds rising off the meadow in summer, golden larch tufts and
- * leaves in autumn, snow in winter. Few and slow on purpose: it is weather beside a list somebody is reading.
+ * Each season's weather, one kind each so the season reads at a glance: sakura petals in spring, dandelion seeds
+ * rising off the meadow in summer, yellow leaves in autumn, painted (scripts/process-seasons.mjs packs the kit into
+ * one small atlas per theme), and in winter the climb's own snow, a soft round flake. Few and slow on purpose: it is
+ * weather beside a list somebody is reading.
  */
 export type WeatherKind = 'petal' | 'seed' | 'leaf' | 'flake';
 
@@ -88,13 +89,32 @@ type WeatherSpec = {
   pass: [number, number];
   /** On-screen size of the sprite's longest side, px: the smaller, the further off, and the fainter. */
   size: [number, number];
+  /**
+   * Which of the season's painted sprites fall (its row of the kit holds a few kinds; one is used, in its poses).
+   * None: the climb's soft round flake, drawn in CSS.
+   */
+  sprites?: number[];
 };
 
 const WEATHER: Record<Season, WeatherSpec> = {
-  winter: { kind: 'flake', seed: 7100, count: 32, pass: [10, 17], size: [10, 19] },
-  spring: { kind: 'petal', seed: 7300, count: 20, pass: [12, 20], size: [17, 27] },
-  summer: { kind: 'seed', seed: 7500, count: 12, pass: [22, 32], size: [24, 34] },
-  autumn: { kind: 'leaf', seed: 7700, count: 22, pass: [11, 18], size: [19, 30] },
+  winter: { kind: 'flake', seed: 7100, count: 40, pass: [10, 17], size: [4, 9] },
+  spring: {
+    kind: 'petal',
+    seed: 7300,
+    count: 18,
+    pass: [12, 20],
+    size: [16, 26],
+    sprites: [0, 1, 2, 3],
+  },
+  summer: {
+    kind: 'seed',
+    seed: 7500,
+    count: 10,
+    pass: [22, 32],
+    size: [24, 34],
+    sprites: [0, 1, 2, 3, 4],
+  },
+  autumn: { kind: 'leaf', seed: 7700, count: 18, pass: [11, 18], size: [18, 28], sprites: [3, 4] },
 };
 
 /** Each kind has this many paths, so neighbours never fall in step. */
@@ -115,7 +135,7 @@ export type WeatherBit = {
   kind: WeatherKind;
   /** Which of its kind's paths it follows, from 1. */
   path: number;
-  /** Which of its season's sprites it is. */
+  /** Which of its season's sprites it is; -1 for the climb's soft round flake. */
   sprite: number;
   /** Across the weather box, in %. */
   x: number;
@@ -133,7 +153,6 @@ const between = ([low, high]: [number, number], t: number) => low + (high - low)
 /** One season's weather. Deterministic, like the stars and the snow. */
 export function weatherField(season: Season): WeatherBit[] {
   const spec = WEATHER[season];
-  const sprites = WEATHER_ATLAS.sprites[season].length;
 
   return Array.from({ length: spec.count }, (_, i) => {
     const r = (draw: number) => rnd(spec.seed + i * 13 + draw);
@@ -144,7 +163,7 @@ export function weatherField(season: Season): WeatherBit[] {
       key: i,
       kind: spec.kind,
       path: 1 + Math.floor(r(2) * WEATHER_PATHS),
-      sprite: Math.floor(r(6) * sprites),
+      sprite: spec.sprites ? spec.sprites[Math.floor(r(6) * spec.sprites.length)] : -1,
       x: r(0) * 100,
       size: between(spec.size, near),
       alpha: 0.7 + 0.3 * near,

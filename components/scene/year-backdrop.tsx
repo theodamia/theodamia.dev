@@ -55,7 +55,7 @@ function Art({ day, night }: Record<Theme, string>) {
  * State `k`'s sky: one gradient per column of the year. Only the column the year starts in is ever shown (CSS, from
  * `data-year-start` on <html>), and only the shown one's colours matter; by night every season shares one sky.
  */
-export function YearSky({ k }: { k: number }) {
+function YearSky({ k }: { k: number }) {
   return COLUMNS.map(j => (
     <div key={j} className='year-season year-sky' data-j={j} data-season={seasonOf(j, k)} />
   ));
@@ -66,7 +66,7 @@ export function YearSky({ k }: { k: number }) {
  * paintings, rising behind the meadow. The meadow hides their cloud sea, all but a band of it, which from down here
  * reads as mist at the mountains' feet. Their snow lies all year, so they stand in every season.
  */
-export function YearRange() {
+function YearRange() {
   return (
     <div className='year-range'>
       {RANGE_COPIES.map(copy => (
@@ -125,7 +125,7 @@ function YearClouds() {
  * day and by night. Pictures are CSS backgrounds on purpose: a hidden column, a theme not on screen and a state
  * still waiting for the page to load are `display: none`, which downloads nothing.
  */
-export function YearLand({ k }: { k: number }) {
+function YearLand({ k }: { k: number }) {
   return COLUMNS.map(j => {
     const season = seasonOf(j, k);
 
@@ -155,9 +155,10 @@ export function YearLand({ k }: { k: number }) {
  * The landscape behind /cv on wide screens (scene/seasons.ts): the valley at the foot of the climb's mountain. Fixed
  * behind the whole page, back to front: the season's sky, the climb's stars by night and its sun that becomes the
  * moon, its clouds on its wind, its far ranges and summit, then the meadow across the bottom and the edge of a larch
- * wood on the right, which turn with the year as the log's hairlines pass. All at full strength, as on the climb:
- * the log reads on a solid sheet in front of it (app/cv/page.tsx), and the weather falls only right of that sheet.
- * Phones have no room beside it: they look through windows instead (season-window.tsx).
+ * wood on the right, which turn with the year as the log's hairlines pass. All at full strength, as on the climb.
+ * The log reads on the page itself, a veil of it that fades out just right of the column and eases off over the
+ * meadow, so the journal is part of the page and the ground still runs edge to edge; the weather falls only right
+ * of the list. Phones have no room beside the log: there the page is just the journal.
  */
 export function YearBackdrop() {
   return (
@@ -185,6 +186,7 @@ export function YearBackdrop() {
         ))}
       </div>
       <YearWeather />
+      <div className='year-veil' />
     </div>
   );
 }

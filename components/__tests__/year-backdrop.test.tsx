@@ -1,6 +1,5 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { SeasonWindow } from '@/components/scene/season-window';
 import { YearBackdrop } from '@/components/scene/year-backdrop';
 import { YearWeather } from '@/components/scene/year-weather';
 import { SEASONS, seasonOf, weatherField, YEAR_STATES, yearTimeline } from '@/scene/seasons';
@@ -78,19 +77,5 @@ describe('YearWeather', () => {
       expect(kinds).toEqual(new Set([weatherField(seasonOf(3, k))[0].kind]));
     });
     delete document.documentElement.dataset.yearStart;
-  });
-});
-
-describe('SeasonWindow', () => {
-  it('looks onto one state, still, and only on phones', () => {
-    const { container } = render(<SeasonWindow k={3} />);
-
-    const window = container.firstElementChild!;
-    expect(window).toHaveAttribute('aria-hidden', 'true');
-    expect(window).toHaveClass('wide:hidden', 'print:hidden');
-    expect(window.querySelectorAll('.year-fade')).toHaveLength(0);
-    window
-      .querySelectorAll<HTMLElement>('.year-state')
-      .forEach(state => expect(state.dataset.k).toBe('3'));
   });
 });

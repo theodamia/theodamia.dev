@@ -1467,7 +1467,7 @@
 }
 
 /*
- * The year behind /cv (components/scene/year-backdrop.tsx, season-window.tsx, scene/seasons.ts). Seven states, one
+ * The year behind /cv on wide screens (components/scene/year-backdrop.tsx, scene/seasons.ts). Seven states, one
  * per stretch of reading, each carrying all four seasons as columns; `data-year-start` on <html> (written before the
  * first paint) shows one column, so the page opens on today's season and every hairline turns to the next.
  */
@@ -1477,8 +1477,8 @@
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
-  /* where the log's sheet ends: the page's 1180px track and 28px gutter, plus the sheet (620px and its padding) */
-  --log-right: calc(max(28px, (100vw - 1180px) / 2 + 28px) + 724px);
+  /* where the log's column ends: the page's 1180px track and 28px gutter, plus the column's 620px */
+  --log-right: calc(max(28px, (100vw - 1180px) / 2 + 28px) + 620px);
   /* the clouds cross it from edge to edge: `cloud-cross` runs in `cqw` */
   container-type: inline-size;
 }
@@ -1661,10 +1661,23 @@
   background-image: var(--atlas-night);
 }
 
+/* winter's snow is the climb's (`.snow-flake`): a soft round flake, a white core with a cool shaded rim */
+.year-weather .weather-bit.weather-flake {
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 42% 38%,
+    var(--color-flake) 0 45%,
+    color-mix(in oklab, var(--color-flake-shade) 80%, transparent) 64%,
+    transparent 80%
+  );
+}
+
 /*
- * The climb's world over the valley: its sun that becomes the moon, high in the open sky right of the sheet; its
+ * The climb's world over the valley: its sun that becomes the moon, high in the open sky right of the log; its
  * clouds on its wind (`cloud-cross`, `cloud-billow`, the climb's own keyframes); its far ranges, as copies of its
- * backdrop tile a period apart, and its summit, centred in the open land right of the sheet. Their cloud sea sinks
+ * backdrop tile a period apart, and its summit, centred in the open land right of the log. Their cloud sea sinks
  * behind the meadow but for a band of mist at their feet. Sizes in vh, like the grove: the scene fills the screen.
  */
 .year-sun {
@@ -1712,28 +1725,25 @@
 }
 
 /*
- * A phone's window onto the year: a full-width band that clips a fixed, full-screen copy of one state, so the page
- * slides over a picture that stays put. Its edges dissolve; the last one ends the page, soft only at its top.
+ * What the log reads on: the page itself, with a little of the season's sky through it, fading out just right of
+ * the column, so the journal is part of the page rather than a card on the landscape. Over the meadow it eases off
+ * to a little over half, so the ground runs edge to edge under the list.
  */
-.season-window {
-  position: relative;
-  height: min(calc(52vw + 90px), 320px);
-  margin-block: 12px 26px;
-  clip-path: inset(0);
-  mask-image: linear-gradient(transparent, black 36px, black calc(100% - 36px), transparent);
-}
-
-.season-window[data-end] {
-  height: 46vh;
-  margin-bottom: 0;
-  mask-image: linear-gradient(transparent, black 48px);
-}
-
-.season-window-view {
-  position: fixed;
+.year-veil {
+  position: absolute;
   inset: 0;
-  /* no sheet beside it: the summit stands in the middle of the screen */
-  --log-right: 0px;
+  --veil: color-mix(in oklab, var(--color-page) 88%, transparent);
+  background: linear-gradient(
+    to right,
+    var(--veil),
+    var(--veil) calc(var(--log-right) + 24px),
+    transparent calc(var(--log-right) + 170px)
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    black calc(100% - var(--year-ground) - 24px),
+    rgb(0 0 0 / 0.55) calc(100% - var(--year-ground) + 56px)
+  );
 }
 
 /* reduced motion: the year steps from season to season at the same hairlines, and no weather falls */

@@ -96,9 +96,17 @@ describe('the year behind /cv', () => {
       const sprites = WEATHER_ATLAS.sprites[season];
       expect(sprites.length).toBeGreaterThan(0);
 
-      weatherField(season).forEach(bit => {
-        expect(bit.sprite).toBeGreaterThanOrEqual(0);
-        expect(bit.sprite).toBeLessThan(sprites.length);
+      const field = weatherField(season);
+      /* one kind per season, so it reads at a glance; winter falls as the climb's soft snow, not a sprite */
+      expect(new Set(field.map(bit => bit.kind)).size).toBe(1);
+
+      field.forEach(bit => {
+        if (season === 'winter') {
+          expect(bit.sprite).toBe(-1);
+        } else {
+          expect(bit.sprite).toBeGreaterThanOrEqual(0);
+          expect(bit.sprite).toBeLessThan(sprites.length);
+        }
       });
 
       sprites.forEach(([x, y, w, h]) => {

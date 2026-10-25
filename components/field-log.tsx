@@ -1,6 +1,4 @@
-import { Fragment } from 'react';
 import { entryNumber, LogEntry } from '@/components/log-entry';
-import { SeasonWindow } from '@/components/scene/season-window';
 import { JOBS, TRAILHEAD } from '@/content/jobs';
 import { SUMMIT_LINE } from '@/content/site';
 import { YEAR_STATES, yearTimeline } from '@/scene/seasons';
@@ -9,8 +7,6 @@ import { cn } from '@/utils/cn';
 /** Newest first, the way a CV is read, while the climb keeps telling it from the beginning. */
 const ENTRIES = JOBS.map((job, index) => ({ job, index })).reverse();
 const NOW = JOBS.length - 1;
-/** The phones' middle window stands after this many entries, so it shows the year's middle state. */
-const WINDOW_AFTER = Math.floor(JOBS.length / 2);
 
 /** The rail and its gutter: the same two columns for an entry and for the two ends that close the log. */
 const RAIL = 'grid grid-cols-[12px_minmax(0,1fr)] gap-x-5 print:block';
@@ -44,29 +40,23 @@ export function FieldLog() {
 
       <ol aria-label='Experience, newest first'>
         {ENTRIES.map(({ job, index }, position) => (
-          <Fragment key={job.start}>
-            {position === WINDOW_AFTER && (
-              <li aria-hidden='true' className='-mx-4'>
-                <SeasonWindow k={WINDOW_AFTER + 1} />
-              </li>
-            )}
-            <li
-              className={cn(RAIL, 'print:break-inside-avoid')}
-              style={{ viewTimelineName: yearTimeline(position + 1) }}
-            >
-              <span aria-hidden='true' className='relative print:hidden'>
-                <span className={LINE} />
-                <span
-                  className={cn(
-                    NODE,
-                    'ring-page top-[33px] ring-2',
-                    index === NOW ? 'bg-accent' : 'bg-ink'
-                  )}
-                />
-              </span>
-              <LogEntry job={job} number={index + 1} />
-            </li>
-          </Fragment>
+          <li
+            key={job.start}
+            className={cn(RAIL, 'print:break-inside-avoid')}
+            style={{ viewTimelineName: yearTimeline(position + 1) }}
+          >
+            <span aria-hidden='true' className='relative print:hidden'>
+              <span className={LINE} />
+              <span
+                className={cn(
+                  NODE,
+                  'ring-page top-[33px] ring-2',
+                  index === NOW ? 'bg-accent' : 'bg-ink'
+                )}
+              />
+            </span>
+            <LogEntry job={job} number={index + 1} />
+          </li>
         ))}
       </ol>
 
