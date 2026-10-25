@@ -1,4 +1,4 @@
-import { YearLand, YearSky } from '@/components/scene/year-backdrop';
+import { YearLand, YearRange, YearSky } from '@/components/scene/year-backdrop';
 import { cn } from '@/utils/cn';
 
 type SeasonWindowProps = {
@@ -13,8 +13,9 @@ type SeasonWindowProps = {
  * A window onto the year, for phones, where there is no room beside the log for the landscape. A full-width band
  * in the page's flow that clips a fixed, full-screen copy of one state: the picture stays put and the page slides
  * over it, so each window shows the wood at a different height as it passes. Three of them (after the header,
- * mid-log and at the foot) turn the year in three steps instead of seven. No stars and no weather: a band this
- * small would not show them, and each would be another copy in the page. Hidden on wide screens and on paper.
+ * mid-log and at the foot) turn the year in three steps instead of seven. The same mountain stands behind the
+ * wood; no stars, clouds or weather: a band this small would not show them, and each would be another copy in the
+ * page. Hidden on wide screens and on paper.
  */
 export function SeasonWindow({ k, end, className }: SeasonWindowProps) {
   return (
@@ -27,6 +28,7 @@ export function SeasonWindow({ k, end, className }: SeasonWindowProps) {
         <div className='year-state' data-k={k}>
           <YearSky k={k} />
         </div>
+        <YearRange />
         <div className='year-state' data-k={k}>
           <YearLand k={k} />
         </div>

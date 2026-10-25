@@ -1477,8 +1477,10 @@
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
-  /* where the log's column ends: the page's 1180px track and 28px gutter, plus the column's 620px */
-  --log-right: calc(max(28px, (100vw - 1180px) / 2 + 28px) + 620px);
+  /* where the log's sheet ends: the page's 1180px track and 28px gutter, plus the sheet (620px and its padding) */
+  --log-right: calc(max(28px, (100vw - 1180px) / 2 + 28px) + 724px);
+  /* the clouds cross it from edge to edge: `cloud-cross` runs in `cqw` */
+  container-type: inline-size;
 }
 
 :is(.year-stack, .year-fade, .year-state, .year-season) {
@@ -1575,18 +1577,19 @@
 
 /*
  * The land: the meadow repeated across the bottom from the right, the grove on the right, the screen's top and right
- * edges cropping the wood (it carries on beyond them). Set back a little: it is scenery, the list is the subject.
- * Only the theme on screen is displayed, so only its paintings download.
+ * edges cropping the wood (it carries on beyond them). At full strength, as the climb's paintings are. Only the
+ * theme on screen is displayed, so only its paintings download.
  */
-/* set back as a pair, not each painting: a night painting over its day must cover it, not blend with it */
-.year-lands {
-  opacity: 0.88;
-}
-
-.year-land {
+.year-art {
   position: absolute;
   inset: 0;
   display: none;
+}
+
+/* a single painting filling its box: the far ranges, the summit, a cloud */
+.year-picture {
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 
 .year-meadow {
@@ -1615,8 +1618,8 @@
   right: min(0px, calc(100vw - var(--log-right) - 120px - 56.25vh));
 }
 
-:root:not([data-theme='dark']) .year-land[data-art='day'],
-:root[data-theme='dark'] .year-land[data-art='night'] {
+:root:not([data-theme='dark']) .year-art[data-art='day'],
+:root[data-theme='dark'] .year-art[data-art='night'] {
   display: block;
   z-index: 1;
 }
@@ -1626,8 +1629,8 @@
  * night then shows the old theme's paintings until the new one's arrive, never a meadow with no wood; its files are
  * downloaded already. A theme nobody has seen is never displayed, so never downloaded.
  */
-:root[data-year-seen~='day'] .year-land[data-art='day'],
-:root[data-year-seen~='night'] .year-land[data-art='night'] {
+:root[data-year-seen~='day'] .year-art[data-art='day'],
+:root[data-year-seen~='night'] .year-art[data-art='night'] {
   display: block;
 }
 
@@ -1659,24 +1662,53 @@
 }
 
 /*
- * What the log reads on: the page itself, with a little of the season's sky through it, fading out just right of
- * the column. Over the meadow it eases off to a little over half, so the ground runs edge to edge under the list.
+ * The climb's world over the valley: its sun that becomes the moon, high in the open sky right of the sheet; its
+ * clouds on its wind (`cloud-cross`, `cloud-billow`, the climb's own keyframes); its far ranges, as copies of its
+ * backdrop tile a period apart, and its summit, centred in the open land right of the sheet. Their cloud sea sinks
+ * behind the meadow but for a band of mist at their feet. Sizes in vh, like the grove: the scene fills the screen.
  */
-.year-veil {
+.year-sun {
+  position: absolute;
+  top: 9%;
+  left: calc(var(--log-right) + 6vw);
+}
+
+.year-cloud {
+  position: absolute;
+  left: 0;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  translate: calc(var(--at) * (100cqw + 100%) - 100%) 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .year-cloud {
+    animation:
+      cloud-cross var(--cross) linear calc(var(--at) * var(--cross) * -1) infinite,
+      cloud-billow var(--billow) ease-in-out infinite alternate;
+  }
+}
+
+.year-range {
   position: absolute;
   inset: 0;
-  --veil: color-mix(in oklab, var(--color-page) 88%, transparent);
-  background: linear-gradient(
-    to right,
-    var(--veil),
-    var(--veil) calc(var(--log-right) + 24px),
-    transparent calc(var(--log-right) + 170px)
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    black calc(100% - var(--year-ground) - 24px),
-    rgb(0 0 0 / 0.55) calc(100% - var(--year-ground) + 56px)
-  );
+  /* the theme on screen is lifted over the one standing in (`.year-art`): only within the mountains, not over the land */
+  isolation: isolate;
+}
+
+.year-far {
+  position: absolute;
+  top: 49vh;
+  left: calc(var(--copy) * var(--period) * 96vh);
+  height: 96vh;
+}
+
+/* 44vh tall, so 124vh wide: its centre is 62vh in */
+.year-peak {
+  position: absolute;
+  top: 33vh;
+  left: calc((var(--log-right) + 100vw) / 2 - 62vh);
+  height: 44vh;
 }
 
 /*
@@ -1700,6 +1732,8 @@
 .season-window-view {
   position: fixed;
   inset: 0;
+  /* no sheet beside it: the summit stands in the middle of the screen */
+  --log-right: 0px;
 }
 
 /* reduced motion: the year steps from season to season at the same hairlines, and no weather falls */

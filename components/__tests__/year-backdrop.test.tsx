@@ -50,8 +50,8 @@ describe('YearBackdrop', () => {
   it('paints each picture in both themes, as backgrounds a hidden picture never downloads', () => {
     const { container } = render(<YearBackdrop />);
 
-    const land = container.querySelector('.year-land[data-art="day"]')!;
-    const night = container.querySelector('.year-land[data-art="night"]')!;
+    const land = container.querySelector('.year-season .year-art[data-art="day"]')!;
+    const night = container.querySelector('.year-season .year-art[data-art="night"]')!;
     [land, night].forEach(picture => {
       expect(picture.querySelector<HTMLElement>('.year-grove')!.style.backgroundImage).toMatch(
         /^url\("?\/seasons\/grove-[a-z]+-(day|night)\.[0-9a-f]{8}\.webp"?\)$/
