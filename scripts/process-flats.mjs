@@ -32,7 +32,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import { clampByte, key, smooth } from './flat-key.mjs';
-import { loadPainting, writeHashed, writeJson } from './paintings.mjs';
+import { bounds, loadPainting, writeHashed, writeJson } from './paintings.mjs';
 import { sceneTokenRgb } from './scene-token-rgb.mjs';
 
 /* a closed output pipe (`| head`) must not stop the run half way, before the manifest is written */
@@ -265,7 +265,6 @@ function fadedAlpha(alpha, flat, rect, canvas) {
   const [rx, ry, rw] = rect;
   const pxPerUnit = W / rw;
   const faded = new Float32Array(W * H);
-  const box = { x0: W, y0: H, x1: 0, y1: 0 };
 
   for (let y = 0; y < H; y++) {
     for (let x = 0; x < W; x++) {
@@ -279,15 +278,10 @@ function fadedAlpha(alpha, flat, rect, canvas) {
       }
 
       faded[i] = a;
-      if (a * 255 <= TRIM_ALPHA) continue;
-      box.x0 = Math.min(box.x0, x);
-      box.y0 = Math.min(box.y0, y);
-      box.x1 = Math.max(box.x1, x);
-      box.y1 = Math.max(box.y1, y);
     }
   }
 
-  return { faded, box, pxPerUnit };
+  return { faded, box: bounds(W, H, i => faded[i] * 255 > TRIM_ALPHA), pxPerUnit };
 }
 
 /**
@@ -557,12 +551,7 @@ async function processFlat(flat) {
   const { canvas } = pair;
   const { faded, box, pxPerUnit } = fadedAlpha(pair.day.alpha, flat, rect, canvas);
   /* a tile keeps its whole width: that width is its period */
-  const trim = {
-    left: flat.tile ? 0 : box.x0,
-    top: box.y0,
-    width: flat.tile ? canvas.W : box.x1 - box.x0 + 1,
-    height: box.y1 - box.y0 + 1,
-  };
+  const trim = flat.tile ? { ...box, left: 0, width: canvas.W } : box;
   const phone = flat.tile ? null : phoneCut(trim, rect, pxPerUnit);
   const art = {};
 
@@ -669,24 +658,9 @@ async function processFlag() {
   const { W, H } = pair.canvas;
   const split = Math.round(W * 0.42);
 
-  const bounds = (x0, x1) => {
-    const box = { x0: W, y0: H, x1: 0, y1: 0 };
-
-    for (let y = 0; y < H; y++) {
-      for (let x = x0; x < x1; x++) {
-        if (pair.day.alpha[y * W + x] * 255 <= 20) continue;
-        box.x0 = Math.min(box.x0, x);
-        box.y0 = Math.min(box.y0, y);
-        box.x1 = Math.max(box.x1, x);
-        box.y1 = Math.max(box.y1, y);
-      }
-    }
-
-    return { left: box.x0, top: box.y0, width: box.x1 - box.x0 + 1, height: box.y1 - box.y0 + 1 };
-  };
-
-  const pole = bounds(0, split);
-  const cloth = bounds(split, W);
+  const painted = i => pair.day.alpha[i] * 255 > 20;
+  const pole = bounds(W, H, painted, [0, split]);
+  const cloth = bounds(W, H, painted, [split, W]);
 
   const opaqueRun = y => {
     const xs = [];
@@ -838,33 +812,17 @@ async function processAurora() {
       .toBuffer({ resolveWithObject: true });
     const { width: W, height: H } = info;
     const rgb = Buffer.alloc(W * H * 3);
-    const box = { x0: W, y0: H, x1: 0, y1: 0 };
+    const brightest = new Float32Array(W * H);
 
-    for (let y = 0; y < H; y++) {
-      for (let x = 0; x < W; x++) {
-        const i = y * W + x;
-        let brightest = 0;
-
-        for (let c = 0; c < 3; c++) {
-          const value = Math.max(0, data[i * 3 + c] - AURORA.FLOOR) * (255 / (255 - AURORA.FLOOR));
-          rgb[i * 3 + c] = clampByte(value);
-          brightest = Math.max(brightest, value / 255);
-        }
-
-        if (brightest <= AURORA.TRIM) continue;
-        box.x0 = Math.min(box.x0, x);
-        box.y0 = Math.min(box.y0, y);
-        box.x1 = Math.max(box.x1, x);
-        box.y1 = Math.max(box.y1, y);
+    for (let i = 0; i < W * H; i++) {
+      for (let c = 0; c < 3; c++) {
+        const value = Math.max(0, data[i * 3 + c] - AURORA.FLOOR) * (255 / (255 - AURORA.FLOOR));
+        rgb[i * 3 + c] = clampByte(value);
+        brightest[i] = Math.max(brightest[i], value / 255);
       }
     }
 
-    const trim = {
-      left: box.x0,
-      top: box.y0,
-      width: box.x1 - box.x0 + 1,
-      height: box.y1 - box.y0 + 1,
-    };
+    const trim = bounds(W, H, i => brightest[i] > AURORA.TRIM);
     const png = await sharp(rgb, { raw: { width: W, height: H, channels: 3 } })
       .extract(trim)
       .png()
@@ -890,24 +848,7 @@ async function processCairn() {
   const pair = await keyPair('cairn');
   const { W, H } = pair.canvas;
   const alpha = pair.day.alpha;
-  const box = { x0: W, y0: H, x1: 0, y1: 0 };
-
-  for (let y = 0; y < H; y++) {
-    for (let x = 0; x < W; x++) {
-      if (alpha[y * W + x] * 255 <= TRIM_ALPHA) continue;
-      box.x0 = Math.min(box.x0, x);
-      box.y0 = Math.min(box.y0, y);
-      box.x1 = Math.max(box.x1, x);
-      box.y1 = Math.max(box.y1, y);
-    }
-  }
-
-  const trim = {
-    left: box.x0,
-    top: box.y0,
-    width: box.x1 - box.x0 + 1,
-    height: box.y1 - box.y0 + 1,
-  };
+  const trim = bounds(W, H, i => alpha[i] * 255 > TRIM_ALPHA);
   const width = Math.round((trim.width * CAIRN.HEIGHT) / trim.height);
   const art = {};
 

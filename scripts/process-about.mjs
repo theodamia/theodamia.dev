@@ -24,6 +24,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { key } from './flat-key.mjs';
 import {
+  bounds,
   despill,
   dropSpecks,
   encodeWebp,
@@ -178,21 +179,17 @@ const paint = Uint8Array.from(sheet.day.alpha, a => (a > 0.06 ? 1 : 0));
 const inCell = islands(paint, W, H).filter(island => island.cx < cellW && island.cy < cellH);
 const saucerPiece = inCell.sort((a, b) => b.pixels.length - a.pixels.length)[0];
 const saucerAlpha = new Float32Array(W * H);
-let [x0, y0, x1, y1] = [W, H, 0, 0];
 
 for (const i of saucerPiece.pixels) {
   saucerAlpha[i] = sheet.day.alpha[i];
-  x0 = Math.min(x0, i % W);
-  x1 = Math.max(x1, i % W);
-  y0 = Math.min(y0, Math.floor(i / W));
-  y1 = Math.max(y1, Math.floor(i / W));
 }
 
+const tight = bounds(W, H, i => saucerAlpha[i] > 0);
 const box = {
-  left: x0 - PAD,
-  top: y0 - PAD,
-  width: x1 - x0 + 1 + 2 * PAD,
-  height: y1 - y0 + 1 + 2 * PAD,
+  left: tight.left - PAD,
+  top: tight.top - PAD,
+  width: tight.width + 2 * PAD,
+  height: tight.height + 2 * PAD,
 };
 const saucer = { size: [box.width, box.height] };
 

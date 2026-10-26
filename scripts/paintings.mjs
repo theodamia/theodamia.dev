@@ -179,6 +179,26 @@ export function dropSpecks(alpha, { W, H }, speck) {
   return dropped;
 }
 
+/**
+ * The smallest box around the pixels `keep(i)` keeps, within columns `[from, to)`, as sharp's `extract()` wants it:
+ * `{ left, top, width, height }`, or null when it keeps none.
+ */
+export function bounds(width, height, keep, [from, to] = [0, width]) {
+  let [x0, y0, x1, y1] = [width, height, -1, -1];
+
+  for (let y = 0; y < height; y++) {
+    for (let x = from; x < to; x++) {
+      if (!keep(y * width + x)) continue;
+      x0 = Math.min(x0, x);
+      y0 = Math.min(y0, y);
+      x1 = Math.max(x1, x);
+      y1 = Math.max(y1, y);
+    }
+  }
+
+  return x1 < 0 ? null : { left: x0, top: y0, width: x1 - x0 + 1, height: y1 - y0 + 1 };
+}
+
 /** The colour under transparent pixels, grown from the nearest paint, so WebP cannot fringe the edges with it. */
 export function bleed(rgb, alpha, width, height) {
   const known = Uint8Array.from(alpha, a => (a > 0.02 ? 1 : 0));
