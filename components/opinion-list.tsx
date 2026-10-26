@@ -12,7 +12,7 @@ const STEPS = 5;
  */
 export function OpinionList({ opinions }: { opinions: Opinion[] }) {
   return (
-    <div className='mt-12'>
+    <div>
       <Eyebrow as='h3'>Opinions, by how often they hold</Eyebrow>
       <ul className='border-line mt-3.5 border-b'>
         {opinions.map(opinion => {

@@ -38,7 +38,7 @@ function SkillIcon({ skill }: { skill: Skill }) {
  */
 export function SkillColumns({ groups }: { groups: SkillGroup[] }) {
   return (
-    <div className='wide:grid-cols-2 mt-11 grid grid-cols-1 gap-x-12 gap-y-10 min-[1100px]:grid-cols-3'>
+    <div className='wide:grid-cols-2 grid grid-cols-1 gap-x-12 gap-y-10 min-[1100px]:grid-cols-3'>
       {groups.map(group => (
         <div key={group.name}>
           <h3 className='text-ink border-line border-b pb-2.5 text-[16.5px] leading-[1.4] font-semibold'>

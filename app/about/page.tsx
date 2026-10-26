@@ -32,7 +32,7 @@ export default function About() {
 
       <div className='max-wide:px-4 mx-auto w-full max-w-[1180px] px-7'>
         <PageSection id='background' name='Background' title='Building things that have to last'>
-          <div className='wide:grid-cols-[minmax(0,1fr)_220px] mt-9 grid gap-x-14 gap-y-7'>
+          <div className='wide:grid-cols-[minmax(0,1fr)_220px] grid gap-x-14 gap-y-7'>
             <div className='flex max-w-[62ch] flex-col gap-[18px]'>
               {/* the first paragraph is the introduction: a size up, in ink */}
               <p className='text-ink text-[20px] leading-[1.5] text-pretty'>{lead}</p>

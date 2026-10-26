@@ -28,7 +28,7 @@ export const metadata: Metadata = pageMetadata({
 /** A few short points, each a name and a sentence or two: two columns on wide screens, one on phones. */
 function PointList({ points }: { points: AiPoint[] }) {
   return (
-    <ul className='wide:grid-cols-2 mt-9 grid max-w-[880px] gap-x-12 gap-y-8'>
+    <ul className='wide:grid-cols-2 grid max-w-[880px] gap-x-12 gap-y-8'>
       {points.map(point => (
         <li key={point.name}>
           <Heading as='h3' size='sub'>
@@ -72,10 +72,15 @@ export default function Ai() {
         </PageSection>
 
         <PageSection id='where' name='Where' title='Three places, the same rules'>
-          <ol className='mt-9 max-w-[680px]'>
-            {AI_PLACES.map(place => (
+          <ol className='max-w-[680px]'>
+            {/* the first entry starts level with the section's title, so it needs no hairline above it */}
+            {AI_PLACES.map((place, index) => (
               <li key={place.id}>
-                <LogEntry entry={place} level={3} />
+                <LogEntry
+                  entry={place}
+                  level={3}
+                  className={index === 0 ? 'border-t-0 pt-0' : undefined}
+                />
               </li>
             ))}
           </ol>

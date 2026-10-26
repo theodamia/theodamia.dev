@@ -1,4 +1,5 @@
 import { Eyebrow, Heading } from '@/components/ui/text';
+import { cn } from '@/utils/cn';
 
 /** One entry of a log: a date line, what it was, where, one sentence and its points. */
 export type LogItem = {
@@ -21,6 +22,7 @@ type LogEntryProps = {
    * (/ai). The "What I did" label is one level under it.
    */
   level?: 2 | 3;
+  className?: string;
 };
 
 /**
@@ -29,13 +31,16 @@ type LogEntryProps = {
  * (job-card.tsx); this is the plain reading of them, which is /cv's identity. The `<li>` around it, and on /cv
  * the rail and the node, are the page's, as each page owns the stop around its entry.
  */
-export function LogEntry({ entry, level = 2 }: LogEntryProps) {
+export function LogEntry({ entry, level = 2, className }: LogEntryProps) {
   const Label = level === 2 ? 'h3' : 'h4';
 
   return (
     <article
       aria-labelledby={entry.id}
-      className='border-line border-t pt-7 pb-9 print:border-t-0 print:pt-5 print:pb-1'
+      className={cn(
+        'border-line border-t pt-7 pb-9 print:border-t-0 print:pt-5 print:pb-1',
+        className
+      )}
     >
       <Eyebrow>{entry.when}</Eyebrow>
       <Heading

@@ -16,6 +16,10 @@ export const AI_PAGE = {
 /** What I set up, wherever I go. Practices, not products: the tools change every few months, these do not. */
 export const AI_PRACTICES: AiPoint[] = [
   {
+    name: 'Early, not blind',
+    text: 'No new tool reaches the team before I have read its docs and got to know it myself.',
+  },
+  {
     name: 'Rules the tools read',
     text: 'Standards written once, as Markdown templates for frontend in general and for React, so every engineer’s assistant works to the same conventions. Kept current as the team changes, with the conflicts between them settled.',
   },
