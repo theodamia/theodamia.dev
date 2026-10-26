@@ -100,7 +100,7 @@ pnpm dev
 - `pnpm format:check` - Check code formatting
 - `pnpm check` - Types, ESLint, Prettier and the tests
 - `pnpm flats`, `pnpm seasons`, `pnpm about` - Rebuild the paintings of `/`, `/cv` and `/about` from `art/`
-- `pnpm icons` - Rebuild the site's icons from the painted peak
+- `pnpm icons` - Rebuild the site's icons (TD in trail paint) from `art/icon/`
 - `pnpm test` - Run tests in watch mode
 - `pnpm test:run` - Run tests once
 - `pnpm test:ui` - Run tests with UI
