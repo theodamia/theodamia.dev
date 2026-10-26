@@ -37,10 +37,15 @@ export function Lede({ className, ...props }: React.HTMLAttributes<HTMLParagraph
   );
 }
 
+type EyebrowProps = React.HTMLAttributes<HTMLElement> & {
+  /** A paragraph by default; a block's own heading (`h3`), or a fact's label (`dt`), where that is what it is. */
+  as?: 'p' | 'h3' | 'dt';
+};
+
 /** The small grey line above a heading, and every other quiet caption. */
-export function Eyebrow({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
+export function Eyebrow({ as: Tag = 'p', className, ...props }: EyebrowProps) {
   return (
-    <p
+    <Tag
       className={cn('text-ink-3 text-[14.5px] leading-[1.4] font-semibold', className)}
       {...props}
     />

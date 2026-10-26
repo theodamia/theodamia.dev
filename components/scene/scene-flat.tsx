@@ -1,8 +1,6 @@
 import type React from 'react';
 import { BACKDROP_TILES, flagLayout, FOOT_END, maxScale, type BoxShare } from '@/scene/camera';
-import { artUrl, FLAG, type Flat, type FlatArt, type Theme } from '@/scene/flats';
-
-const THEMES: Theme[] = ['day', 'night'];
+import { artUrl, FLAG, THEMES, type Flat, type FlatArt, type Theme } from '@/scene/flats';
 
 /** A rectangle given in shares of the flat's box, as inline style. */
 const placed = ({ left, top, width, height }: BoxShare): React.CSSProperties => ({

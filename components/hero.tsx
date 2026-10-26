@@ -1,5 +1,6 @@
 import { TrailLink } from '@/components/trail-link';
 import { SocialLinks } from '@/components/social-links';
+import { quietLinkVariants } from '@/components/ui/button';
 import { Eyebrow, Heading, Lede } from '@/components/ui/text';
 import { SITE } from '@/content/site';
 
@@ -30,10 +31,7 @@ export function Hero() {
        * back here from /cv, pointing the other way.
        */}
       <p className='mt-6'>
-        <TrailLink
-          href='/cv'
-          className='text-ink-3 hover:text-ink text-[15px] font-semibold underline decoration-dotted underline-offset-4'
-        >
+        <TrailLink href='/cv' className={quietLinkVariants({ standalone: true })}>
           Every role, on one page
         </TrailLink>
       </p>

@@ -1,4 +1,4 @@
-import { Heading } from '@/components/ui/text';
+import { Eyebrow, Heading } from '@/components/ui/text';
 import type { Job } from '@/content/jobs';
 
 type LogEntryProps = {
@@ -19,9 +19,9 @@ export function LogEntry({ job }: LogEntryProps) {
       aria-labelledby={roleId}
       className='border-line border-t pt-7 pb-9 print:border-t-0 print:pt-5 print:pb-1'
     >
-      <p className='text-ink-3 text-[14.5px] leading-[1.4] font-semibold'>
+      <Eyebrow>
         {job.period} · {job.duration}
-      </p>
+      </Eyebrow>
       <Heading as='h2' size='card' id={roleId} className='max-wide:text-[22px] mt-2'>
         {job.role}
       </Heading>

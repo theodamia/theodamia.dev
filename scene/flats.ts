@@ -1,8 +1,9 @@
-import { JOBS, TRAILHEAD } from '@/content/jobs';
+import { CAMP_YEARS } from '@/scene/world';
 import manifest from './flats.json';
 
 /** The scene's two looks: the same flats painted by day and by night, with identical silhouettes. */
 export type Theme = 'day' | 'night';
+export const THEMES: Theme[] = ['day', 'night'];
 
 /** [x, y, width, height] in design units, from the focus of expansion, at the flat's own scale 1. */
 export type Box = readonly [x: number, y: number, width: number, height: number];
@@ -109,7 +110,6 @@ export type Cairn = { w: number; h: number; ground: number; art: Record<Theme, s
 export const CAIRN: Cairn = manifest.cairn;
 
 /** Camps are keyed by their start year, so adding or removing a job never shifts another camp's art. */
-const CAMP_YEARS = [TRAILHEAD.year, ...JOBS.map(job => job.start)];
 
 /** The flat a camp stands on (0 is the trailhead), or undefined when that camp has no painting yet. */
 export function campFlat(camp: number): Flat | undefined {

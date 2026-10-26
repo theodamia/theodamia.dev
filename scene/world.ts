@@ -1,4 +1,4 @@
-import { JOBS } from '@/content/jobs';
+import { JOBS, TRAILHEAD } from '@/content/jobs';
 
 /*
  * The climb as numbers: its stops and how long each leg between them is, the altimeter's rail, the side each card
@@ -45,6 +45,9 @@ export type SceneHandle = {
 
 /** Camps are waypoints: the trailhead, then one per job. */
 export const CAMP_COUNT = JOBS.length + 1;
+
+/** The year each camp stands for: the trailhead's, then each job's start. A camp's painting is named by it. */
+export const CAMP_YEARS = [TRAILHEAD.year, ...JOBS.map(job => job.start)];
 
 /** How long a leg is for a tenure in years. See LEG_WEIGHT. */
 export function legWeight(years: number): number {

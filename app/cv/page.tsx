@@ -1,11 +1,13 @@
 import type { Metadata } from 'next';
 import { TrailLink } from '@/components/trail-link';
 import { ContactRows } from '@/components/contact-rows';
+import { FactItem } from '@/components/fact-item';
 import { FieldLog } from '@/components/field-log';
 import { YearBackdrop } from '@/components/scene/year-backdrop';
 import { YearReady } from '@/components/scene/year-ready';
 import { SectionCard } from '@/components/section-card';
 import { SocialLinks } from '@/components/social-links';
+import { quietLinkVariants } from '@/components/ui/button';
 import { Eyebrow, Heading } from '@/components/ui/text';
 import { EDUCATION, SUMMARY_FACTS } from '@/content/about';
 import { pageMetadata } from '@/lib/page-metadata';
@@ -21,7 +23,7 @@ export const metadata: Metadata = pageMetadata({
 });
 
 /** The quiet links on the page: the climb from the header, and back to it at the end. */
-const QUIET_LINK = 'hover:text-ink font-semibold underline decoration-dotted underline-offset-4';
+const QUIET_LINK = quietLinkVariants();
 
 /**
  * The same ten years the climb tells, read plainly: the facts a CV is scanned for, then a field log of every job,
@@ -59,14 +61,7 @@ export default function Cv() {
 
             <dl className='border-line max-wide:grid-cols-1 max-wide:gap-y-4 mt-10 grid grid-cols-3 gap-x-8 border-y py-6 print:mt-5 print:py-4'>
               {SUMMARY_FACTS.map(fact => (
-                <div key={fact.label}>
-                  <dt>
-                    <Eyebrow>{fact.label}</Eyebrow>
-                  </dt>
-                  <dd className='text-ink mt-1 text-[16.5px] leading-[1.45] font-medium'>
-                    {fact.value}
-                  </dd>
-                </div>
+                <FactItem key={fact.label} fact={fact} />
               ))}
             </dl>
 

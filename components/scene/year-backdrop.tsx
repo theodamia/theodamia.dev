@@ -1,8 +1,9 @@
 import type React from 'react';
-import { Celestial, Stars } from '@/components/scene/sky';
+import { Celestial, PaintedClouds, Stars, type CloudWind } from '@/components/scene/sky';
+import { ThemePicture } from '@/components/scene/theme-picture';
 import { YearFade } from '@/components/scene/year-fade';
 import { YearWeather } from '@/components/scene/year-weather';
-import { artUrl, BACKDROP, CLOUDS, FLATS, type Theme } from '@/scene/flats';
+import { artUrl, BACKDROP, FLATS, THEMES } from '@/scene/flats';
 import {
   GROUND_SHARE,
   GROVE_ASPECT,
@@ -13,7 +14,6 @@ import {
   YEAR_STATES,
 } from '@/scene/seasons';
 
-const THEMES: Theme[] = ['day', 'night'];
 const STATES = Array.from({ length: YEAR_STATES }, (_, k) => k);
 /** The columns of the year: picture `j` of every state belongs to the year that starts in SEASONS[j]. */
 const COLUMNS = SEASONS.map((_, j) => j);
@@ -33,23 +33,11 @@ const RANGE_PAINTED = RANGE_PERIOD * (1 + BACKDROP.tile!.bleed / BACKDROP.tile!.
  * (vh), where across it stands when the page opens, and its crossing and billow times. Fewer and smaller than the
  * climb's, and high: from the valley most of the sky is above the trees.
  */
-const YEAR_CLOUDS = [
+const YEAR_CLOUDS: CloudWind[] = [
   { cloud: 0, top: '5%', width: 30, at: 0.62, cross: 240, billow: 19 },
   { cloud: 1, top: '13%', width: 20, at: 0.86, cross: 300, billow: 15 },
   { cloud: 2, top: '3%', width: 14, at: 0.3, cross: 340, billow: 13 },
 ] as const;
-
-/** One painted picture in both themes, as CSS backgrounds (`.year-art`: only the theme on screen downloads). */
-function Art({ day, night }: Record<Theme, string>) {
-  return THEMES.map(theme => (
-    <div
-      key={theme}
-      className='year-art year-picture'
-      data-art={theme}
-      style={{ backgroundImage: `url(${theme === 'day' ? day : night})` }}
-    />
-  ));
-}
 
 /**
  * State `k`'s sky: one gradient per column of the year. Only the column the year starts in is ever shown (CSS, from
@@ -81,43 +69,23 @@ function YearRange() {
             } as React.CSSProperties
           }
         >
-          <Art day={artUrl(BACKDROP.art.day.near)} night={artUrl(BACKDROP.art.night.near)} />
+          <ThemePicture
+            pictures={{
+              day: artUrl(BACKDROP.art.day.near),
+              night: artUrl(BACKDROP.art.night.near),
+            }}
+          />
         </div>
       ))}
       {PEAK && (
         <div className='year-peak' style={{ aspectRatio: PEAK.box[2] / PEAK.box[3] }}>
-          <Art day={artUrl(PEAK.art.day.near)} night={artUrl(PEAK.art.night.near)} />
+          <ThemePicture
+            pictures={{ day: artUrl(PEAK.art.day.near), night: artUrl(PEAK.art.night.near) }}
+          />
         </div>
       )}
     </div>
   );
-}
-
-/** The climb's clouds, in the valley's sky. */
-function YearClouds() {
-  return YEAR_CLOUDS.map(wind => {
-    const cloud = CLOUDS[wind.cloud];
-    if (!cloud) return null;
-
-    return (
-      <div
-        key={`${wind.cloud}-${wind.top}`}
-        className='year-cloud'
-        style={
-          {
-            top: wind.top,
-            width: `${wind.width}vh`,
-            aspectRatio: `${cloud.w} / ${cloud.h}`,
-            '--at': wind.at,
-            '--cross': `${wind.cross}s`,
-            '--billow': `${wind.billow}s`,
-          } as React.CSSProperties
-        }
-      >
-        <Art day={artUrl(cloud.art.day)} night={artUrl(cloud.art.night)} />
-      </div>
-    );
-  });
 }
 
 /**
@@ -132,7 +100,7 @@ function YearLand({ k }: { k: number }) {
     return (
       <div key={j} className='year-season' data-j={j} data-season={season}>
         {THEMES.map(theme => (
-          <div key={theme} className='year-art' data-art={theme}>
+          <div key={theme} className='theme-art' data-art={theme}>
             <div
               className='year-meadow'
               style={{ backgroundImage: `url(${seasonUrl(SEASON_ART[season][theme].meadow)})` }}
@@ -176,7 +144,7 @@ export function YearBackdrop() {
       </div>
       <Stars />
       <Celestial className='year-sun' />
-      <YearClouds />
+      <PaintedClouds winds={YEAR_CLOUDS} />
       <YearRange />
       <div className='year-stack'>
         {STATES.map(k => (

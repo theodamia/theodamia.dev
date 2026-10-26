@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { AboutFinale } from '@/components/about-finale';
 import { AboutHero } from '@/components/about-hero';
 import { AboutSection } from '@/components/about-section';
+import { FactItem } from '@/components/fact-item';
 import { OpinionList } from '@/components/opinion-list';
 import { SkillColumns } from '@/components/skill-columns';
 import { WeekBar } from '@/components/week-bar';
@@ -43,14 +44,7 @@ export default function About() {
             </div>
             <dl className='flex flex-col gap-5 pt-1.5'>
               {ASIDE_FACTS.map(fact => (
-                <div key={fact.label}>
-                  <dt className='text-ink-3 text-[14.5px] leading-[1.4] font-semibold'>
-                    {fact.label}
-                  </dt>
-                  <dd className='text-ink mt-1 max-w-[26ch] text-[16.5px] leading-[1.45] font-medium'>
-                    {fact.value}
-                  </dd>
-                </div>
+                <FactItem key={fact.label} fact={fact} className='max-w-[26ch]' />
               ))}
             </dl>
           </div>

@@ -2,9 +2,7 @@
 
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
-import { artUrl, CAIRN, type Theme } from '@/scene/flats';
-
-const THEMES: Theme[] = ['day', 'night'];
+import { artUrl, CAIRN, THEMES } from '@/scene/flats';
 
 type CairnProps = {
   /** Up while the closing card is set aside: the cairn stands by the path and answers a click. */

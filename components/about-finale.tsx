@@ -3,11 +3,10 @@ import { ContactRows } from '@/components/contact-rows';
 import { ContactSignal } from '@/components/contact-signal';
 import { AboutDawn } from '@/components/scene/about-dawn';
 import { TrailLink } from '@/components/trail-link';
+import { quietLinkVariants } from '@/components/ui/button';
 import { Eyebrow, Heading } from '@/components/ui/text';
 import { CONTACT_INVITATION } from '@/content/about';
 import { CLOUD_LINE, RANGE_ASPECT, RANGE_RISE } from '@/scene/about';
-
-const QUIET_LINK = 'hover:text-ink font-semibold underline decoration-dotted underline-offset-4';
 
 /**
  * Contact, the page's last screen. A short band takes the page into the sky; then one screen: the card near the
@@ -47,7 +46,7 @@ export function AboutFinale() {
                 {CONTACT_INVITATION}
               </p>
               <p className='text-ink-3 mt-[22px] text-[15px] print:hidden'>
-                <TrailLink href='/' className={QUIET_LINK}>
+                <TrailLink href='/' className={quietLinkVariants()}>
                   <span aria-hidden='true'>←</span> Back to the climb
                 </TrailLink>
               </p>

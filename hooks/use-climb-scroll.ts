@@ -13,8 +13,8 @@ const CUE_HIDE_AFTER_PX = 60;
 /** A stop's scroll position is nudged past its knot so the frame lands on the stop, not just before it. */
 const STOP_SCROLL_NUDGE_PX = 2;
 import { cardLaneGap, stopPositions } from '@/utils/climb-stops';
-import { JOBS, TRAILHEAD } from '@/content/jobs';
-import { CAMP_COUNT, railShare, type SceneHandle } from '@/scene/world';
+import { TRAILHEAD } from '@/content/jobs';
+import { CAMP_COUNT, CAMP_YEARS, railShare, type SceneHandle } from '@/scene/world';
 
 type ClimbScrollRefs = {
   scene: RefObject<SceneHandle | null>;
@@ -40,7 +40,6 @@ type ClimbScroll = {
 
 const LAST_STOP = CAMP_COUNT - 1;
 /** The year at each camp: the trailhead's, then each job's start. */
-const CAMP_YEARS = [TRAILHEAD.year, ...JOBS.map(job => job.start)];
 
 /**
  * Drives the climb from the page scroll. Everything that needs layout is read in `measure()` (on resize and

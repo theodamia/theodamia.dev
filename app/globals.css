@@ -324,6 +324,53 @@
   }
 }
 
+/*
+ * Pictures in both themes, on the still pages (components/scene/theme-picture.tsx): a day and a night picture as CSS
+ * backgrounds, only the theme on screen displayed, so only its picture downloads. A theme already on screen once
+ * stays underneath the other (`data-year-seen` on <html>, components/scene/year-ready.tsx): switching day and night
+ * then shows the old theme's paintings until the new one's arrive, never a hole; its files are downloaded already.
+ * A theme nobody has seen is never displayed, so never downloaded.
+ */
+.theme-art {
+  position: absolute;
+  inset: 0;
+  display: none;
+}
+
+/* a single painting filling its box: a range, a summit, a cloud */
+.theme-picture {
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+:root:not([data-theme='dark']) .theme-art[data-art='day'],
+:root[data-theme='dark'] .theme-art[data-art='night'] {
+  display: block;
+  z-index: 1;
+}
+
+:root[data-year-seen~='day'] .theme-art[data-art='day'],
+:root[data-year-seen~='night'] .theme-art[data-art='night'] {
+  display: block;
+}
+
+/* the climb's clouds in a still page's sky (`PaintedClouds`): they cross it in `cqw`, so their sky is a container */
+.sky-cloud {
+  position: absolute;
+  left: 0;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  translate: calc(var(--at) * (100cqw + 100%) - 100%) 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sky-cloud {
+    animation:
+      cloud-cross var(--cross) linear calc(var(--at) * var(--cross) * -1) infinite,
+      cloud-billow var(--billow) ease-in-out infinite alternate;
+  }
+}
+
 /* the backdrop's copies, a period apart (each is the period plus its bleed wide), over its haze fill */
 .scene-flat [data-tile] {
   position: absolute;
@@ -1300,18 +1347,6 @@
  * edges cropping the wood (it carries on beyond them). At full strength, as the climb's paintings are. Only the
  * theme on screen is displayed, so only its paintings download.
  */
-.year-art {
-  position: absolute;
-  inset: 0;
-  display: none;
-}
-
-/* a single painting filling its box: the far ranges, the summit, a cloud */
-.year-picture {
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-}
-
 .year-meadow {
   position: absolute;
   inset: 0;
@@ -1336,22 +1371,6 @@
  */
 .year-backdrop .year-grove {
   right: min(0px, calc(100vw - var(--log-right) - 120px - 56.25vh));
-}
-
-:root:not([data-theme='dark']) .year-art[data-art='day'],
-:root[data-theme='dark'] .year-art[data-art='night'] {
-  display: block;
-  z-index: 1;
-}
-
-/*
- * A theme already on screen once stays underneath the other (`data-year-seen`, year-ready.tsx). Switching day and
- * night then shows the old theme's paintings until the new one's arrive, never a meadow with no wood; its files are
- * downloaded already. A theme nobody has seen is never displayed, so never downloaded.
- */
-:root[data-year-seen~='day'] .year-art[data-art='day'],
-:root[data-year-seen~='night'] .year-art[data-art='night'] {
-  display: block;
 }
 
 /*
@@ -1406,26 +1425,10 @@
   left: calc(var(--log-right) + 6vw);
 }
 
-.year-cloud {
-  position: absolute;
-  left: 0;
-  pointer-events: none;
-  transform-origin: 50% 100%;
-  translate: calc(var(--at) * (100cqw + 100%) - 100%) 0;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .year-cloud {
-    animation:
-      cloud-cross var(--cross) linear calc(var(--at) * var(--cross) * -1) infinite,
-      cloud-billow var(--billow) ease-in-out infinite alternate;
-  }
-}
-
 .year-range {
   position: absolute;
   inset: 0;
-  /* the theme on screen is lifted over the one standing in (`.year-art`): only within the mountains, not over the land */
+  /* the theme on screen is lifted over the one standing in (`.theme-art`): only within the mountains, not over the land */
   isolation: isolate;
 }
 
@@ -1553,36 +1556,6 @@
     var(--color-day-mid) 58%,
     var(--color-day-low)
   );
-}
-
-/* a painting in both themes: only the theme on screen is displayed, so only its picture downloads */
-.about-art {
-  position: absolute;
-  inset: 0;
-  display: none;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-}
-
-:root:not([data-theme='dark']) .about-art[data-art='day'],
-:root[data-theme='dark'] .about-art[data-art='night'] {
-  display: block;
-}
-
-.about-cloud {
-  position: absolute;
-  left: 0;
-  pointer-events: none;
-  transform-origin: 50% 100%;
-  translate: calc(var(--at) * (100cqw + 100%) - 100%) 0;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .about-cloud {
-    animation:
-      cloud-cross var(--cross) linear calc(var(--at) * var(--cross) * -1) infinite,
-      cloud-billow var(--billow) ease-in-out infinite alternate;
-  }
 }
 
 /*

@@ -1,6 +1,7 @@
 import type React from 'react';
 import { STAGE_SCALE_CSS } from '@/scene/camera';
-import { artUrl, CLOUDS, type Theme } from '@/scene/flats';
+import { ThemePicture } from '@/components/scene/theme-picture';
+import { artUrl, CLOUDS, THEMES, type Cloud } from '@/scene/flats';
 import { starField, twinkleKeyframes, twinkleLevel } from '@/scene/stars';
 import { cn } from '@/utils/cn';
 
@@ -87,7 +88,30 @@ export function Celestial({ className }: { className?: string }) {
   );
 }
 
-const THEMES: Theme[] = ['day', 'night'];
+/** A cloud on the wind: which painting, how high, how wide, where across it opens, and its times in seconds. */
+export type CloudWind = {
+  cloud: number;
+  top: string;
+  width: number;
+  at: number;
+  cross: number;
+  billow: number;
+};
+
+/**
+ * Where a cloud stands and how the wind carries it (`cloud-cross`, `cloud-billow` in globals.css), its width in the
+ * caller's unit: the climb sizes clouds against its mountains, a still page against the screen.
+ */
+function windStyle(wind: CloudWind, cloud: Cloud, width: string) {
+  return {
+    top: wind.top,
+    width,
+    aspectRatio: `${cloud.w} / ${cloud.h}`,
+    '--at': wind.at,
+    '--cross': `${wind.cross}s`,
+    '--billow': `${wind.billow}s`,
+  } as React.CSSProperties;
+}
 
 /**
  * The wind. Every cloud crosses the whole sky from left to right and comes round again, at a steady speed: the
@@ -97,7 +121,7 @@ const THEMES: Theme[] = ['day', 'night'];
  * paintings, smaller still. Each also billows slowly, as a cumulus does. Widths are design units, so a cloud keeps
  * its size against the mountains; times are seconds, `cross` for the whole sky and `billow` for one swell.
  */
-const CLOUD_WIND = [
+const CLOUD_WIND: readonly CloudWind[] = [
   { cloud: 0, top: '1.5%', width: 230, at: 0.5, cross: 200, billow: 19 },
   { cloud: 1, top: '10%', width: 150, at: 0.72, cross: 260, billow: 15 },
   { cloud: 2, top: '2.5%', width: 110, at: 0.24, cross: 320, billow: 13 },
@@ -122,16 +146,7 @@ export function Clouds() {
           <div
             key={`${wind.cloud}-${wind.top}`}
             className='scene-cloud'
-            style={
-              {
-                top: wind.top,
-                width: `calc(var(--v) * ${wind.width})`,
-                aspectRatio: `${cloud.w} / ${cloud.h}`,
-                '--at': wind.at,
-                '--cross': `${wind.cross}s`,
-                '--billow': `${wind.billow}s`,
-              } as React.CSSProperties
-            }
+            style={windStyle(wind, cloud, `calc(var(--v) * ${wind.width})`)}
           >
             {THEMES.map(theme => (
               <img
@@ -148,6 +163,28 @@ export function Clouds() {
       })}
     </div>
   );
+}
+
+/**
+ * The climb's clouds on its wind, in the sky of a still page (/cv's valley, /about's opening and ending). They cross
+ * their sky from edge to edge in `cqw`, so their parent is a container; their widths are in `vh`, so they keep their
+ * size against a scene that fills the screen. With reduced motion each stays where it opens.
+ */
+export function PaintedClouds({ winds }: { winds: readonly CloudWind[] }) {
+  return winds.map(wind => {
+    const cloud = CLOUDS[wind.cloud];
+    if (!cloud) return null;
+
+    return (
+      <div
+        key={`${wind.cloud}-${wind.top}`}
+        className='sky-cloud'
+        style={windStyle(wind, cloud, `${wind.width}vh`)}
+      >
+        <ThemePicture pictures={{ day: artUrl(cloud.art.day), night: artUrl(cloud.art.night) }} />
+      </div>
+    );
+  });
 }
 
 /**

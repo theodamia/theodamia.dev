@@ -1,4 +1,5 @@
 import type React from 'react';
+import { Eyebrow } from '@/components/ui/text';
 import type { WeekSlice } from '@/content/about';
 import { cn } from '@/utils/cn';
 
@@ -18,7 +19,7 @@ const shade = (i: number) =>
 export function WeekBar({ week }: { week: WeekSlice[] }) {
   return (
     <div className='mt-12'>
-      <h3 className='text-ink-3 text-[14.5px] leading-[1.4] font-semibold'>Where a week goes</h3>
+      <Eyebrow as='h3'>Where a week goes</Eyebrow>
       <div aria-hidden='true' className='mt-[18px] flex h-2.5 max-w-[760px] gap-[3px]'>
         {week.map((slice, i) => (
           <i

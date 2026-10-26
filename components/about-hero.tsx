@@ -1,7 +1,7 @@
-import { Stars } from '@/components/scene/sky';
-import { AboutClouds, type CloudWind } from '@/components/scene/about-sky';
+import { FactItem } from '@/components/fact-item';
+import { PaintedClouds, Stars, type CloudWind } from '@/components/scene/sky';
 import { TrailLink } from '@/components/trail-link';
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants, quietLinkVariants } from '@/components/ui/button';
 import { Eyebrow, Heading, Lede } from '@/components/ui/text';
 import { HERO_FACTS } from '@/content/about';
 import { SITE } from '@/content/site';
@@ -12,9 +12,6 @@ const HERO_CLOUDS: CloudWind[] = [
   { cloud: 1, top: '11%', width: 17, at: 0.86, cross: 300, billow: 15 },
   { cloud: 2, top: '2%', width: 12, at: 0.28, cross: 340, billow: 13 },
 ];
-
-const QUIET_LINK =
-  'text-ink-3 hover:text-ink text-[15px] font-semibold underline decoration-dotted underline-offset-4';
 
 /**
  * The opening: the climb's sky at the visitor's time of day (`data-daypart` on <html>, scene/about.ts), its
@@ -27,7 +24,7 @@ export function AboutHero() {
     <header className='relative isolate'>
       <div aria-hidden='true' className='about-sky max-wide:hidden print:hidden'>
         <Stars />
-        <AboutClouds winds={HERO_CLOUDS} />
+        <PaintedClouds winds={HERO_CLOUDS} />
       </div>
 
       <div className='max-wide:px-4 max-wide:pt-[72px] max-wide:pb-10 mx-auto w-full max-w-[1180px] px-7 pt-[clamp(104px,15vh,168px)] pb-[clamp(56px,8vh,80px)] print:pt-0'>
@@ -48,21 +45,14 @@ export function AboutHero() {
         <div className='border-line max-wide:mt-10 mt-[clamp(56px,9vh,96px)] flex flex-wrap items-end justify-between gap-x-12 gap-y-7 border-t pt-7'>
           <dl className='flex flex-wrap gap-x-14 gap-y-5'>
             {HERO_FACTS.map(fact => (
-              <div key={fact.label}>
-                <dt>
-                  <Eyebrow>{fact.label}</Eyebrow>
-                </dt>
-                <dd className='text-ink mt-1 max-w-[26ch] text-[16.5px] leading-[1.45] font-medium'>
-                  {fact.value}
-                </dd>
-              </div>
+              <FactItem key={fact.label} fact={fact} className='max-w-[26ch]' />
             ))}
           </dl>
           <div className='flex items-center gap-[22px] print:hidden'>
             <a href={`mailto:${SITE.email}`} className={buttonVariants({ size: 'sm' })}>
               Email me
             </a>
-            <TrailLink href='/' className={QUIET_LINK}>
+            <TrailLink href='/' className={quietLinkVariants({ standalone: true })}>
               <span aria-hidden='true'>←</span> Back to the climb
             </TrailLink>
           </div>

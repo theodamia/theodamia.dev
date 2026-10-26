@@ -4,12 +4,11 @@ import { useEffect, useRef } from 'react';
 import { TrailLink } from '@/components/trail-link';
 import { SectionCard } from '@/components/section-card';
 import { useScenery } from '@/components/scenery';
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants, quietLinkVariants } from '@/components/ui/button';
 import { cn } from '@/utils/cn';
 
 /** The quiet dotted links under the card's button. */
-const QUIET_LINK =
-  'text-ink-3 hover:text-ink cursor-pointer text-[15px] font-semibold underline decoration-dotted underline-offset-4';
+const QUIET_LINK = quietLinkVariants({ standalone: true });
 
 /**
  * The card at the top of the climb, and a way to set it aside: "Take in the view" shrinks it into a cairn by the

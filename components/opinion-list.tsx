@@ -1,3 +1,4 @@
+import { Eyebrow } from '@/components/ui/text';
 import { holdsInWords, type Opinion } from '@/content/about';
 
 const STEPS = 5;
@@ -9,9 +10,7 @@ const STEPS = 5;
 export function OpinionList({ opinions }: { opinions: Opinion[] }) {
   return (
     <div className='mt-12'>
-      <h3 className='text-ink-3 text-[14.5px] leading-[1.4] font-semibold'>
-        Opinions, by how often they hold
-      </h3>
+      <Eyebrow as='h3'>Opinions, by how often they hold</Eyebrow>
       <ul className='border-line mt-3.5 border-b'>
         {opinions.map(opinion => {
           const { words, steps } = holdsInWords(opinion.holds);

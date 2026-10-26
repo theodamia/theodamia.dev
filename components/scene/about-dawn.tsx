@@ -1,6 +1,13 @@
 import type React from 'react';
-import { AboutArt, AboutClouds, type CloudWind } from '@/components/scene/about-sky';
-import { Celestial, Daylight, Sky, Stars } from '@/components/scene/sky';
+import {
+  Celestial,
+  Daylight,
+  PaintedClouds,
+  Sky,
+  Stars,
+  type CloudWind,
+} from '@/components/scene/sky';
+import { ThemePicture } from '@/components/scene/theme-picture';
 import { aboutUrl, RANGE_ART, RANGE_ASPECT, SAUCER } from '@/scene/about';
 
 /** High and few: the card stands in the sky below them. */
@@ -24,7 +31,7 @@ function Saucer() {
       <div className='about-saucer-across'>
         <div className='about-saucer-rise'>
           <div className='about-saucer-hover'>
-            <AboutArt pictures={{ day: aboutUrl(SAUCER.day), night: aboutUrl(SAUCER.night) }} />
+            <ThemePicture pictures={{ day: aboutUrl(SAUCER.day), night: aboutUrl(SAUCER.night) }} />
             {SAUCER.lights.map(([x, y]) => (
               <i
                 key={`${x}-${y}`}
@@ -55,15 +62,15 @@ export function AboutDawn() {
       <Sky />
       <Daylight className='about-daylight' />
       <Stars />
-      <AboutClouds winds={DAWN_CLOUDS} />
+      <PaintedClouds winds={DAWN_CLOUDS} />
       <Celestial className='about-sun' />
       <Saucer />
-      <AboutArt
+      <ThemePicture
         className='about-range'
         pictures={{ day: aboutUrl(RANGE_ART.sunrise), night: aboutUrl(RANGE_ART.night) }}
       />
       <div
-        className='about-art about-range about-morning'
+        className='theme-art theme-picture about-range about-morning'
         data-art='day'
         style={{ backgroundImage: `url(${aboutUrl(RANGE_ART.day)})` }}
       />

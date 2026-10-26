@@ -23,3 +23,16 @@ export const buttonVariants = cva(
     defaultVariants: { variant: 'primary', size: 'md' },
   }
 );
+
+/**
+ * The quiet link: a dotted underline that turns to ink on hover, for the ways between pages and the asides under a
+ * button. Inside a sentence it takes the sentence's colour and size; standing alone (`standalone`) it sets its own, a
+ * step under the body.
+ */
+export const quietLinkVariants = cva(
+  'hover:text-ink cursor-pointer font-semibold underline decoration-dotted underline-offset-4',
+  {
+    variants: { standalone: { true: 'text-ink-3 text-[15px]', false: '' } },
+    defaultVariants: { standalone: false },
+  }
+);
