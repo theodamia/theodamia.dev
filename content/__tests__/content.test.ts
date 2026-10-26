@@ -29,10 +29,6 @@ describe('jobs', () => {
     expect([...years].sort((a, b) => a - b)).toEqual(years);
   });
 
-  it('grows: every level is higher than the one before', () => {
-    JOBS.slice(1).forEach((job, i) => expect(job.level).toBeGreaterThan(JOBS[i].level));
-  });
-
   it('keeps the copy short enough to read at a glance', () => {
     JOBS.forEach(job => {
       expect(job.summary.length).toBeLessThanOrEqual(MAX_SUMMARY);

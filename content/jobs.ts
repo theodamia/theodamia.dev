@@ -1,9 +1,7 @@
 export type Job = {
   /** Year the stop starts; also its mark on the altimeter. Unique. */
   start: number;
-  /** Seniority, 2 (intern) upwards. It picks the fallback tent; camps are placed by tenure (`years`). */
-  level: number;
-  /** Label painted next to the tent in the scene. */
+  /** The camp's name: over its camp in the scene, and on its altimeter mark. */
   place: string;
   company: string;
   role: string;
@@ -29,7 +27,6 @@ export const TRAILHEAD = { label: 'Start', year: 2014 } as const;
 export const JOBS: Job[] = [
   {
     start: 2015,
-    level: 2,
     place: 'Fedenet',
     company: 'Fedenet',
     role: 'Web Developer Intern',
@@ -45,7 +42,6 @@ export const JOBS: Job[] = [
   },
   {
     start: 2016,
-    level: 3,
     place: 'Ordereze',
     company: 'Ordereze',
     role: 'Junior Frontend Engineer',
@@ -61,7 +57,6 @@ export const JOBS: Job[] = [
   },
   {
     start: 2018,
-    level: 4,
     place: 'Geekbot',
     company: 'Geekbot',
     role: 'Frontend Software Engineer',
@@ -79,7 +74,6 @@ export const JOBS: Job[] = [
   },
   {
     start: 2022,
-    level: 5,
     place: 'Geekbot · Lead',
     company: 'Geekbot',
     role: 'Frontend Lead',
@@ -97,7 +91,6 @@ export const JOBS: Job[] = [
   },
   {
     start: 2026,
-    level: 5.6,
     place: 'DeepSea.ai',
     company: 'DeepSea.ai',
     role: 'Senior Frontend Software Engineer',
