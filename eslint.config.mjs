@@ -107,6 +107,16 @@ const eslintConfig = defineConfig([
     },
   },
 
+  /*
+   * The scene's paintings are plain `<img>` on purpose. `next/image` would set the source at render, and the
+   * stage must choose it itself: one file per screen, decoded before it shows (lib/scene-art.ts). The files are
+   * already sized and encoded by `pnpm flats`, so the image optimiser would have nothing left to do.
+   */
+  {
+    files: ['components/scene/**'],
+    rules: { '@next/next/no-img-element': 'off' },
+  },
+
   // Disable ESLint rules that conflict with Prettier
   prettierConfig,
   // Add Prettier plugin and rules

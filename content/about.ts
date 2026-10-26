@@ -27,6 +27,17 @@ export const SUMMARY_FACTS: Fact[] = ['Experience', 'Based in', 'Languages'].fla
 );
 
 /**
+ * The facts /about opens on, under its title: the job now, where, and how long. A recruiter's first three
+ * questions, answered before anything else. Taken from FACTS by label, like SUMMARY_FACTS.
+ */
+export const HERO_FACTS: Fact[] = ['Currently', 'Based in', 'Experience'].flatMap(label =>
+  FACTS.filter(fact => fact.label === label)
+);
+
+/** The rest of the facts, beside the About text: the ones nobody scans for first but somebody always asks. */
+export const ASIDE_FACTS: Fact[] = FACTS.filter(fact => !HERO_FACTS.includes(fact));
+
+/**
  * The degree. It reads as background on /about, so it stays out of the Experience page on screen — but a printed
  * CV with no education looks like it is hiding one, so the print sheet carries it under the jobs.
  */
@@ -48,6 +59,21 @@ export const OPINIONS: Opinion[] = [
   { name: 'Tests where they earn their keep', holds: 0.62 },
 ];
 
+/**
+ * How often an opinion holds, said in words with a five-step scale beside it: a reader takes in "Almost always"
+ * at a glance, where a bar's length only says "a lot". The first band an opinion's `holds` reaches is its own.
+ */
+export const HOLDS_IN_WORDS = [
+  { from: 0.9, words: 'Almost always', steps: 5 },
+  { from: 0.85, words: 'Most of the time', steps: 4 },
+  { from: 0.7, words: 'Usually', steps: 3 },
+  { from: 0, words: 'Often', steps: 2 },
+] as const;
+
+/** An opinion's `holds` in words, and its steps out of five. */
+export const holdsInWords = (holds: number) =>
+  HOLDS_IN_WORDS.find(band => holds >= band.from) ?? HOLDS_IN_WORDS[HOLDS_IN_WORDS.length - 1];
+
 export type WeekSlice = {
   label: string;
   /** Share of a week in percent. The slices sum to 100. */
@@ -67,3 +93,7 @@ export const WEEK: WeekSlice[] = [
   { label: 'Mentoring', share: 10, note: "It shows up later, in someone else's code." },
   { label: 'Meetings', share: 10, note: 'Few and the ones that stay have a decision in them.' },
 ];
+
+/** The line under Contact's heading: what to write about, and how soon to expect an answer. */
+export const CONTACT_INVITATION =
+  'Always open to a conversation: new opportunities, interesting challenges, or simply exchanging ideas. Replies within a day, usually less.';

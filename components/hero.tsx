@@ -1,12 +1,19 @@
-import Link from 'next/link';
+import { TrailLink } from '@/components/trail-link';
 import { SocialLinks } from '@/components/social-links';
+import { quietLinkVariants } from '@/components/ui/button';
 import { Eyebrow, Heading, Lede } from '@/components/ui/text';
 import { SITE } from '@/content/site';
 
-/** The top of the climb page: who this is, what the page is, and the three ways to reach me. */
+/**
+ * The top of the climb page: who this is, what the page is, and the three ways to reach me.
+ *
+ * The words float over the painted meadow and the path, so they wear the scene's text halo, as the altimeter's
+ * labels do, and sit on a wash of the page colour (`.hero-wash`): a soft one beside the scene on wide screens, a
+ * scrim on phones, where the village is right under the lede. A wider halo would read as a cloud instead.
+ */
 export function Hero() {
   return (
-    <section className='max-wide:pt-[84px] min-h-screen pt-[92px]'>
+    <section className='hero-wash max-wide:pt-[84px] text-shadow-halo min-h-screen pt-[92px]'>
       <Eyebrow className='text-[17px]'>
         {SITE.title} · {SITE.location}
       </Eyebrow>
@@ -14,8 +21,8 @@ export function Hero() {
         {SITE.name}
       </Heading>
       <Lede>
-        Ten years of software engineering, built on frontend fundamentals: a camp for every job and
-        the summit still ahead.
+        Ten years of software engineering, built on frontend fundamentals. A camp for every role,
+        a&nbsp;lesson&nbsp;from&nbsp;every&nbsp;camp, and the summit still ahead.
       </Lede>
       <SocialLinks />
       {/*
@@ -24,12 +31,9 @@ export function Hero() {
        * back here from /cv, pointing the other way.
        */}
       <p className='mt-6'>
-        <Link
-          href='/cv'
-          className='text-ink-3 hover:text-ink text-[15px] font-semibold underline decoration-dotted underline-offset-4'
-        >
+        <TrailLink href='/cv' className={quietLinkVariants({ standalone: true })}>
           Every role, on one page
-        </Link>
+        </TrailLink>
       </p>
     </section>
   );

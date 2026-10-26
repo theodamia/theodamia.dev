@@ -59,13 +59,11 @@ describe('ThemeToggle', () => {
   beforeEach(() => {
     root.dataset.theme = 'light';
     localStorage.clear();
-    vi.stubGlobal('CSS', { supports: () => true });
     mockMedia([]);
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
-    vi.unstubAllGlobals();
     Reflect.deleteProperty(document, 'startViewTransition');
     root.className = '';
     root.removeAttribute('style');

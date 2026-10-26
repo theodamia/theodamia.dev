@@ -12,9 +12,9 @@ const STOP_LEFT_AT = 0.8;
 const CUE_HIDE_AFTER_PX = 60;
 /** A stop's scroll position is nudged past its knot so the frame lands on the stop, not just before it. */
 const STOP_SCROLL_NUDGE_PX = 2;
-import { anchorsFor, stopPositions } from '@/utils/climb-stops';
-import { JOBS, TRAILHEAD } from '@/content/jobs';
-import { CAMP_COUNT, cameraKnot, campAnchor, WORLD, type SceneHandle } from '@/scene/world';
+import { cardLaneGap, stopPositions } from '@/utils/climb-stops';
+import { TRAILHEAD } from '@/content/jobs';
+import { CAMP_COUNT, CAMP_YEARS, railShare, type SceneHandle } from '@/scene/world';
 
 type ClimbScrollRefs = {
   scene: RefObject<SceneHandle | null>;
@@ -40,13 +40,12 @@ type ClimbScroll = {
 
 const LAST_STOP = CAMP_COUNT - 1;
 /** The year at each camp: the trailhead's, then each job's start. */
-const CAMP_YEARS = [TRAILHEAD.year, ...JOBS.map(job => job.start)];
 
 /**
  * Drives the climb from the page scroll. Everything that needs layout is read in `measure()` (on resize and
- * when the track changes height), never while scrolling: the scroll position at which each card meets its camp
- * and the matching camera positions. A frame then only interpolates between those and hands the scene one
- * `SceneFrame`. The three pieces of state are set every frame but almost always with the value they already
+ * when the track changes height), never while scrolling: the scroll position at which each card meets its camp,
+ * and where the card lanes leave room for the camps. A frame then only works out which leg it is on and how far
+ * along, and hands the scene one `SceneFrame`. The three pieces of state are set every frame but almost always with the value they already
  * hold, so React bails out and nothing re-renders until the stop or the year actually changes.
  */
 export function useClimbScroll({
@@ -60,9 +59,8 @@ export function useClimbScroll({
   const [stop, setStop] = useState(0);
   const [year, setYear] = useState<number>(TRAILHEAD.year);
   const [moving, setMoving] = useState(false);
-  /** Scroll position of each stop, and the camera's world Y there. */
+  /** Scroll position of each stop. */
   const stops = useRef<number[]>([]);
-  const knots = useRef<number[]>([]);
   const railHeight = useRef(0);
   const reached = useRef(0);
 
@@ -72,7 +70,6 @@ export function useClimbScroll({
     const frame = () => {
       raf = 0;
       const S = stops.current;
-      const K = knots.current;
       if (S.length !== CAMP_COUNT) return;
       const y = window.scrollY;
       let leg = 0;
@@ -86,17 +83,17 @@ export function useClimbScroll({
         f = (y - S[leg]) / (S[leg + 1] - S[leg]);
       }
 
-      const yTop = K[leg] + (K[leg + 1] - K[leg]) * f;
-      scene.current?.applyFrame({ yTop, leg, f });
+      scene.current?.applyFrame({ leg, f });
+      const share = railShare(leg, f);
 
       if (needle.current) {
         const dpr = window.devicePixelRatio || 1;
-        const offset = Math.round((yTop / WORLD.TRAVEL) * railHeight.current * dpr) / dpr;
+        const offset = Math.round(share * railHeight.current * dpr) / dpr;
         needle.current.style.transform = `translate3d(0,${offset}px,0)`;
       }
 
       if (walked.current) {
-        walked.current.style.transform = `scaleY(${(1 - yTop / WORLD.TRAVEL).toFixed(4)})`;
+        walked.current.style.transform = `scaleY(${(1 - share).toFixed(4)})`;
       }
 
       /* arriving needs most of the leg; leaving needs a real step back (see STOP_LEFT_AT) */
@@ -115,15 +112,15 @@ export function useClimbScroll({
 
     const measure = (paint: () => void = onScroll) => {
       const wide = window.matchMedia(WIDE_QUERY).matches;
-      const anchors = anchorsFor(wide);
-      knots.current = CAMP_YEARS.map((_, i) => cameraKnot(i, campAnchor(i, anchors)));
+      const cards = Array.from(climb.current?.querySelectorAll<HTMLElement>('[data-card]') ?? []);
       /* the trailhead is the top of the page; every other camp is reached when its card arrives */
-      stops.current = stopPositions(
-        Array.from(climb.current?.querySelectorAll<HTMLElement>('[data-card]') ?? []),
-        { wide, innerHeight: window.innerHeight, scrollY: window.scrollY }
-      );
+      stops.current = stopPositions(cards, {
+        wide,
+        innerHeight: window.innerHeight,
+        scrollY: window.scrollY,
+      });
       railHeight.current = rail.current?.clientHeight ?? 0;
-      scene.current?.resize();
+      scene.current?.resize({ laneGap: wide ? cardLaneGap(cards, window.innerWidth) : null });
 
       paint();
     };

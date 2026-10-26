@@ -27,11 +27,8 @@
   --color-accent: #cf4318;
   --color-accent-text: #b93e14;
   --color-accent-wash: rgb(207 67 24 / 0.1);
-  /* the shaded side of a tent */
-  --color-accent-shade: #a5330f;
   --color-lake-fill: #2474ab;
   --color-sun: #e2a12b;
-  --color-mist: #a9b7c4;
 
   /* Scene — sky gradients, the sun and the few scenery colours that are not generated ramps */
   --color-dawn-top: oklch(0.88 0.03 285);
@@ -40,26 +37,32 @@
   --color-day-top: oklch(0.84 0.05 240);
   --color-day-mid: oklch(0.91 0.03 228);
   --color-day-low: oklch(0.97 0.012 160);
+  /* /cv's year (scene/seasons.ts): each season's day sky, summer being the day sky above; by night all share one */
+  --color-winter-top: oklch(0.8 0.045 248);
+  --color-winter-mid: oklch(0.89 0.025 238);
+  --color-winter-low: oklch(0.965 0.008 230);
+  --color-spring-top: oklch(0.85 0.055 233);
+  --color-spring-mid: oklch(0.92 0.032 218);
+  --color-spring-low: oklch(0.975 0.016 148);
+  --color-autumn-top: oklch(0.82 0.052 252);
+  --color-autumn-mid: oklch(0.9 0.042 72);
+  --color-autumn-low: oklch(0.965 0.028 80);
   --color-sun-disc: oklch(0.98 0.04 85);
   --color-sun-glow: oklch(0.96 0.05 80 / 0.45);
-  --color-roof: #2e6b57;
-  --color-hut-wall: oklch(0.96 0.015 90);
-  --color-hut-window: oklch(0.86 0.1 90);
-  --color-pine-front: oklch(0.4 0.045 155);
-  --color-cloud: #ffffff;
-  /* the soft white stroke behind the scene's labels */
-  --color-halo: rgb(255 255 255 / 0.8);
-  /* the foreground mist */
-  --color-wisp: oklch(0.985 0.008 85);
-  /* what falls: snow, a turning leaf, a blossom petal */
+  /* what far things fade toward: baked into the painted flats by scripts/process-flats.mjs, never applied at runtime */
+  --color-scene-haze: oklch(0.9188 0.0231 258.36);
+  /* the snow that falls on the heights */
   --color-flake: oklch(0.99 0.008 250);
-  --color-leaf: oklch(0.7 0.145 58);
-  --color-petal: oklch(0.92 0.05 8);
-  /* the deeper pink toward a petal's base, which is what stops it reading as a pink snowflake */
-  --color-petal-edge: oklch(0.84 0.095 5);
+  /* a flake's shaded rim: what keeps a white flake visible against a white mountain, without an outline */
+  --color-flake-shade: oklch(0.84 0.035 252);
 
   /* only ever seen at night: the stars, and the moon's dark side */
   --color-star: oklch(0.97 0.025 95);
+  /* a third of the stars lean blue and a few warm, as real ones do; only ever seen at night */
+  --color-star-cool: oklch(0.94 0.04 250);
+  --color-star-warm: oklch(0.93 0.07 75);
+  /* the saucer's running lights on /about: warm, and the same by night */
+  --color-saucer-light: oklch(0.86 0.13 62);
   --color-moon-shadow: oklch(0.3 0.035 258);
 
   /* Shape and size */
@@ -97,47 +100,24 @@
   /* overshoots a little past the end: things that pop */
   --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  --animate-drift: drift 46s ease-in-out infinite alternate;
-  --animate-drift-slow: drift 62s ease-in-out infinite alternate-reverse;
   --animate-bob: bob 1.6s ease-in-out infinite;
-  /* the Contact card's radio waves: each ring flares up, then fades while the next one lights */
-  --animate-signal: signal 2.8s ease-out infinite both;
 
-  @keyframes drift {
-    from {
-      transform: translateX(-40px);
-    }
-    to {
-      transform: translateX(60px);
-    }
-  }
-
+  /* evenly either side of where it rests, so a bobbing icon still sits on its text's centre line */
   @keyframes bob {
     0%,
     100% {
       transform: translateY(-2px);
     }
     50% {
-      transform: translateY(4px);
-    }
-  }
-
-  @keyframes signal {
-    0%,
-    60%,
-    100% {
-      opacity: 0.15;
-    }
-    18% {
-      opacity: 0.9;
+      transform: translateY(2px);
     }
   }
 }
 
 /*
  * Night, "Alpine night": the same tokens by moonlight. `data-theme` on <html> is the only switch (set before the
- * first paint by the script in app/layout.tsx, flipped by lib/theme.ts). `color-scheme` follows it: that is what
- * the scene's generated `light-dark()` colours read, and it darkens native scrollbars.
+ * first paint by the script in app/layout.tsx, flipped by lib/theme.ts). `color-scheme` follows it, which darkens
+ * native scrollbars and form controls.
  */
 :root {
   color-scheme: light;
@@ -174,21 +154,22 @@
   --color-day-top: oklch(0.17 0.035 262);
   --color-day-mid: oklch(0.22 0.04 258);
   --color-day-low: oklch(0.29 0.04 250);
+  --color-winter-top: oklch(0.17 0.035 262);
+  --color-winter-mid: oklch(0.22 0.04 258);
+  --color-winter-low: oklch(0.29 0.04 250);
+  --color-spring-top: oklch(0.17 0.035 262);
+  --color-spring-mid: oklch(0.22 0.04 258);
+  --color-spring-low: oklch(0.29 0.04 250);
+  --color-autumn-top: oklch(0.17 0.035 262);
+  --color-autumn-mid: oklch(0.22 0.04 258);
+  --color-autumn-low: oklch(0.29 0.04 250);
   /* by night the sun's tokens hold the moon */
   --color-sun-disc: oklch(0.93 0.02 245);
   --color-sun-glow: oklch(0.85 0.04 245 / 0.2);
-  --color-roof: #1d4a3d;
-  --color-hut-wall: oklch(0.45 0.02 250);
-  --color-hut-window: oklch(0.86 0.13 82);
-  --color-pine-front: oklch(0.2 0.025 215);
-  --color-cloud: oklch(0.4 0.035 265);
-  --color-halo: rgb(10 16 24 / 0.75);
-  --color-wisp: oklch(0.4 0.03 255);
-  /* by moonlight the snow still catches the light; leaf and petal sink towards the dark they fall through */
+  --color-scene-haze: oklch(0.4014 0.0646 261.15);
+  /* by moonlight the snow still catches the light */
   --color-flake: oklch(0.93 0.012 250);
-  --color-leaf: oklch(0.45 0.08 55);
-  --color-petal: oklch(0.62 0.035 8);
-  --color-petal-edge: oklch(0.5 0.055 5);
+  --color-flake-shade: oklch(0.66 0.045 258);
 
   /* by night the light is behind you: the same shadows, cast in black */
   --shadow-cast-card: rgb(0 0 0 / 0.8);
@@ -235,33 +216,6 @@
 }
 
 /*
- * Scene layers. Each layer is as tall as its parallax depth needs (--d), so one number says how far it
- * travels. The transform below is only the resting pose (before the first frame, and for the still
- * strip on /about): while scrolling, the stage writes pixel transforms onto whole layers and nothing else.
- */
-.scene-layer {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  display: block;
-  overflow: visible;
-  pointer-events: none;
-  /* 240 and 500 are WORLD.WIDTH and WORLD.TRAVEL over WORLD.VIEW (lib/scene/world.ts): change those, change these */
-  width: 240vh;
-  width: 240lvh;
-  height: calc(100vh + var(--d) * 500vh);
-  height: calc(100lvh + var(--d) * 500lvh);
-  transform: translate3d(-50%, calc(var(--cam) * (100vh - 100%)), 0);
-  transform: translate3d(-50%, calc(var(--cam) * (100lvh - 100%)), 0);
-}
-
-/* Only the climb writes transforms; the still strip on /about renders the same layers and never moves them. */
-.scene-stage .scene-layer,
-.scene-stage .scene-layer-window {
-  will-change: transform;
-}
-
-/*
  * On wide screens the altimeter is fixed at the right edge, and its labels reach this far into the page. The job cards on the
  * right keep clear of it: the list of cards gets as much right padding as the page's own margin (28px padding plus
  * whatever the 1180px track leaves) does not already give.
@@ -275,379 +229,586 @@
 }
 
 /*
- * Camps. A camp stands in full colour at full size from the start. Reaching it (the stage flips `data-reached`)
- * runs its flag up the pole and brightens its name. Transforms are in the camp's own SVG units, measured from
- * each shape's own box.
+ * The forward climb (components/scene/ascent-stage.tsx, scene/camera.ts). Each flat is one whole painting the stage
+ * moves as a layer: its box is authored at the largest it is ever shown, sized here from the stage scale `--v` (a
+ * length per design unit, from the stage's container size), and the stage only ever scales it down. A painting is
+ * shown once it is decoded (`data-ready`, lib/scene-art.ts), and only in the theme on screen, so the day/night
+ * swap happens in the same frame as `data-theme` and the reveal's circle uncovers the night paintings from its
+ * first frame. Until a theme's painting is ready, the other theme's stands in: never a hole.
  */
-.camp-pennant {
-  transform-box: fill-box;
-  transform-origin: 0% 50%;
-  transition:
-    transform 0.8s var(--ease-pop) 0.12s,
-    opacity 0.3s ease-out 0.12s;
-}
-
-.camp-canvas {
-  fill: var(--color-accent);
-}
-
-.camp-shade {
-  fill: var(--color-accent-shade);
-}
-
-.camp-light {
-  fill: var(--color-hut-wall);
-}
-
-.camp-label {
-  transition: opacity 0.45s ease-out;
-}
-
-.camp[data-reached='false'] .camp-pennant {
-  transform: translateY(54px) scale(0.3);
-  opacity: 0.55;
-}
-
-.camp[data-reached='false'] .camp-label {
-  opacity: 0.6;
-}
-
-/*
- * The label over the summit. It rides in the layer that moves with the mountain, like the camps, and fades out once
- * the closing card is up: by then the summit is off the top of the screen and the words are alone in the sky.
- * Slow, because nothing else in the scene hurries, and opacity only, so the compositor handles it.
- */
-.summit-label {
-  transition: opacity 0.7s ease-out;
-}
-
-.summit-label[data-gone='true'] {
-  opacity: 0;
-}
-
-/*
- * What comes alive at a camp, and how. Each item (a flame and its core, a lantern's glass, a lit doorway, a spinner's
- * blades) is a separate picture laid over the artwork, which is saved with its lights out. Only opacity and
- * transform move, on plain HTML elements, so the compositor does it all and nothing repaints.
- *
- * The motion itself never stops or restarts: flames flicker, lights breathe and blades keep their angle the whole
- * time. Arriving and leaving only fade the item in and out (or, for the spinner, let it run or hold it still), so
- * hovering around a camp can never make anything jump back to the start of its animation.
- */
-.camp-light-source {
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.6s ease-out 0.25s;
-}
-
-.camp-light-source[data-reached='true'] {
-  opacity: 1;
-}
-
-.camp-lit,
-.camp-glow {
+.scene-flat {
   position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--bw) * var(--v));
+  height: calc(var(--bh) * var(--v));
+  transform-origin: 0 0;
+  will-change: transform, opacity;
 }
 
-.camp-lit {
+.scene-flat [data-lod] {
+  position: absolute;
   inset: 0;
+  will-change: opacity;
+}
+
+/* each painting its own layer: the compositor then draws the decoded image as it is, with nothing to raster */
+:is(.scene-flat, .scene-cloud) img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* a phone's near painting covers only the middle of the box */
+.scene-flat img[data-variant='phone'] {
+  left: var(--phone-left, 0%);
+  width: var(--phone-width, 100%);
+}
+
+:root:not([data-theme='dark']) :is(.scene-flat, .scene-cloud) img[data-art='day'][data-ready],
+:root[data-theme='dark'] :is(.scene-flat, .scene-cloud) img[data-art='night'][data-ready],
+:root[data-theme='dark']
+  :is(.scene-flat [data-lod], .scene-flat [data-tile], .scene-flag-part, .scene-cloud):not(
+    :has(> img[data-art='night'][data-ready])
+  )
+  > img[data-art='day'][data-ready],
+:root:not([data-theme='dark'])
+  :is(.scene-flat [data-lod], .scene-flat [data-tile], .scene-flag-part, .scene-cloud):not(
+    :has(> img[data-art='day'][data-ready])
+  )
+  > img[data-art='night'][data-ready] {
+  display: block;
+}
+
+/*
+ * The sky's painted clouds, carried by a steady wind (components/scene/sky.tsx). Each crosses the whole sky, from
+ * just off the left edge to just off the right, and comes round again; `--at` is how far across it stands when
+ * the page opens, which is also where it stays with reduced motion. It billows on its flat base as it goes.
+ * `translate` and `scale` only, so the compositor moves them and nothing repaints.
+ */
+.scene-cloud {
+  position: absolute;
+  left: 0;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  translate: calc(var(--at) * (100cqw + 100%) - 100%) 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scene-cloud {
+    animation:
+      cloud-cross var(--cross) linear calc(var(--at) * var(--cross) * -1) infinite,
+      cloud-billow var(--billow) ease-in-out infinite alternate;
+  }
+}
+
+@keyframes cloud-cross {
+  from {
+    translate: -100% 0;
+  }
+
+  to {
+    translate: 100cqw 0;
+  }
+}
+
+@keyframes cloud-billow {
+  to {
+    scale: 1.025 1.06;
+  }
+}
+
+/*
+ * Pictures in both themes, on the still pages (components/scene/theme-picture.tsx): a day and a night picture as CSS
+ * backgrounds, only the theme on screen displayed, so only its picture downloads. A theme already on screen once
+ * stays underneath the other (`data-year-seen` on <html>, components/scene/year-ready.tsx): switching day and night
+ * then shows the old theme's paintings until the new one's arrive, never a hole; its files are downloaded already.
+ * A theme nobody has seen is never displayed, so never downloaded.
+ */
+.theme-art {
+  position: absolute;
+  inset: 0;
+  display: none;
+}
+
+/* a single painting filling its box: a range, a summit, a cloud */
+.theme-picture {
+  background-repeat: no-repeat;
   background-size: 100% 100%;
 }
 
-.camp-glow {
-  border-radius: 50%;
-  background: radial-gradient(
-    closest-side,
-    rgb(255 196 92 / 0.55),
-    rgb(255 170 70 / 0.18) 55%,
-    transparent
-  );
+:root:not([data-theme='dark']) .theme-art[data-art='day'],
+:root[data-theme='dark'] .theme-art[data-art='night'] {
+  display: block;
+  z-index: 1;
 }
 
-/*
- * The flag every camp raises: its cloth is a layer of its own, the pole stays in the picture. Waiting, the cloth is
- * furled small and low on the pole; reaching the camp runs it up to the top (the same pop as before the flag was a
- * picture), where it ripples in the wind: the free end lifts and falls a little about the hoist. Like the spinner,
- * the ripple never restarts: leaving the camp holds it, coming back lets it carry on. At night it is dimmed with the
- * rest of the camp: it gives no light.
- */
-.camp-light-source[data-kind='flag'] {
-  opacity: 0.55;
-  transform: translateY(140%) scale(0.3);
-  transform-origin: 0% 50%;
+:root[data-year-seen~='day'] .theme-art[data-art='day'],
+:root[data-year-seen~='night'] .theme-art[data-art='night'] {
+  display: block;
+}
+
+/* the climb's clouds in a still page's sky (`PaintedClouds`): they cross it in `cqw`, so their sky is a container */
+.sky-cloud {
+  position: absolute;
+  left: 0;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  translate: calc(var(--at) * (100cqw + 100%) - 100%) 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sky-cloud {
+    animation:
+      cloud-cross var(--cross) linear calc(var(--at) * var(--cross) * -1) infinite,
+      cloud-billow var(--billow) ease-in-out infinite alternate;
+  }
+}
+
+/* the backdrop's copies, a period apart (each is the period plus its bleed wide), over its haze fill */
+.scene-flat [data-tile] {
+  position: absolute;
+  top: 0;
+  height: 100%;
+}
+
+.scene-foot {
+  position: absolute;
+  background: var(--color-scene-haze);
+  pointer-events: none;
+}
+
+/* nothing shows until the first frame is posed: the boxes would sit at full size in the corner */
+.scene-stage:not([data-posed]) [data-scene-flats] {
+  visibility: hidden;
+}
+
+.scene-flag-part {
+  position: absolute;
+}
+
+/* the shared flag: furled low on the pole until its camp is reached, then it runs up */
+.scene-pennant {
+  transform-origin: 0 0;
+  transform: translateY(170%) scale(0.32, 0.5);
+  opacity: 0.6;
   transition:
-    transform 0.8s var(--ease-pop) 0.12s,
-    opacity 0.3s ease-out 0.12s;
+    transform 0.8s var(--ease-pop),
+    opacity 0.3s ease-out;
 }
 
-.camp-light-source[data-kind='flag'][data-reached='true'] {
-  opacity: 1;
+.scene-pennant[data-reached='true'] {
   transform: none;
-}
-
-[data-kind='flag'] .camp-lit {
-  transform-origin: 0% 50%;
-  animation: flag-ripple 2.6s ease-in-out infinite alternate;
-  animation-play-state: paused;
-}
-
-[data-kind='flag'][data-reached='true'] .camp-lit {
-  animation-play-state: running;
-}
-
-@keyframes flag-ripple {
-  0% {
-    transform: none;
-  }
-  40% {
-    transform: skewY(-3deg) scaleX(0.96);
-  }
-  70% {
-    transform: skewY(1deg) scaleX(0.99);
-  }
-  100% {
-    transform: skewY(-2deg) scaleX(0.95);
-  }
-}
-
-/*
- * A house's window in the village: tied to no arrival. Dark glass by day; at night it comes on as the theme reveal's
- * edge reaches it (it is a `data-wave` target, like the stars) and then stays steady: electric light, not a wick.
- */
-.camp-light-source[data-kind='window'] {
-  transition: opacity 0.8s ease-out var(--wave-delay, 0ms);
-}
-
-:root[data-theme='dark'] .camp-light-source[data-kind='window'] {
   opacity: 1;
 }
 
-/* fire: it catches, growing out of the pit; the glow sits a little above the flame */
-.camp-light-source[data-kind='fire'] {
-  transform: scale(0.15);
-  transform-origin: 50% 94%;
-  transition:
-    opacity 0.35s ease-out 0.25s,
-    transform 0.6s var(--ease-pop) 0.25s;
+/* camp names: they move with their camp but never scale, so the text stays sharp */
+.scene-label,
+.scene-summit {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  will-change: transform, opacity;
+  pointer-events: none;
 }
 
-.camp-light-source[data-kind='fire'][data-reached='true'] {
-  transform: none;
+.scene-label > span {
+  display: block;
+  transform: translate(-50%, -100%);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: var(--color-ink-2);
+  text-shadow: var(--text-shadow-halo);
+  transition: color 0.3s var(--ease-soft);
 }
 
-[data-kind='fire'] .camp-glow {
-  translate: 0 -18%;
-  animation: flame-glow 1.9s ease-in-out infinite alternate;
+.scene-label > span b {
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
 }
 
-[data-kind='fire'] .camp-lit {
-  transform-origin: 50% 94%;
-  animation: flame-sway 1.15s ease-in-out infinite alternate;
+.scene-label[data-reached='true'] > span {
+  color: var(--color-ink);
 }
 
-[data-kind='fire'] .camp-lit-core {
-  animation: flame-core 0.68s ease-in-out infinite alternate;
+/* the line over the summit at the end: left of the tip on wide screens, on the snow below it on phones */
+.scene-summit > span {
+  display: block;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: var(--color-ink);
+  text-shadow: var(--text-shadow-halo);
+  transition: opacity 0.7s var(--ease-soft);
 }
 
-/* lantern, window, doorway: no dancing. It fades in, and breathes slowly with one small dip, like a wick */
-[data-kind='lantern'] .camp-lit {
-  animation: lantern-breathe 1.7s ease-in-out infinite;
+.scene-summit > span[data-gone='true'] {
+  opacity: 0;
 }
 
-[data-kind='lantern'] .camp-glow {
-  animation: lantern-glow 1.7s ease-in-out infinite;
-}
-
-/*
- * Wind spinner: the blades are always there. Reaching the camp lets them run: one slow first turn that ends at
- * exactly the speed of the steady turn that follows (the easing's end slope, 1.6, times 360deg over 2.4s is the
- * same 240deg a second as one turn every 1.5s). Leaving holds them where they are; coming back, they carry on.
- *
- * The first turn must not fill forwards. Both animations write `transform`, so a `forwards` fill leaves the first
- * one in effect for ever, holding rotate(360deg) — which is the identity matrix, so the blades simply stop dead the
- * moment the first turn lands. `backwards` holds them still through the 0.3s delay and then lets go, leaving the
- * steady turn alone from 2.7s on. The handoff is seamless either way: the first ends at 360deg and the second
- * starts at 0deg, which are the same picture.
- */
-.camp-light-source[data-kind='spinner'] {
+/* the closing card set aside to take in the view (components/closing-card.tsx): the summit's line comes back */
+:root[data-scenery] .scene-summit > span[data-gone='true'] {
   opacity: 1;
 }
 
-[data-kind='spinner'] .camp-lit {
-  animation:
-    spin 2.4s cubic-bezier(0.5, 0, 0.75, 0.6) 0.3s 1 backwards,
-    spin 1.5s linear 2.7s infinite;
-  animation-play-state: paused;
+/*
+ * The cairn by today's camp (components/scene/cairn.tsx), up while the closing card is kept in it. The button is
+ * the stones and a little air around them, invisible but for its focus ring; the stage sizes it and moves it with
+ * the camp. Under the pointer or focus the stones catch a little more light and "Today's note" shows over them, as
+ * it does for a moment right after the card goes in (`data-hint`), so the way back is shown once unasked.
+ */
+.cairn {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  padding: 0;
+  border: 0;
+  border-radius: 14px;
+  background: none;
+  cursor: pointer;
 }
 
-[data-kind='spinner'][data-reached='true'] .camp-lit {
-  animation-play-state: running;
+.cairn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* the stones and the air around them: what the closing card shrinks into */
+.cairn-stones {
+  position: absolute;
+  inset: 0;
+  padding: var(--air-y) var(--air-x);
 }
 
-@keyframes flame-sway {
-  0% {
-    transform: scale(1, 1) skewX(-2.5deg);
-  }
-  35% {
-    transform: scale(0.96, 1.07) skewX(1.5deg);
-  }
-  70% {
-    transform: scale(1.04, 0.95) skewX(-1deg);
-  }
-  100% {
-    transform: scale(0.97, 1.1) skewX(3deg);
-  }
+.cairn-stones img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: filter 0.3s var(--ease-soft);
 }
 
-@keyframes flame-core {
-  0% {
-    transform: scale(1, 1);
-  }
-  50% {
-    transform: scale(0.88, 1.14) skewX(2deg);
-  }
-  100% {
-    transform: scale(1.08, 0.92) skewX(-2deg);
-  }
+:root[data-theme='dark'] .cairn-stones img[data-art='day'],
+:root:not([data-theme='dark']) .cairn-stones img[data-art='night'] {
+  display: none;
 }
 
-@keyframes flame-glow {
-  from {
-    opacity: 1;
-    transform: scale(1);
-  }
-  to {
-    opacity: 0.7;
-    transform: scale(0.93);
+.cairn:is(:hover, :focus-visible) .cairn-stones img {
+  filter: brightness(1.1) contrast(1.06);
+}
+
+:root[data-theme='dark'] .cairn:is(:hover, :focus-visible) .cairn-stones img {
+  filter: brightness(1.3);
+}
+
+.cairn-note {
+  position: absolute;
+  /* clear of the box, so the focus ring never runs through it */
+  bottom: calc(100% + 7px);
+  left: 50%;
+  translate: -50% 0;
+  font-size: 12.5px;
+  font-weight: 650;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: var(--color-ink);
+  text-shadow: var(--text-shadow-halo);
+  opacity: 0;
+  transition: opacity 0.35s var(--ease-soft);
+  pointer-events: none;
+}
+
+.cairn:is(:hover, :focus-visible, [data-hint]) .cairn-note {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cairn-stones img,
+  .cairn-note {
+    transition: none;
   }
 }
 
 /*
- * One dip per cycle, and nothing else. An earlier version dipped, half recovered and dipped again inside 300ms,
- * which reads as a blink rather than a breath: `ease-in-out` is applied to every segment, so a short one snaps.
- * Keep it to two stops — the low point in the middle, the ends equal so the loop joins invisibly.
+ * The closing card going into today's cairn and coming back out (view transitions, named only while they run,
+ * lib/view-morph.ts; one name each way, since the card is the old picture going in and the new one coming out).
+ * The box travels and reshapes between the card and the cairn's stones, clipped to rounded corners. The card
+ * shrinks whole inside it, a miniature tucked in among the stones, and stays in sight for most of the way before
+ * the cairn takes over; coming out, the cairn steps aside at once and the card grows back from it. The cairn
+ * keeps its own size throughout, so it is never blown up to the card's.
  */
-@keyframes lantern-breathe {
+:is(::view-transition-group(card-in), ::view-transition-group(card-out)) {
+  overflow: clip;
+  border-radius: 22px;
+  animation-duration: 480ms;
+  animation-timing-function: var(--ease-soft);
+}
+
+:is(
+  ::view-transition-old(card-in),
+  ::view-transition-new(card-in),
+  ::view-transition-old(card-out),
+  ::view-transition-new(card-out)
+) {
+  height: 100%;
+  animation-duration: 480ms;
+  animation-timing-function: linear;
+}
+
+/* the card: shrinking whole, or growing back */
+:is(::view-transition-old(card-in), ::view-transition-new(card-out)) {
+  object-fit: contain;
+}
+
+/* the cairn: at its own size */
+:is(::view-transition-new(card-in), ::view-transition-old(card-out)) {
+  object-fit: none;
+}
+
+::view-transition-old(card-in) {
+  animation-name: card-tuck;
+}
+
+::view-transition-new(card-in) {
+  animation-name: cairn-take-over;
+}
+
+::view-transition-old(card-out) {
+  animation-name: cairn-step-aside;
+}
+
+::view-transition-new(card-out) {
+  animation-name: card-unfold;
+}
+
+@keyframes card-tuck {
   0%,
-  100% {
+  60% {
     opacity: 1;
   }
-  50% {
-    opacity: 0.84;
+
+  100% {
+    opacity: 0;
   }
 }
 
-/* the glow breathes with the glass, on the same two stops, so the light and its halo never disagree */
-@keyframes lantern-glow {
+@keyframes cairn-take-over {
   0%,
+  45% {
+    opacity: 0;
+  }
+
   100% {
     opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.78;
-    transform: scale(0.94);
   }
 }
 
-/*
- * At night the painted camps sink into the dark; their lights are separate layers, so they stay bright and glow.
- * The flag's cloth is a layer too, but it gives no light: it dims with the picture it belongs to.
- */
-/*
- * The camps and the trees are photographs, so no CSS variable can repaint them the way it repaints the mountain:
- * they are filtered instead. Night and season each set their own half of the chain and filters compose in order,
- * so the two stack without either knowing about the other. Summer by day sets neither and gets no filter at all,
- * which is why the selector lists the cases rather than filtering everything always.
- */
-:root[data-theme='dark'] .camp-art,
-:root[data-theme='dark'] .camp-light-source[data-kind='flag'],
-:root[data-season='winter'] .camp-art,
-:root[data-season='winter'] .camp-light-source[data-kind='flag'] {
-  filter: brightness(var(--art-night-l, 1)) saturate(var(--art-night-s, 1))
-    brightness(var(--art-season-l, 1)) saturate(var(--art-season-s, 1));
+@keyframes cairn-step-aside {
+  0% {
+    opacity: 1;
+  }
+
+  25%,
+  100% {
+    opacity: 0;
+  }
 }
 
-/* The near slopes' trees are pictures in the mountain layers: by moonlight they sink darker, into the forest. */
-:root[data-theme='dark'] .scene-tree,
-:root[data-season='winter'] .scene-tree,
-:root[data-season='spring'] .scene-tree,
-:root[data-season='autumn'] .scene-tree {
-  filter: brightness(var(--tree-night-l, 1)) saturate(var(--tree-night-s, 1))
-    brightness(var(--tree-season-l, 1)) saturate(var(--tree-season-s, 1))
-    hue-rotate(var(--tree-season-h, 0deg));
+@keyframes card-unfold {
+  0% {
+    opacity: 0;
+  }
+
+  30%,
+  100% {
+    opacity: 1;
+  }
 }
 
-:root[data-theme='dark'] {
-  --art-night-l: 0.68;
-  --art-night-s: 0.8;
-  --tree-night-l: 0.55;
-  --tree-night-s: 0.75;
+@media (min-width: 900px) {
+  .scene-summit > span {
+    transform: translate(-100%, -50%);
+  }
 }
 
-/*
- * Winter frosts the evergreens almost white and takes the warmth out of the camps. Autumn and spring leave the
- * camps alone — a tent is a tent in any weather — and only turn the needles, which are the one green thing a
- * photograph cannot argue with.
- */
-:root[data-season='winter'] {
-  --art-season-l: 1.06;
-  --art-season-s: 0.82;
-  --tree-season-l: 1.24;
-  --tree-season-s: 0.32;
-  --tree-season-h: -6deg;
+/* reduced motion: the scene changes between stops under this veil, in the sky's colour */
+.scene-veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--color-day-low);
+  opacity: 0;
+  transition: opacity 125ms linear;
 }
 
-:root[data-season='autumn'] {
-  --tree-season-l: 0.98;
-  --tree-season-s: 1.12;
-  --tree-season-h: -20deg;
+.scene-veil[data-on] {
+  opacity: 1;
 }
 
-:root[data-season='spring'] {
-  --tree-season-l: 1.1;
-  --tree-season-s: 1.12;
-  --tree-season-h: 8deg;
+@media (prefers-reduced-motion: reduce) {
+  .scene-pennant {
+    transition: opacity 0.3s ease-out;
+  }
 }
 
 /*
- * The sky is two CSS gradients, not part of the drawing, so each season states its own. Night is shared: at that
- * lightness the seasons are indistinguishable, and four near-black skies would be four lies.
+ * The hero's words over the scene: on wide screens a soft wash of the page colour behind them, on phones a scrim
+ * from the top, where the village sits right under the lede. Both belong to the hero, so they scroll away with it
+ * and cost nothing per frame; by night the page colour makes them a dusk instead of a mist.
  */
-:root[data-season='winter']:not([data-theme='dark']) {
-  --color-dawn-top: oklch(0.86 0.025 265);
-  --color-dawn-mid: oklch(0.925 0.018 250);
-  --color-dawn-low: oklch(0.955 0.012 240);
-  --color-day-top: oklch(0.8 0.045 248);
-  --color-day-mid: oklch(0.89 0.025 238);
-  --color-day-low: oklch(0.965 0.008 230);
+.hero-wash {
+  position: relative;
+  isolation: isolate;
 }
 
-:root[data-season='spring']:not([data-theme='dark']) {
-  --color-dawn-top: oklch(0.89 0.035 280);
-  --color-dawn-mid: oklch(0.94 0.04 72);
-  --color-dawn-low: oklch(0.96 0.028 95);
-  --color-day-top: oklch(0.85 0.055 233);
-  --color-day-mid: oklch(0.92 0.032 218);
-  --color-day-low: oklch(0.975 0.016 148);
+@media (min-width: 900px) {
+  .hero-wash::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    /* out to the screen's left edge: the page's 28px margin plus whatever the 1180px track leaves */
+    left: calc(-1 * max(28px, (100vw - 1180px) / 2 + 28px));
+    width: 62vw;
+    height: 68lvh;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse 78% 70% at 30% 44%,
+      color-mix(in oklab, var(--color-page) 52%, transparent),
+      color-mix(in oklab, var(--color-page) 28%, transparent) 58%,
+      transparent 84%
+    );
+  }
 }
 
-:root[data-season='autumn']:not([data-theme='dark']) {
-  --color-dawn-top: oklch(0.86 0.04 300);
-  --color-dawn-mid: oklch(0.92 0.062 52);
-  --color-dawn-low: oklch(0.95 0.048 66);
-  --color-day-top: oklch(0.82 0.052 252);
-  --color-day-mid: oklch(0.9 0.042 72);
-  --color-day-low: oklch(0.965 0.028 80);
+@media (max-width: 899.98px) {
+  .hero-wash {
+    margin-inline: -16px;
+    padding-inline: 16px;
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--color-page) 72%, transparent),
+      color-mix(in oklab, var(--color-page) 62%, transparent) 38%,
+      transparent 60%
+    );
+  }
+}
+
+/*
+ * Moving between the pages (components/trail-link.tsx, the <ViewTransition> around every page in app/layout.tsx).
+ * The three pages are three heights on one mountain: /cv the valley at its foot, / the climb, /about the summit.
+ * Going up, the page leaves upward and the next rises in from below, the way the climb's cards move as you climb;
+ * going down, the reverse. The old page leaves quickly, softening as it goes; the new one eases in a beat later, on
+ * the site's own curve. The dock is outside the page and stays still. The boxes of two pages are never morphed into
+ * each other (their heights differ): only the pictures move. Reduced motion: a plain cross-fade.
+ */
+::view-transition-group(.trail-up),
+::view-transition-group(.trail-down),
+::view-transition-group(.trail-across) {
+  animation-duration: 0s;
+}
+
+::view-transition-old(.trail-up) {
+  animation: trail-leave-up 240ms cubic-bezier(0.4, 0, 0.6, 1) both;
+}
+
+::view-transition-new(.trail-up) {
+  animation: trail-rise-in 560ms var(--ease-soft) 70ms both;
+}
+
+::view-transition-old(.trail-down) {
+  animation: trail-leave-down 240ms cubic-bezier(0.4, 0, 0.6, 1) both;
+}
+
+::view-transition-new(.trail-down) {
+  animation: trail-sink-in 560ms var(--ease-soft) 70ms both;
+}
+
+::view-transition-old(.trail-across) {
+  animation: trail-fade-out 220ms ease both;
+}
+
+::view-transition-new(.trail-across) {
+  animation: trail-fade-in 420ms var(--ease-soft) 40ms both;
+}
+
+/* the dock, its own layer for the move: shown as it now is, at once, above the moving page */
+::view-transition-group(.dock-still),
+::view-transition-new(.dock-still) {
+  animation: none;
+}
+
+::view-transition-old(.dock-still) {
+  display: none;
+}
+
+@keyframes trail-leave-up {
+  to {
+    opacity: 0;
+    translate: 0 -20px;
+    filter: blur(3px);
+  }
+}
+
+@keyframes trail-leave-down {
+  to {
+    opacity: 0;
+    translate: 0 20px;
+    filter: blur(3px);
+  }
+}
+
+@keyframes trail-rise-in {
+  from {
+    opacity: 0;
+    translate: 0 36px;
+  }
+}
+
+@keyframes trail-sink-in {
+  from {
+    opacity: 0;
+    translate: 0 -36px;
+  }
+}
+
+@keyframes trail-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes trail-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(.trail-up),
+  ::view-transition-old(.trail-down),
+  ::view-transition-old(.trail-across) {
+    animation: trail-fade-out 160ms ease both;
+  }
+
+  ::view-transition-new(.trail-up),
+  ::view-transition-new(.trail-down),
+  ::view-transition-new(.trail-across) {
+    animation: trail-fade-in 240ms ease both;
+  }
 }
 
 /*
@@ -746,160 +907,58 @@
 }
 
 /*
- * Stars. Each fades in as the reveal's edge passes it (`--wave-delay`), plus its own lag: the brightest come out
- * first and the faintest a moment later, like eyes adjusting to the dark. The dot is the ::before, so a twinkle
- * (opacity only, a few of the brightest, only at night) never fights the fade.
+ * The snow of the heights (scene/snow.ts, components/scene/snow-layer.tsx): soft painted flakes, a white core with a
+ * cool shaded rim instead of an outline, at three depths. Their fall comes from generated keyframes (`translate`
+ * only, on the compositor); the stage fades the two layers with the climb. Below the snowline the flakes wait,
+ * paused, so nothing moves where nothing shows. With reduced motion there is no snow: still flakes are not snow.
  */
-/*
- * The weather (see `weather-layer.tsx` for why it is spans). `translate` carries the fall and the drift, `rotate`
- * turns the leaves; a negative `--phase` starts each bit part way down, so the sky is full from the first frame
- * rather than filling over the first fifteen seconds.
- */
-.weather-bit {
-  display: none;
+.snow-layer {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  pointer-events: none;
+}
+
+.snow-density {
+  position: absolute;
+  inset: 0;
+  will-change: opacity;
+}
+
+.snow-flake {
   position: absolute;
   top: 0;
   width: var(--size);
   height: var(--size);
-  opacity: var(--alpha);
-  will-change: translate;
-  animation: weather-fall var(--fall) linear var(--phase) infinite;
-}
-
-:root[data-season='winter'] .weather-bit[data-kind='snow'],
-:root[data-season='autumn'] .weather-bit[data-kind='leaf'],
-:root[data-season='spring'] .weather-bit[data-kind='petal'] {
-  display: block;
-}
-
-.weather-bit[data-kind='snow'] {
-  background: var(--color-flake);
   border-radius: 50%;
-  /*
-   * Everything in this scene is drawn with an ink outline, and a white flake without one disappears into a white
-   * mountain — which is exactly the sky it falls through in winter. This is that outline, at the weight the rest
-   * of the drawing would give something this small.
-   */
-  box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-ink) 17%, transparent);
-}
-
-/* a leaf: round at one end, pointed at the other, and turning as it goes */
-.weather-bit[data-kind='leaf'] {
-  background: var(--color-leaf);
-  border-radius: 60% 0 60% 0;
-  animation:
-    weather-fall var(--fall) linear var(--phase) infinite,
-    weather-turn var(--fall) linear var(--phase) infinite;
-}
-
-/*
- * A blossom petal, not a pink flake: wider than it is long, rounded at three corners and drawn to a point at the
- * fourth, and shaded from a deeper pink at the base out to almost white at the rim. The gradient turns with it,
- * so a petal on its edge catches the light differently from one face on — which is most of what sells it at this
- * size, where no amount of outline would read as a notch.
- */
-.weather-bit[data-kind='petal'] {
-  height: calc(var(--size) * 0.74);
-  background: linear-gradient(205deg, var(--color-petal-edge), var(--color-petal) 68%);
-  border-radius: 100% 0 100% 100%;
-  box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-ink) 9%, transparent);
-  animation:
-    weather-fall var(--fall) linear var(--phase) infinite,
-    weather-turn var(--fall) linear var(--phase) infinite;
-}
-
-/*
- * Leaves and blossom come off trees, and the trees stop at the first camp: past it they fade out and the bits
- * underneath pause where they are, so nothing is animated above the treeline and nothing restarts on the way back
- * down. Snow says nothing about trees and falls the whole way up.
- */
-.weather-layer {
-  transition: opacity 700ms ease-out;
-}
-
-:root[data-season='autumn'] .weather-layer:not([data-low]),
-:root[data-season='spring'] .weather-layer:not([data-low]) {
-  opacity: 0;
-}
-
-:root[data-season='autumn'] .weather-layer:not([data-low]) .weather-bit,
-:root[data-season='spring'] .weather-layer:not([data-low]) .weather-bit {
+  background: radial-gradient(
+    circle at 42% 38%,
+    var(--color-flake) 0 45%,
+    color-mix(in oklab, var(--color-flake-shade) 80%, transparent) 64%,
+    transparent 80%
+  );
+  opacity: var(--alpha);
+  translate: 0 -10vh;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
   animation-play-state: paused;
 }
 
+.snow-layer[data-snowing] .snow-flake {
+  animation-play-state: running;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .weather-layer {
-    transition: none;
-  }
-}
-
-@keyframes weather-fall {
-  from {
-    translate: 0 -14vh;
-  }
-  to {
-    translate: var(--drift) 114vh;
-  }
-}
-
-@keyframes weather-turn {
-  to {
-    rotate: var(--spin);
+  .snow-layer {
+    display: none;
   }
 }
 
 /*
- * The season dial. Its depth is built, not painted: the card it floats on, a hairline rim, and a well the wedges
- * sit down inside, so the lit one reads as filled rather than merely coloured. The seams drawn over the wedges are
- * wide enough to cover the stepped edges a clipped triangle leaves on its diagonals, which is what made the first
- * version look ragged.
+ * Stars. Each fades in as the reveal's edge passes it (`--wave-delay`), plus its own lag: the brightest come out
+ * first and the faintest a moment later, like eyes adjusting to the dark. The dot is the ::before, so its twinkle
+ * (opacity only, only at night) never fights the fade.
  */
-.season-dial {
-  box-shadow:
-    0 14px 30px -16px var(--shadow-cast-dock),
-    0 3px 8px -3px var(--shadow-cast-soft);
-}
-
-.season-dial::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  pointer-events: none;
-  box-shadow:
-    inset 0 0 0 1px color-mix(in oklab, var(--color-ink) 8%, transparent),
-    inset 0 7px 14px -9px color-mix(in oklab, var(--color-ink) 50%, transparent);
-}
-
-/*
- * The one filled wedge, turned to whichever season is chosen. It rides under the buttons, so a wedge's hover wash
- * tints over it and the icons stay on top.
- */
-.season-marker {
-  position: absolute;
-  inset: 0;
-  background: var(--color-accent);
-  /*
-   * ease-soft, not ease-pop. Pop overshoots by about a tenth, which on a quarter turn is nine degrees past the
-   * wedge and back — a lot of movement for a setting, and it belongs to things that snap, like a flag reaching the
-   * top of its pole. This glides in and settles, which is what the rest of the interface does, and at 640ms it
-   * finishes well inside the reveal sweeping the mountain behind it.
-   */
-  /* `--turn` is THEME_REVEAL.DURATION_MS, set by the dial: the turn and the sweep have to end on the same beat */
-  transition: rotate var(--turn, 640ms) var(--ease-soft);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .season-marker {
-    transition: none;
-  }
-}
-
-/* the wedge you are in: sunk a little into the dial, so it reads as pressed rather than stuck on */
-.season-wedge[aria-pressed='true'] {
-  box-shadow: inset 0 1px 6px -2px color-mix(in oklab, var(--color-shade) 55%, transparent);
-}
-
 .star {
   position: absolute;
   width: var(--size);
@@ -914,16 +973,62 @@
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: var(--color-star);
-  opacity: var(--alpha);
+  /* its brightness lives in its colour, so the twinkle can run relative to 1 with plain numbers */
+  background: color-mix(
+    in oklab,
+    var(--star-colour, var(--color-star)) calc(var(--alpha) * 100%),
+    transparent
+  );
+}
+
+.star[data-tint='cool'] {
+  --star-colour: var(--color-star-cool);
+}
+
+.star[data-tint='warm'] {
+  --star-colour: var(--color-star-warm);
 }
 
 .star[data-tier='bright']::before {
-  box-shadow: 0 0 5px 1px color-mix(in oklab, var(--color-star) 45%, transparent);
+  box-shadow: 0 0 6px 1px
+    color-mix(in oklab, var(--star-colour, var(--color-star)) 50%, transparent);
 }
 
+/*
+ * Twinkling, as starlight does through moving air: quick and uneven, several flickers a second, never a smooth
+ * pulse. The keyframes come from scene/stars.ts (`twinkleKeyframes`, one set per depth, `data-depth`): faint stars
+ * and stars low over the mountains dip furthest. Every star has its own cycle and its own place in it, so no two
+ * flicker together. Opacity only, on the compositor.
+ */
 .star[data-twinkle]::before {
-  animation: twinkle var(--twinkle) ease-in-out var(--phase) infinite alternate;
+  animation: scintillate-2 var(--twinkle) linear var(--phase) infinite;
+  animation-play-state: paused;
+}
+
+.star[data-depth='1']::before {
+  animation-name: scintillate-1;
+}
+
+.star[data-depth='3']::before {
+  animation-name: scintillate-3;
+}
+
+/* the brightest beam: four soft rays that flare and shrink with their twinkle */
+.star[data-tier='bright']::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--size) * 9);
+  height: calc(var(--size) * 9);
+  translate: -50% -50%;
+  background:
+    linear-gradient(90deg, transparent, var(--star-colour, var(--color-star)) 50%, transparent) 50%
+      50% / 100% 1px no-repeat,
+    linear-gradient(transparent, var(--star-colour, var(--color-star)) 50%, transparent) 50% 50% /
+      1px 100% no-repeat;
+  opacity: 0.55;
+  animation: beam var(--twinkle) linear var(--phase) infinite;
   animation-play-state: paused;
 }
 
@@ -932,13 +1037,158 @@
   transition: opacity 0.9s ease-out calc(var(--wave-delay, 0ms) + var(--star-lag, 0ms));
 }
 
-:root[data-theme='dark'] .star[data-twinkle]::before {
+:root[data-theme='dark'] .star[data-twinkle]::before,
+:root[data-theme='dark'] .star[data-tier='bright']::after {
   animation-play-state: running;
 }
 
-@keyframes twinkle {
+/*
+ * The aurora (components/scene/aurora.tsx): by night, while the pointer is over the sky, two painted layers glow in
+ * across the top of it and fold slowly against each other, the second shimmering; it leans a little toward the
+ * pointer (`--lean`) and, once the pointer leaves, lingers and fades over a few seconds. It is wider than the stage
+ * so the lean never shows an edge. The paintings are glow on black, blended as light: the group screens onto the
+ * sky (black adds nothing, so the stars and the moon show through), and the second layer screens onto the first
+ * inside it. Transform and opacity only; paused whenever it is not lit. With reduced motion it still glows in, but
+ * nothing in it moves.
+ */
+.aurora {
+  position: absolute;
+  top: 0;
+  left: -8%;
+  width: 116%;
+  height: 46%;
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  translate: var(--lean, 0px) 0;
+  transition:
+    opacity 3.2s var(--ease-soft),
+    translate 2.6s var(--ease-soft);
+}
+
+:root[data-theme='dark'] .aurora[data-lit] {
+  opacity: 1;
+  transition-duration: 1.6s, 2.6s;
+}
+
+.aurora-curtain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 30%;
+  visibility: hidden;
+  transform-origin: 50% 100%;
+}
+
+.aurora-curtain[data-ready] {
+  visibility: visible;
+}
+
+.aurora-curtain[data-layer='1'] {
+  animation: aurora-fold 19s ease-in-out infinite alternate paused;
+}
+
+.aurora-curtain[data-layer='2'] {
+  mix-blend-mode: screen;
+  animation:
+    aurora-drift 27s ease-in-out infinite alternate paused,
+    aurora-shimmer 7s ease-in-out infinite alternate paused;
+}
+
+.aurora[data-lit] .aurora-curtain {
+  animation-play-state: running;
+}
+
+@keyframes aurora-fold {
+  from {
+    transform: translateX(-2.5%) scaleY(0.92) skewX(-5deg);
+  }
+
   to {
-    opacity: calc(var(--alpha) * 0.4);
+    transform: translateX(2.5%) scaleY(1.08) skewX(4deg);
+  }
+}
+
+@keyframes aurora-drift {
+  from {
+    transform: translateX(3%) scaleY(1.05) skewX(4deg);
+  }
+
+  to {
+    transform: translateX(-3%) scaleY(0.94) skewX(-3deg);
+  }
+}
+
+@keyframes aurora-shimmer {
+  from {
+    opacity: 0.55;
+  }
+
+  to {
+    opacity: 0.9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora {
+    translate: none;
+    transition: opacity 1.6s linear;
+  }
+
+  .aurora-curtain {
+    animation: none;
+  }
+}
+
+/*
+ * Shooting stars: night only, now and then. Each streak waits out most of its cycle unseen, then in its last
+ * 2.4% (about a second) runs its course and burns out, head first. Two cycles that share no beat, so they never
+ * fall into a rhythm.
+ */
+.meteor {
+  position: absolute;
+  display: none;
+  width: 110px;
+  height: 1.5px;
+  border-radius: 1px;
+  transform-origin: 100% 50%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklab, var(--color-star) 55%, transparent) 70%,
+    var(--color-star)
+  );
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-theme='dark'] .meteor {
+    display: block;
+    animation: meteor var(--cycle) linear var(--at) infinite;
+  }
+}
+
+@keyframes meteor {
+  0%,
+  97.6% {
+    opacity: 0;
+    translate: 0 0;
+  }
+
+  98% {
+    opacity: 1;
+  }
+
+  99.4% {
+    opacity: 0.7;
+  }
+
+  100% {
+    opacity: 0;
+    translate: var(--dx) var(--dy);
   }
 }
 
@@ -977,39 +1227,628 @@
     transition: none;
   }
 
-  .star[data-twinkle]::before {
+  .star[data-twinkle]::before,
+  .star[data-tier='bright']::after {
+    animation: none;
+  }
+}
+
+/*
+ * The year behind /cv on wide screens (components/scene/year-backdrop.tsx, scene/seasons.ts). Seven states, one
+ * per stretch of reading, each carrying all four seasons as columns; `data-year-start` on <html> (written before the
+ * first paint) shows one column, so the page opens on today's season and every hairline turns to the next.
+ */
+.year-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /* where the log's column ends: the page's 1180px track and 28px gutter, plus the column's 620px */
+  --log-right: calc(max(28px, (100vw - 1180px) / 2 + 28px) + 620px);
+  /* the clouds cross it from edge to edge: `cloud-cross` runs in `cqw` */
+  container-type: inline-size;
+}
+
+:is(.year-stack, .year-fade, .year-state, .year-season) {
+  position: absolute;
+  inset: 0;
+}
+
+.year-season {
+  display: none;
+}
+
+:root[data-year-start='0'] .year-season[data-j='0'],
+:root[data-year-start='1'] .year-season[data-j='1'],
+:root[data-year-start='2'] .year-season[data-j='2'],
+:root[data-year-start='3'] .year-season[data-j='3'],
+/* no script ran: the year starts in summer (DEFAULT_START) */
+:root:not([data-year-start]) .year-season[data-j='2'] {
+  display: block;
+}
+
+/* the later states wait for the page to load (year-ready.tsx): today's season downloads first, on its own */
+:root:not([data-year-ready]) .year-state:not([data-k='0']) .year-season {
+  display: none;
+}
+
+/*
+ * The turn of the year. Each state fades in on its hairline's view timeline, from half-way down the screen to a fifth
+ * of the way down, and the state under it fades out once it is covered, so nothing below ever shows through.
+ * One opacity on a whole layer, run by the browser's own scrolling.
+ */
+.year-fade {
+  animation-duration: auto;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+}
+
+.year-fade[data-fade='in'] {
+  animation-name: year-in;
+  animation-range: cover 50vh cover 80vh;
+}
+
+.year-fade[data-fade='out'] {
+  animation-name: year-out;
+  animation-range: cover 78vh cover 80vh;
+}
+
+@keyframes year-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes year-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* without scroll timelines the year stays where it starts: today's season, still */
+@supports not ((animation-timeline: view()) and (timeline-scope: --year)) {
+  .year-fade {
     animation: none;
   }
 
-  /* weather that cannot fall is just litter hanging in the sky, so there is none */
-  .weather-bit {
+  .year-fade[data-fade='in'] {
     display: none;
   }
+}
 
-  .camp-pennant,
-  .camp-label,
-  .camp-light-source,
-  .camp-light-source[data-kind] {
-    transition: none;
+.year-sky {
+  --sky-top: var(--color-day-top);
+  --sky-mid: var(--color-day-mid);
+  --sky-low: var(--color-day-low);
+  background: linear-gradient(to bottom, var(--sky-top), var(--sky-mid) 55%, var(--sky-low));
+}
+
+.year-sky[data-season='winter'] {
+  --sky-top: var(--color-winter-top);
+  --sky-mid: var(--color-winter-mid);
+  --sky-low: var(--color-winter-low);
+}
+
+.year-sky[data-season='spring'] {
+  --sky-top: var(--color-spring-top);
+  --sky-mid: var(--color-spring-mid);
+  --sky-low: var(--color-spring-low);
+}
+
+.year-sky[data-season='autumn'] {
+  --sky-top: var(--color-autumn-top);
+  --sky-mid: var(--color-autumn-mid);
+  --sky-low: var(--color-autumn-low);
+}
+
+/*
+ * The land: the meadow repeated across the bottom from the right, the grove on the right, the screen's top and right
+ * edges cropping the wood (it carries on beyond them). At full strength, as the climb's paintings are. Only the
+ * theme on screen is displayed, so only its paintings download.
+ */
+.year-meadow {
+  position: absolute;
+  inset: 0;
+  background-repeat: repeat-x;
+  background-position: right bottom;
+  background-size: auto 100%;
+}
+
+.year-grove {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  background-size: 100% 100%;
+}
+
+/*
+ * On narrower wide screens the grove would bring its young larch in behind the list, a ghost tree under the text.
+ * It slides right instead, enough to keep that larch's trunk (62.5% across a grove 1.5 screens tall wide, so
+ * 56.25vh from its right edge) 120px clear of the column, past where its crown and the veil's soft edge would reach.
+ * The wood loses a little more off the screen's edge; from about 1280px wide nothing moves.
+ */
+.year-backdrop .year-grove {
+  right: min(0px, calc(100vw - var(--log-right) - 120px - 56.25vh));
+}
+
+/*
+ * The weather falls only right of the list, never over the text: small painted things from one atlas per theme
+ * (scene/seasons.ts), each placed and sized by its own style. Heights in the keyframes are `cqh`, so the box is a
+ * size container. Petals and leaves turn about a tilted axis as they fall, which flips them edge-on and back.
+ */
+.year-weather {
+  position: absolute;
+  inset: 0 0 0 calc(var(--log-right) + 64px);
+  overflow: hidden;
+  container-type: size;
+  mask-image: linear-gradient(to right, transparent, black 96px);
+}
+
+.weather-bit {
+  position: absolute;
+  top: 0;
+  background-image: var(--atlas-day);
+  background-repeat: no-repeat;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* by night the kit's moonlit atlas: displayed only then, so downloaded only then */
+:root[data-theme='dark'] .weather-bit {
+  background-image: var(--atlas-night);
+}
+
+/* winter's snow is the climb's (`.snow-flake`): a soft round flake, a white core with a cool shaded rim */
+.year-weather .weather-bit.weather-flake {
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 42% 38%,
+    var(--color-flake) 0 45%,
+    color-mix(in oklab, var(--color-flake-shade) 80%, transparent) 64%,
+    transparent 80%
+  );
+}
+
+/*
+ * The climb's world over the valley: its sun that becomes the moon, high in the open sky right of the log; its
+ * clouds on its wind (`cloud-cross`, `cloud-billow`, the climb's own keyframes); its far ranges, as copies of its
+ * backdrop tile a period apart, and its summit, centred in the open land right of the log. Their cloud sea sinks
+ * behind the meadow but for a band of mist at their feet. Sizes in vh, like the grove: the scene fills the screen.
+ */
+.year-sun {
+  position: absolute;
+  top: 9%;
+  left: calc(var(--log-right) + 6vw);
+}
+
+.year-range {
+  position: absolute;
+  inset: 0;
+  /* the theme on screen is lifted over the one standing in (`.theme-art`): only within the mountains, not over the land */
+  isolation: isolate;
+}
+
+.year-far {
+  position: absolute;
+  top: 49vh;
+  left: calc(var(--copy) * var(--period) * 96vh);
+  height: 96vh;
+}
+
+/* 44vh tall, so 124vh wide: its centre is 62vh in */
+.year-peak {
+  position: absolute;
+  top: 33vh;
+  left: calc((var(--log-right) + 100vw) / 2 - 62vh);
+  height: 44vh;
+}
+
+/*
+ * What the log reads on: the page itself, with a little of the season's sky through it, fading out just right of
+ * the column, so the journal is part of the page rather than a card on the landscape. Over the meadow it eases off
+ * to a little over half, so the ground runs edge to edge under the list.
+ */
+.year-veil {
+  position: absolute;
+  inset: 0;
+  --veil: color-mix(in oklab, var(--color-page) 88%, transparent);
+  background: linear-gradient(
+    to right,
+    var(--veil),
+    var(--veil) calc(var(--log-right) + 24px),
+    transparent calc(var(--log-right) + 170px)
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    black calc(100% - var(--year-ground) - 24px),
+    rgb(0 0 0 / 0.55) calc(100% - var(--year-ground) + 56px)
+  );
+}
+
+/* reduced motion: the year steps from season to season at the same hairlines, and no weather falls */
+@media (prefers-reduced-motion: reduce) {
+  .year-fade {
+    animation-timing-function: steps(1, end);
   }
 
-  /* [data-kind] matches the specificity of the rules that start these animations, so every kind is silenced */
-  [data-kind] .camp-lit,
-  [data-kind] .camp-glow {
+  .year-weather {
+    display: none;
+  }
+}
+
+/*
+ * /about: what's ahead (app/about/page.tsx, scene/about.ts). The page opens on the climb's sky at the visitor's time
+ * of day (`data-daypart` on <html>, written before the first paint) and ends, at Contact, on the next range across a
+ * sea of clouds, where dawn becomes morning and the climb's sun comes up as the last screen scrolls in (by night,
+ * dusk becomes midnight and the moon rises). Wide screens only: on phones the page is just the words.
+ */
+
+/* the opening's sky: the climb's tokens, mixed by the hour; it eases into the page below the facts */
+.about-sky {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  /* the clouds cross it from edge to edge: `cloud-cross` runs in `cqw` */
+  container-type: inline-size;
+  background: linear-gradient(
+    to bottom,
+    var(--color-dawn-top),
+    var(--color-dawn-mid) 58%,
+    var(--color-dawn-low)
+  );
+}
+
+.about-sky::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 30%;
+  background: linear-gradient(to bottom, transparent, var(--color-page));
+}
+
+/* by day: morning is the dawn (above), midday the day, evening a warmer day; at night the light theme is first light */
+:root[data-daypart='midday'] .about-sky {
+  background: linear-gradient(
+    to bottom,
+    var(--color-day-top),
+    var(--color-day-mid) 58%,
+    var(--color-day-low)
+  );
+}
+
+:root[data-daypart='evening'] .about-sky {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--color-day-top) 62%, var(--color-dawn-top)),
+    color-mix(in oklab, var(--color-dawn-mid) 68%, var(--color-day-mid)) 58%,
+    var(--color-dawn-low)
+  );
+}
+
+/* by night the dawn tokens are dusk and the day's are midnight: dusk until evening, then deeper, then midnight */
+:root[data-theme='dark'][data-daypart='midday'] .about-sky {
+  background: linear-gradient(
+    to bottom,
+    var(--color-dawn-top),
+    var(--color-dawn-mid) 58%,
+    var(--color-dawn-low)
+  );
+}
+
+:root[data-theme='dark'][data-daypart='evening'] .about-sky {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--color-day-top) 50%, var(--color-dawn-top)),
+    color-mix(in oklab, var(--color-day-mid) 50%, var(--color-dawn-mid)) 58%,
+    color-mix(in oklab, var(--color-day-low) 40%, var(--color-dawn-low))
+  );
+}
+
+:root[data-theme='dark'][data-daypart='night'] .about-sky {
+  background: linear-gradient(
+    to bottom,
+    var(--color-day-top),
+    var(--color-day-mid) 58%,
+    var(--color-day-low)
+  );
+}
+
+/*
+ * The finale: a short band takes the page into the sky, then one screen, the page's last. Its range stands along
+ * the bottom edge, its cloud line --about-foot above it; the summit rises --about-rise above that (both set on the
+ * section from the painting's measurements). The card sits near the top, and the band of open sky between them is
+ * where the easter egg plays.
+ */
+.about-into {
+  height: 14vh;
+  background: linear-gradient(to bottom, var(--color-page), var(--color-dawn-top));
+}
+
+.about-finale {
+  --about-foot: 4vh;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-top: clamp(56px, 8vh, 96px);
+  view-timeline-name: --about-finale;
+  /* the range spans the width, so its heights are `cqw` of the finale */
+  container-type: inline-size;
+}
+
+.about-band {
+  flex: 1 0 14vh;
+}
+
+.about-foot {
+  flex: none;
+  height: calc(var(--about-foot) + var(--about-rise));
+}
+
+.about-dawn {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  container-type: size;
+}
+
+.about-daylight {
+  opacity: 0;
+}
+
+/* the range spans the width; its cloud line stands --about-foot above the bottom edge */
+.about-range {
+  inset: auto;
+  left: 0;
+  top: calc(100cqh - var(--about-foot) - var(--about-cloud-depth));
+  width: 100cqw;
+  aspect-ratio: var(--range-aspect);
+}
+
+.about-morning {
+  opacity: 0;
+}
+
+/* the climb's sun (by night, its moon) starts behind the right-hand ridge */
+.about-sun {
+  left: 86%;
+  top: calc(100cqh - var(--about-foot) + 2cqw);
+  translate: -50% -50%;
+}
+
+@supports (animation-timeline: view()) {
+  .about-daylight,
+  .about-morning {
+    animation: about-in linear both;
+    animation-timeline: --about-finale;
+    animation-range: entry 15% entry 90%;
+  }
+
+  .about-sun {
+    animation: about-sunrise linear both;
+    animation-timeline: --about-finale;
+    animation-range: entry 25% entry 100%;
+  }
+}
+
+@keyframes about-in {
+  to {
+    opacity: 1;
+  }
+}
+
+/* up over the ridge into the band of open sky, a little to the left as it climbs */
+@keyframes about-sunrise {
+  to {
+    translate: calc(-50% - 1cqw) calc(-50% - 8vh - 9cqw);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-daylight,
+  .about-morning,
+  .about-sun {
+    animation-timing-function: steps(1, end);
+  }
+}
+
+/*
+ * The easter egg. When the reader makes contact (components/contact-signal.tsx), a small saucer comes in from high
+ * in the sky, far off and tiny, down the open right side and along the band of sky to hover under the card; its
+ * lights blink twice, the contact; and it swings back round and up into the sky. Eight seconds, once. Each wrapper
+ * moves one way (across; up and down, with its distance; a hover), so the path curves without a motion path.
+ */
+.about-saucer {
+  position: absolute;
+  left: 44%;
+  top: calc(100cqh - var(--about-foot) - var(--about-rise) - 7vh);
+  width: 6.4cqw;
+  translate: -50% -50%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.about-saucer-across,
+.about-saucer-rise,
+.about-saucer-hover {
+  position: absolute;
+  inset: 0;
+}
+
+.about-saucer-light {
+  position: absolute;
+  width: 22%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--color-saucer-light),
+    color-mix(in oklab, var(--color-saucer-light) 50%, transparent) 30%,
+    transparent 68%
+  );
+  mix-blend-mode: plus-lighter;
+  opacity: 0;
+}
+
+[data-contact] .about-saucer {
+  opacity: 1;
+}
+
+[data-contact] .about-saucer-across {
+  animation: saucer-across 8s both;
+}
+
+[data-contact] .about-saucer-rise {
+  animation: saucer-rise 8s both;
+}
+
+[data-contact] .about-saucer-hover {
+  animation: saucer-hover 8s both;
+}
+
+[data-contact] .about-saucer-light {
+  animation: saucer-blink 8s both;
+}
+
+@keyframes saucer-across {
+  0% {
+    translate: 44cqw 0;
+    animation-timing-function: cubic-bezier(0.55, 0, 0.25, 1);
+  }
+
+  34%,
+  70% {
+    translate: 0 0;
+    animation-timing-function: cubic-bezier(0.5, 0, 0.4, 1);
+  }
+
+  100% {
+    translate: 48cqw 0;
+  }
+}
+
+@keyframes saucer-rise {
+  0% {
+    opacity: 0;
+    translate: 0 -64cqh;
+    scale: 0.14;
+    animation-timing-function: cubic-bezier(0.12, 0.75, 0.3, 1);
+  }
+
+  6% {
+    opacity: 1;
+  }
+
+  34%,
+  70% {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+    animation-timing-function: cubic-bezier(0.7, 0, 0.85, 0.35);
+  }
+
+  96% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    translate: 0 -70cqh;
+    scale: 0.12;
+  }
+}
+
+@keyframes saucer-hover {
+  0%,
+  34% {
+    translate: 0 0;
+  }
+
+  45% {
+    translate: 0 -3px;
+  }
+
+  58% {
+    translate: 0 1px;
+  }
+
+  68%,
+  100% {
+    translate: 0 0;
+  }
+}
+
+/* the contact: its lights blink twice while it hovers */
+@keyframes saucer-blink {
+  0%,
+  40% {
+    opacity: 0;
+  }
+
+  43%,
+  51% {
+    opacity: 1;
+  }
+
+  47% {
+    opacity: 0.1;
+  }
+
+  57%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* reduced motion: no flight; it fades in where it hovers, blinks, and fades out */
+@media (prefers-reduced-motion: reduce) {
+  [data-contact] .about-saucer {
+    animation: saucer-still 8s both;
+  }
+
+  [data-contact] .about-saucer-across,
+  [data-contact] .about-saucer-rise,
+  [data-contact] .about-saucer-hover {
     animation: none;
   }
+}
 
-  /* The two that sweep widest across the screen are the ones that make people queasy. The still strip keeps them. */
-  .scene-stage .scene-layer[data-depth='0.8'],
-  .scene-stage .scene-layer[data-depth='1.35'] {
-    display: none;
+@keyframes saucer-still {
+  0% {
+    opacity: 0;
+  }
+
+  18%,
+  74% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* phones: the card alone, clear of the dock */
+@media (max-width: 899.98px) {
+  .about-finale {
+    min-height: 0;
+    padding-top: 8px;
+    padding-bottom: 120px;
   }
 }
 
 /*
  * Printing. The Experience page is the one that gets saved as a PDF, and browsers keep text colour while dropping
  * background colours: a night page would print as pale grey on nothing. So the interface tokens go back to the day
- * (the scene's own are never needed — the valley is `print:hidden`, like the dock), shadows are cast in nothing,
+ * (the scene's own are never needed — the year behind the log is `print:hidden`, like the dock), shadows are cast in nothing,
  * and no card is broken across two sheets.
  */
 @media print {

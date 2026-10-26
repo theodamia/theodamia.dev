@@ -1,12 +1,14 @@
 import type React from 'react';
+import { ViewTransition } from 'react';
 import type { Metadata } from 'next';
 import { Bricolage_Grotesque, Instrument_Sans } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Dock } from '@/components/dock';
 import { SITE } from '@/content/site';
-import { SEASON_SCRIPT } from '@/lib/season';
 import { THEME_SCRIPT } from '@/lib/theme';
+import { DAYPART_SCRIPT } from '@/scene/about';
+import { SEASON_SCRIPT } from '@/scene/seasons';
 import './globals.css';
 
 /* Variable, with the optical-size axis: the big headings need the narrower display cut. */
@@ -89,14 +91,27 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        {/* before the first paint: day or night, and which season, so the page never flashes the wrong sky */}
+        {/* before the first paint: day or night, so the page never flashes the wrong sky */}
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        {/* and the season it is, which /cv's year starts from; on <html>, so it survives client navigation */}
         <script dangerouslySetInnerHTML={{ __html: SEASON_SCRIPT }} />
+        {/* and the visitor's time of day, the light /about opens on */}
+        <script dangerouslySetInnerHTML={{ __html: DAYPART_SCRIPT }} />
       </head>
       {/* overflow-x: clip, not hidden — hidden would make the body a scroll container and break the sticky stage */}
       <body className='overflow-x-clip'>
-        {children}
-        <Dock />
+        {/* the move between pages: up or down the mountain, named by the link (components/trail-link.tsx); the
+            dock stays out of it, still */}
+        <ViewTransition
+          default='none'
+          update={{ 'trail-up': 'trail-up', 'trail-down': 'trail-down', default: 'trail-across' }}
+        >
+          {children}
+        </ViewTransition>
+        {/* the dock is its own still layer in that move, or the page's picture would cover it while it moves */}
+        <ViewTransition name='dock' default='none' update='dock-still'>
+          <Dock />
+        </ViewTransition>
         <Analytics />
         <SpeedInsights />
       </body>

@@ -1,16 +1,12 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
-import { ContactRows } from '@/components/contact-rows';
-import { FactList } from '@/components/fact-list';
-import { OpinionBars } from '@/components/opinion-bars';
-import { SummitStrip } from '@/components/scene/summit-strip';
-import { SectionCard } from '@/components/section-card';
-import { SignalTower } from '@/components/signal-tower';
-import { SkillGrid } from '@/components/skill-grid';
-import { buttonVariants } from '@/components/ui/button';
-import { Eyebrow, Heading, Lede } from '@/components/ui/text';
-import { WeekSplit } from '@/components/week-split';
-import { ABOUT_PARAGRAPHS, FACTS, OPINIONS, WEEK } from '@/content/about';
+import { AboutFinale } from '@/components/about-finale';
+import { AboutHero } from '@/components/about-hero';
+import { AboutSection } from '@/components/about-section';
+import { FactItem } from '@/components/fact-item';
+import { OpinionList } from '@/components/opinion-list';
+import { SkillColumns } from '@/components/skill-columns';
+import { WeekBar } from '@/components/week-bar';
+import { ABOUT_PARAGRAPHS, ASIDE_FACTS, OPINIONS, WEEK } from '@/content/about';
 import { pageMetadata } from '@/lib/page-metadata';
 import { SITE } from '@/content/site';
 import { SKILL_GROUPS } from '@/content/skill-groups';
@@ -22,79 +18,49 @@ export const metadata: Metadata = pageMetadata({
   path: '/about',
 });
 
-const TWO_COLUMNS =
-  'grid grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] gap-11 max-wide:grid-cols-1 max-wide:gap-7';
-
-/** The quiet reading page under a still strip of the unreached summit. No moving scene here. */
+/**
+ * The page at the top of the mountain: what's ahead. It opens on the sky at the visitor's time of day, reads on the
+ * page itself (About, How I work, Skills), and ends at Contact on the next range across a sea of clouds, where the
+ * sun comes up as the last screen scrolls in. Everything read is on the page; only the title stands on the sky.
+ */
 export default function About() {
+  const [lead, ...rest] = ABOUT_PARAGRAPHS;
+
   return (
-    <main className='bg-page relative min-h-screen'>
-      <SummitStrip />
+    <main className='bg-page relative'>
+      <AboutHero />
 
-      <div className='max-wide:px-4 relative z-[2] mx-auto w-full max-w-[1180px] px-7'>
-        <header className='max-wide:pt-16 max-wide:pb-8 mx-auto max-w-[980px] pt-[84px] pb-11'>
-          <Eyebrow className='text-[17px]'>
-            {SITE.name} · {SITE.title}
-          </Eyebrow>
-          {/* not "About": that is the first section's name, right below */}
-          <Heading as='h1' size='page' className='mt-3'>
-            Behind the climb
-          </Heading>
-          <Lede>Who carries the pack, how the work gets done and what is in it.</Lede>
-          <div className='mt-7'>
-            <Link href='/' className={buttonVariants({ variant: 'quiet' })}>
-              <span aria-hidden='true'>←</span> Back to the climb
-            </Link>
+      <div className='max-wide:px-4 mx-auto w-full max-w-[1180px] px-7'>
+        <AboutSection id='about' name='About' title='Building things that have to last'>
+          <div className='wide:grid-cols-[minmax(0,1fr)_220px] mt-9 grid gap-x-14 gap-y-7'>
+            <div className='flex max-w-[62ch] flex-col gap-[18px]'>
+              {/* the first paragraph is the introduction: a size up, in ink */}
+              <p className='text-ink text-[20px] leading-[1.5] text-pretty'>{lead}</p>
+              {rest.map(paragraph => (
+                <p key={paragraph} className='text-ink-2 text-[17.5px] leading-[1.62] text-pretty'>
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+            <dl className='flex flex-col gap-5 pt-1.5'>
+              {ASIDE_FACTS.map(fact => (
+                <FactItem key={fact.label} fact={fact} className='max-w-[26ch]' />
+              ))}
+            </dl>
           </div>
-        </header>
+        </AboutSection>
 
-        <div className='max-wide:gap-5 flex flex-col gap-9'>
-          <SectionCard id='about' eyebrow='About' title='Building things that have to last'>
-            <div className={`${TWO_COLUMNS} mt-[26px]`}>
-              <div className='flex flex-col gap-4'>
-                {ABOUT_PARAGRAPHS.map(paragraph => (
-                  <p key={paragraph} className='text-ink-2 text-pretty'>
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-              <FactList facts={FACTS} />
-            </div>
-          </SectionCard>
+        <AboutSection id='work' name='How I work' title='What ten years have settled into'>
+          <OpinionList opinions={OPINIONS} />
+          <WeekBar week={WEEK} />
+        </AboutSection>
 
-          <SectionCard id='work' eyebrow='How I work' title='What ten years have settled into'>
-            <div className={`${TWO_COLUMNS} mt-[34px]`}>
-              <OpinionBars opinions={OPINIONS} />
-              <WeekSplit week={WEEK} />
-            </div>
-          </SectionCard>
-
-          <SectionCard id='skills' eyebrow='Skills' title='What is in the pack'>
-            <SkillGrid groups={SKILL_GROUPS} />
-          </SectionCard>
-
-          {/* isolate: the tower sits behind the card's content, above its background */}
-          <SectionCard
-            id='contact'
-            eyebrow='Contact'
-            title='Putting a team together?'
-            className='relative isolate'
-          >
-            <SignalTower className='absolute top-7 right-[52px] -z-10 w-[190px] max-[1023px]:hidden' />
-            <p className='text-ink-2 mt-3.5 max-w-[620px] text-pretty'>
-              Always open to a conversation: new opportunities, interesting challenges, or simply
-              exchanging ideas. Replies within a day, usually less.
-            </p>
-            <ContactRows />
-          </SectionCard>
-        </div>
-
-        <footer className='pt-14 pb-[130px] text-center'>
-          <Link href='/' className={buttonVariants({ variant: 'quiet', size: 'sm' })}>
-            <span aria-hidden='true'>←</span> Back to the climb
-          </Link>
-        </footer>
+        <AboutSection id='skills' name='Skills' title='What is in the pack'>
+          <SkillColumns groups={SKILL_GROUPS} />
+        </AboutSection>
       </div>
+
+      <AboutFinale />
     </main>
   );
 }

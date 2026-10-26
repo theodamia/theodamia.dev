@@ -17,7 +17,7 @@ describe('Climb', () => {
     expect(screen.getAllByRole('heading', { level: 2 }).map(h => h.textContent)).toEqual(
       JOBS.map(job => job.role)
     );
-    expect(container.querySelector('[aria-hidden="true"] svg.scene-layer')).toBeInTheDocument();
+    expect(container.querySelector('[aria-hidden="true"] [data-scene-flat]')).toBeInTheDocument();
   });
 
   it('makes each stop as tall as the leg that leaves its camp, so long stays scroll longer', () => {
@@ -46,7 +46,7 @@ describe('Climb', () => {
   it('starts the climb from the scroll cue', async () => {
     render(<Climb hero={null}>after</Climb>);
 
-    await userEvent.click(screen.getByRole('button', { name: /Scroll to climb/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Start the climb' }));
 
     expect(window.scrollTo).toHaveBeenCalledWith({ top: expect.any(Number) });
   });

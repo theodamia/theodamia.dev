@@ -39,6 +39,7 @@ export function CopyEmailButton({ email, className }: { email: string; className
       <button
         type='button'
         onClick={() => void copy()}
+        data-contact-action
         aria-label='Copy email address'
         className={cn(buttonVariants({ variant: 'quiet', size: 'sm' }), className)}
       >

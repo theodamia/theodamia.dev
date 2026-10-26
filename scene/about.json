@@ -1,0 +1,22 @@
+{
+  "canvas": [1536, 1024],
+  "cloudLine": 0.37,
+  "summit": 0.1572,
+  "range": {
+    "sunrise": "range-sunrise.462ab5d7.webp",
+    "day": "range-day.37736ffe.webp",
+    "night": "range-night.d7bc7f13.webp"
+  },
+  "saucer": {
+    "size": [549, 196],
+    "day": "saucer-day.0b8270d5.webp",
+    "lights": [
+      [0.0594, 0.7254],
+      [0.2202, 0.569],
+      [0.5238, 0.4962],
+      [0.8019, 0.5663],
+      [0.9401, 0.7091]
+    ],
+    "night": "saucer-night.93b11fe1.webp"
+  }
+}

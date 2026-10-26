@@ -1,22 +1,30 @@
 'use client';
 
 import type React from 'react';
-import { useRef } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { Altimeter } from '@/components/altimeter';
 import { JobCard } from '@/components/job-card';
 import { AscentStage } from '@/components/scene/ascent-stage';
+import { Cairn } from '@/components/scene/cairn';
+import { SceneryContext } from '@/components/scenery';
 import { ScrollCue } from '@/components/scroll-cue';
+import { JOBS } from '@/content/jobs';
+import { useClimbScroll } from '@/hooks/use-climb-scroll';
+import { useInView } from '@/hooks/use-in-view';
+import { useReducedMotion } from '@/hooks/use-reduced-motion';
+import { morph } from '@/lib/view-morph';
+import { LEG_WEIGHTS, SIDES, type SceneHandle } from '@/scene/world';
+import { cn } from '@/utils/cn';
 
 /** Scroll length of a leg of weight 1, in large viewport heights. */
 const LEG_SCROLL_LVH = 140;
 /** Room under the last card before the page's closing section. */
 const LAST_CARD_LVH = 110;
-import { useClimbScroll } from '@/hooks/use-climb-scroll';
-import { useInView } from '@/hooks/use-in-view';
-import { useReducedMotion } from '@/hooks/use-reduced-motion';
-import { JOBS } from '@/content/jobs';
-import { LEG_WEIGHTS, SIDES, type SceneHandle } from '@/scene/world';
-import { cn } from '@/utils/cn';
+/** The view transitions that carry the closing card into today's cairn and out again (one name each way). */
+const CARD_MORPH = { IN: 'card-in', OUT: 'card-out' } as const;
+/** How long the way back is shown after the card is set aside ("Today's note" over the cairn), in ms. */
+const HINT_MS = 3200;
 
 type ClimbProps = {
   hero: React.ReactNode;
@@ -51,6 +59,12 @@ export function Climb({ hero, children }: ClimbProps) {
   /* the closing card in view is what "the climb is over" means: the last job is behind you and the summit is off
      the top of the screen, so the label up there has nothing left to point at */
   const climbOver = useInView(closing);
+  /* taking in the view: the closing card set aside into today's cairn (components/scenery.tsx) */
+  const [viewing, setViewing] = useState(false);
+  const card = useRef<HTMLElement>(null);
+  const cairn = useRef<HTMLButtonElement>(null);
+  const returning = useRef(false);
+  const hint = useRef(0);
   const { stop, year, moving, scrollToStop } = useClimbScroll({
     scene,
     track,
@@ -60,9 +74,75 @@ export function Climb({ hero, children }: ClimbProps) {
     walked,
   });
 
+  const stones = () => cairn.current?.querySelector<HTMLElement>('[data-cairn-stones]') ?? null;
+
+  /* the card shrinks onto the cairn's stones, or grows back off them; the cairn names the way back for a moment */
+  const fold = (next: boolean) => {
+    returning.current = !next;
+    morph(
+      next ? card.current : stones(),
+      () => (next ? stones() : card.current),
+      () => {
+        flushSync(() => setViewing(next));
+        if (!next) return;
+        const el = cairn.current;
+        el?.focus({ preventScroll: true });
+        el?.setAttribute('data-hint', '');
+        window.clearTimeout(hint.current);
+        hint.current = window.setTimeout(() => el?.removeAttribute('data-hint'), HINT_MS);
+      },
+      next ? CARD_MORPH.IN : CARD_MORPH.OUT
+    );
+  };
+
+  const unfold = useEffectEvent(() => fold(false));
+
+  /* the scene shows the summit's line again while the card is set aside */
+  useEffect(() => {
+    document.documentElement.toggleAttribute('data-scenery', viewing);
+
+    return () => document.documentElement.removeAttribute('data-scenery');
+  }, [viewing]);
+
+  /* Escape takes the card out again, and leaving the summit puts it back for the next arrival */
+  useEffect(() => {
+    if (!viewing) return;
+
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        unfold();
+      }
+    };
+
+    const away = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) return;
+      returning.current = false;
+      setViewing(false);
+    });
+
+    window.addEventListener('keydown', onKey);
+
+    if (card.current) {
+      away.observe(card.current);
+    }
+
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      away.disconnect();
+    };
+  }, [viewing]);
+
+  useEffect(() => () => window.clearTimeout(hint.current), []);
+
   return (
     <main className='grid'>
-      <AscentStage ref={scene} reducedMotion={reducedMotion} stop={stop} climbOver={climbOver} />
+      <AscentStage
+        ref={scene}
+        reducedMotion={reducedMotion}
+        stop={stop}
+        climbOver={climbOver}
+        cairnRef={cairn}
+      />
 
       <div
         ref={track}
@@ -88,7 +168,9 @@ export function Climb({ hero, children }: ClimbProps) {
             </li>
           ))}
         </ol>
-        <div ref={closing}>{children}</div>
+        <SceneryContext value={{ viewing, fold, cardRef: card, returningRef: returning }}>
+          <div ref={closing}>{children}</div>
+        </SceneryContext>
       </div>
 
       <Altimeter
@@ -100,6 +182,7 @@ export function Climb({ hero, children }: ClimbProps) {
         walkedRef={walked}
       />
       <ScrollCue gone={moving} onStart={() => scrollToStop(campOf(0))} />
+      <Cairn open={viewing} warm={climbOver} onOpen={() => fold(false)} ref={cairn} />
     </main>
   );
 }

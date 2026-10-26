@@ -1,6 +1,6 @@
 import { useEffect, useSyncExternalStore } from 'react';
 import { DARK_SCHEME_QUERY } from '@/constants';
-import { applyTheme, readTheme, storedTheme, supportsNight, type Theme } from '@/lib/theme';
+import { applyTheme, readTheme, storedTheme, type Theme } from '@/lib/theme';
 
 function subscribe(onChange: () => void) {
   const observer = new MutationObserver(onChange);
@@ -24,7 +24,7 @@ export function useFollowSystemTheme() {
     const query = window.matchMedia(DARK_SCHEME_QUERY);
 
     const follow = () => {
-      if (storedTheme() || !supportsNight()) return;
+      if (storedTheme()) return;
       applyTheme(query.matches ? 'dark' : 'light');
     };
 

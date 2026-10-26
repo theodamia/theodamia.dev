@@ -1,9 +1,8 @@
 import type React from 'react';
-import { CAMP_ANCHORS } from '@/constants';
 import { Eyebrow } from '@/components/ui/text';
 import { JOBS, TRAILHEAD } from '@/content/jobs';
 import { SUMMIT_MARK } from '@/content/site';
-import { cameraKnot, campAnchor, WORLD } from '@/scene/world';
+import { railShare } from '@/scene/world';
 import { cn } from '@/utils/cn';
 
 type AltimeterProps = {
@@ -17,13 +16,10 @@ type AltimeterProps = {
   walkedRef: React.Ref<HTMLSpanElement>;
 };
 
-/** Where a stop sits on the rail: the camera position at its camp, as a share of the whole climb. */
+/** Where a stop sits on the rail: how much of the road is walked when its camp is reached. */
 function stopTop(job: number): string {
-  /* camp 0 is the trailhead, so job `i` stands at camp `i + 1` */
-  const camp = job + 1;
-  const knot = cameraKnot(camp, campAnchor(camp, CAMP_ANCHORS.WIDE));
-
-  return `${Math.min(100, (knot / WORLD.TRAVEL) * 100).toFixed(1)}%`;
+  /* camp 0 is the trailhead, so job `i` stands at camp `i + 1`: arriving there ends leg `i` */
+  return `${(railShare(job + 1, 0) * 100).toFixed(1)}%`;
 }
 
 /** Every stop on the rail: the trailhead, then one per job. `job` is what `onJump` takes, `top` where it sits. */

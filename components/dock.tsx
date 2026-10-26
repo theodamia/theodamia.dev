@@ -2,13 +2,13 @@
 
 import type React from 'react';
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { DOCK_ICON_STROKE, SECTION_SCROLL_OFFSET_PX } from '@/constants';
 
 /** The dock lights the section under this share of the screen height. */
 const DOCK_PROBE_RATIO = 0.5;
 import { Map, NotebookPen, RadioTower, Tent } from 'lucide-react';
+import { TrailLink } from '@/components/trail-link';
 import { DockBubble } from '@/components/dock-bubble';
 import { IceAxeIcon } from '@/components/icons/ice-axe-icon';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -118,7 +118,10 @@ export function Dock() {
   };
 
   return (
-    <div className='rounded-dock border-line shadow-dock bg-card/96 touch:p-1 fixed bottom-4 left-1/2 z-[90] flex max-w-[calc(100vw-20px)] -translate-x-1/2 items-center border p-1.5 print:hidden'>
+    <div
+      data-surface
+      className='rounded-dock border-line shadow-dock bg-card/96 touch:p-1 fixed bottom-4 left-1/2 z-[90] flex max-w-[calc(100vw-20px)] -translate-x-1/2 items-center border p-1.5 print:hidden'
+    >
       <nav aria-label='Sections' className='touch:gap-0 flex items-center gap-0.5'>
         {DOCK_ITEMS.map(item => {
           const Icon = ICONS[item.id];
@@ -126,7 +129,7 @@ export function Dock() {
           const isOn = item.section ? item.section === active : !isHome && item.page === pathname;
 
           return (
-            <Link
+            <TrailLink
               key={item.id}
               href={dockHref(item)}
               aria-label={item.label}
@@ -144,20 +147,19 @@ export function Dock() {
               <Icon className='shrink-0' strokeWidth={DOCK_ICON_STROKE} aria-hidden='true' />
               {isOn && <span className='touch:inline hidden'>{item.label}</span>}
               <DockBubble>{item.label}</DockBubble>
-            </Link>
+            </TrailLink>
           );
         })}
       </nav>
       {/*
-        the night needs light-dark() (the scene's colours use it); without it the site stays in daylight.
         The hairline sits further from Contact than from the switch: Contact's outline is at the edge of its box,
         the switch's icon 10px inside its own, so this is what centres it between the two things you see.
       */}
       <span
         aria-hidden='true'
-        className='bg-line touch:ml-2 touch:mr-0 mr-0.5 ml-3 h-6 w-px shrink-0 not-supports-[color:light-dark(#000,#fff)]:hidden'
+        className='bg-line touch:ml-2 touch:mr-0 mr-0.5 ml-3 h-6 w-px shrink-0'
       />
-      <ThemeToggle className='not-supports-[color:light-dark(#000,#fff)]:hidden' />
+      <ThemeToggle />
     </div>
   );
 }

@@ -19,14 +19,11 @@ import { timeAtProgress } from '@/utils/time-at-progress';
 
 export type Theme = 'light' | 'dark';
 
-/** The scene's colours are written with `light-dark()`; a browser without it stays in daylight. */
-const NIGHT_TEST = "CSS.supports('color','light-dark(#000,#fff)')";
-
 /**
  * Runs in <head> before the first paint, so the page never shows the wrong sky: the stored choice, or else the
  * system's. `data-theme` on <html> is the only switch; CSS derives everything else from it.
  */
-export const THEME_SCRIPT = `(function(){var d=document.documentElement;try{var t=localStorage.getItem('${THEME_STORAGE_KEY}');if(t!=='light'&&t!=='dark')t=matchMedia('${DARK_SCHEME_QUERY}').matches?'dark':'light';if(!${NIGHT_TEST})t='light';d.dataset.theme=t}catch(e){d.dataset.theme='light'}})()`;
+export const THEME_SCRIPT = `(function(){var d=document.documentElement;try{var t=localStorage.getItem('${THEME_STORAGE_KEY}');if(t!=='light'&&t!=='dark')t=matchMedia('${DARK_SCHEME_QUERY}').matches?'dark':'light';d.dataset.theme=t}catch(e){d.dataset.theme='light'}})()`;
 
 /** Marks <html> while the reveal runs; the view transition rules in globals.css are scoped to it. */
 const REVEAL_CLASS = 'theme-reveal';
@@ -51,15 +48,6 @@ export function storedTheme(): Theme | null {
   } catch {
     return null;
   }
-}
-
-/**
- * Whether this browser can show the night at all. The scene's generated colours are written as `light-dark()`
- * pairs, so without it the mountain would keep its daylight while the interface went dark: the switch hides
- * instead (see the `not-supports-` classes on the dock) and the site stays in daylight.
- */
-export function supportsNight(): boolean {
-  return typeof CSS !== 'undefined' && CSS.supports('color', 'light-dark(#000,#fff)');
 }
 
 function clearWave(root: HTMLElement) {
@@ -89,7 +77,7 @@ function track(transition: ViewTransition, cleanUp?: () => void) {
 }
 
 /**
- * Changes the world from a button: the theme, the season, anything that is one attribute on <html>.
+ * Changes the world from a button: the theme, or anything else that is one attribute on <html>.
  *
  * The new look spreads from the button as a soft-edged circle — a view transition holds the old page still and
  * masks the new one behind a radius (`--reveal-r`) growing past the farthest corner. The new view is the *live*
@@ -99,7 +87,7 @@ function track(transition: ViewTransition, cleanUp?: () => void) {
  * Reduced motion gets the browser's own cross-fade and no wave; without view transitions the colours switch at
  * once but the sky still waves. `flip` runs inside the transition and must only set the attribute.
  */
-export function reveal(from: HTMLElement, flip: () => void): void {
+function reveal(from: HTMLElement, flip: () => void): void {
   const root = document.documentElement;
 
   running?.skipTransition();
@@ -179,17 +167,8 @@ export function reveal(from: HTMLElement, flip: () => void): void {
   });
 }
 
-/**
- * Whether a reveal is sweeping the page right now. The new view a reveal shows is the live page, not a snapshot,
- * so something changed while one is running is carried by that sweep — a caller can use this to change the world
- * again without cutting the sweep short and starting another.
- */
-export function isRevealing(): boolean {
-  return running !== null;
-}
-
 /** Remembers a choice, where the browser allows it. In private mode it lasts until the page is left. */
-export function remember(key: string, value: string) {
+function remember(key: string, value: string) {
   try {
     localStorage.setItem(key, value);
   } catch {
