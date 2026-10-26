@@ -1,6 +1,4 @@
 import { BrandIcon } from '@/components/icons/brand-icon';
-import { Pill } from '@/components/ui/pill';
-import { Heading } from '@/components/ui/text';
 import type { Skill, SkillGroup } from '@/content/skill-groups';
 
 const SKILL_ICON_SIZE = 16;
@@ -8,7 +6,7 @@ const SKILL_ICON_SIZE = 16;
 const SKILL_ICON_STROKE = 2;
 const SKILL_ICON_CLASS = 'text-accent-text shrink-0';
 
-/** Decorative: the pill's text is its name. */
+/** Decorative: the line's text is its name. */
 function SkillIcon({ skill }: { skill: Skill }) {
   if ('brand' in skill) {
     return (
@@ -33,24 +31,28 @@ function SkillIcon({ skill }: { skill: Skill }) {
   );
 }
 
-/** One full-width row per category: its name, then its skills as pills below. Nothing else. */
-export function SkillGrid({ groups }: { groups: SkillGroup[] }) {
+/**
+ * The groups side by side, three across on wide screens: each its name over a hairline, then its skills as a plain
+ * list, a logo (or a symbol, for a practice) beside each name. Lists, not pills: a column scans down faster than a
+ * wall of capsules scans across.
+ */
+export function SkillColumns({ groups }: { groups: SkillGroup[] }) {
   return (
-    <div className='max-wide:mt-7 mt-[34px] flex flex-col'>
+    <div className='wide:grid-cols-2 mt-11 grid grid-cols-1 gap-x-12 gap-y-10 min-[1100px]:grid-cols-3'>
       {groups.map(group => (
-        <div
-          key={group.name}
-          className='border-line max-wide:py-5 flex flex-col gap-3.5 border-t py-6 first:border-t-0 first:pt-0 last:pb-0'
-        >
-          <Heading as='h3' size='sub'>
+        <div key={group.name}>
+          <h3 className='text-ink border-line border-b pb-2.5 text-[16.5px] leading-[1.4] font-semibold'>
             {group.name}
-          </Heading>
-          <ul className='flex flex-wrap gap-3'>
+          </h3>
+          <ul className='mt-3 flex flex-col gap-[9px]'>
             {group.items.map(skill => (
-              <Pill key={skill.name}>
+              <li
+                key={skill.name}
+                className='text-ink flex items-center gap-2.5 text-[16.5px] font-medium'
+              >
                 <SkillIcon skill={skill} />
                 {skill.name}
-              </Pill>
+              </li>
             ))}
           </ul>
         </div>

@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { WEEK, OPINIONS, EDUCATION, SUMMARY_FACTS } from '@/content/about';
+import {
+  ASIDE_FACTS,
+  EDUCATION,
+  FACTS,
+  HERO_FACTS,
+  HOLDS_IN_WORDS,
+  holdsInWords,
+  OPINIONS,
+  SUMMARY_FACTS,
+  WEEK,
+} from '@/content/about';
 import { DOCK_ITEMS, dockHref } from '@/content/dock-items';
 import { JOBS } from '@/content/jobs';
 import { SKILL_GROUPS } from '@/content/skill-groups';
@@ -52,6 +62,17 @@ describe('about', () => {
         expect(opinion.holds).toBeLessThanOrEqual(OPINIONS[i - 1].holds);
       }
     });
+  });
+
+  it('says how often each opinion holds in words, never weaker for a stronger one', () => {
+    const steps = OPINIONS.map(opinion => holdsInWords(opinion.holds).steps);
+    steps.slice(1).forEach((step, i) => expect(step).toBeLessThanOrEqual(steps[i]));
+    expect(HOLDS_IN_WORDS.at(-1)?.from).toBe(0);
+  });
+
+  it('opens /about on the job now, where and how long, and keeps the rest beside its text', () => {
+    expect(HERO_FACTS.map(fact => fact.label)).toEqual(['Currently', 'Based in', 'Experience']);
+    expect([...HERO_FACTS, ...ASIDE_FACTS]).toHaveLength(FACTS.length);
   });
 
   it('finds every fact the Experience page summarises, so a rename cannot go quiet', () => {

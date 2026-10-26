@@ -23,11 +23,12 @@ const WHEREABOUTS = [SITE.location, 'Remote', 'UTC+2/+3'];
 /**
  * Email first, the one channel that needs no account: a full-width row with the address and its two actions,
  * copy it or write straight away. The two profiles sit side by side below it, whole tiles as links; their logo
- * and their arrow turn to the accent on hover, as in the hero.
+ * and their arrow turn to the accent on hover, as in the hero. Its two actions are marked `data-contact-action`:
+ * on /about, making contact is what the page's easter egg answers (components/contact-signal.tsx).
  */
-export function ContactRows() {
+export function ContactRows({ className }: { className?: string }) {
   return (
-    <div className='mt-[26px]'>
+    <div className={cn('mt-[26px]', className)}>
       <ul className='max-wide:grid-cols-1 grid grid-cols-2 gap-3'>
         <li
           className={cn(
@@ -46,6 +47,7 @@ export function ContactRows() {
             <CopyEmailButton email={SITE.email} className='whitespace-nowrap' />
             <a
               href={`mailto:${SITE.email}`}
+              data-contact-action
               className={cn(buttonVariants({ size: 'sm' }), 'max-wide:flex-1 whitespace-nowrap')}
             >
               Email me

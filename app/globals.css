@@ -72,6 +72,8 @@
   /* a third of the stars lean blue and a few warm, as real ones do; only ever seen at night */
   --color-star-cool: oklch(0.94 0.04 250);
   --color-star-warm: oklch(0.93 0.07 75);
+  /* the saucer's running lights on /about: warm, and the same by night */
+  --color-saucer-light: oklch(0.86 0.13 62);
   --color-moon-shadow: oklch(0.3 0.035 258);
 
   /* Shape and size */
@@ -110,8 +112,6 @@
   --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
 
   --animate-bob: bob 1.6s ease-in-out infinite;
-  /* the Contact card's radio waves: each ring flares up, then fades while the next one lights */
-  --animate-signal: signal 2.8s ease-out infinite both;
 
   /* evenly either side of where it rests, so a bobbing icon still sits on its text's centre line */
   @keyframes bob {
@@ -121,17 +121,6 @@
     }
     50% {
       transform: translateY(2px);
-    }
-  }
-
-  @keyframes signal {
-    0%,
-    60%,
-    100% {
-      opacity: 0.15;
-    }
-    18% {
-      opacity: 0.9;
     }
   }
 }
@@ -241,33 +230,6 @@
     outline: 3px solid var(--color-lake-fill);
     outline-offset: 3px;
   }
-}
-
-/*
- * Scene layers. Each layer is as tall as its parallax depth needs (--d), so one number says how far it
- * travels. The transform below is only the resting pose (before the first frame, and for the still
- * strip on /about): while scrolling, the stage writes pixel transforms onto whole layers and nothing else.
- */
-.scene-layer {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  display: block;
-  overflow: visible;
-  pointer-events: none;
-  /* 240 and 500 are WORLD.WIDTH and WORLD.TRAVEL over WORLD.VIEW (lib/scene/world.ts): change those, change these */
-  width: 240vh;
-  width: 240lvh;
-  height: calc(100vh + var(--d) * 500vh);
-  height: calc(100lvh + var(--d) * 500lvh);
-  transform: translate3d(-50%, calc(var(--cam) * (100vh - 100%)), 0);
-  transform: translate3d(-50%, calc(var(--cam) * (100lvh - 100%)), 0);
-}
-
-/* Only the climb writes transforms; the still strip on /about renders the same layers and never moves them. */
-.scene-stage .scene-layer,
-.scene-stage .scene-layer-window {
-  will-change: transform;
 }
 
 /*
@@ -1562,12 +1524,6 @@
   [data-kind] .camp-glow {
     animation: none;
   }
-
-  /* The two that sweep widest across the screen are the ones that make people queasy. The still strip keeps them. */
-  .scene-stage .scene-layer[data-depth='0.8'],
-  .scene-stage .scene-layer[data-depth='1.35'] {
-    display: none;
-  }
 }
 
 /*
@@ -1858,6 +1814,401 @@
 
   .year-weather {
     display: none;
+  }
+}
+
+/*
+ * /about: what's ahead (app/about/page.tsx, scene/about.ts). The page opens on the climb's sky at the visitor's time
+ * of day (`data-daypart` on <html>, written before the first paint) and ends, at Contact, on the next range across a
+ * sea of clouds, where dawn becomes morning and the climb's sun comes up as the last screen scrolls in (by night,
+ * dusk becomes midnight and the moon rises). Wide screens only: on phones the page is just the words.
+ */
+
+/* the opening's sky: the climb's tokens, mixed by the hour; it eases into the page below the facts */
+.about-sky {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  /* the clouds cross it from edge to edge: `cloud-cross` runs in `cqw` */
+  container-type: inline-size;
+  background: linear-gradient(
+    to bottom,
+    var(--color-dawn-top),
+    var(--color-dawn-mid) 58%,
+    var(--color-dawn-low)
+  );
+}
+
+.about-sky::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 30%;
+  background: linear-gradient(to bottom, transparent, var(--color-page));
+}
+
+/* by day: morning is the dawn (above), midday the day, evening a warmer day; at night the light theme is first light */
+:root[data-daypart='midday'] .about-sky {
+  background: linear-gradient(
+    to bottom,
+    var(--color-day-top),
+    var(--color-day-mid) 58%,
+    var(--color-day-low)
+  );
+}
+
+:root[data-daypart='evening'] .about-sky {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--color-day-top) 62%, var(--color-dawn-top)),
+    color-mix(in oklab, var(--color-dawn-mid) 68%, var(--color-day-mid)) 58%,
+    var(--color-dawn-low)
+  );
+}
+
+/* by night the dawn tokens are dusk and the day's are midnight: dusk until evening, then deeper, then midnight */
+:root[data-theme='dark'][data-daypart='midday'] .about-sky {
+  background: linear-gradient(
+    to bottom,
+    var(--color-dawn-top),
+    var(--color-dawn-mid) 58%,
+    var(--color-dawn-low)
+  );
+}
+
+:root[data-theme='dark'][data-daypart='evening'] .about-sky {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--color-day-top) 50%, var(--color-dawn-top)),
+    color-mix(in oklab, var(--color-day-mid) 50%, var(--color-dawn-mid)) 58%,
+    color-mix(in oklab, var(--color-day-low) 40%, var(--color-dawn-low))
+  );
+}
+
+:root[data-theme='dark'][data-daypart='night'] .about-sky {
+  background: linear-gradient(
+    to bottom,
+    var(--color-day-top),
+    var(--color-day-mid) 58%,
+    var(--color-day-low)
+  );
+}
+
+/* a painting in both themes: only the theme on screen is displayed, so only its picture downloads */
+.about-art {
+  position: absolute;
+  inset: 0;
+  display: none;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+:root:not([data-theme='dark']) .about-art[data-art='day'],
+:root[data-theme='dark'] .about-art[data-art='night'] {
+  display: block;
+}
+
+.about-cloud {
+  position: absolute;
+  left: 0;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  translate: calc(var(--at) * (100cqw + 100%) - 100%) 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .about-cloud {
+    animation:
+      cloud-cross var(--cross) linear calc(var(--at) * var(--cross) * -1) infinite,
+      cloud-billow var(--billow) ease-in-out infinite alternate;
+  }
+}
+
+/*
+ * The finale: a short band takes the page into the sky, then one screen, the page's last. Its range stands along
+ * the bottom edge, its cloud line --about-foot above it; the summit rises --about-rise above that (both set on the
+ * section from the painting's measurements). The card sits near the top, and the band of open sky between them is
+ * where the easter egg plays.
+ */
+.about-into {
+  height: 14vh;
+  background: linear-gradient(to bottom, var(--color-page), var(--color-dawn-top));
+}
+
+.about-finale {
+  --about-foot: 4vh;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-top: clamp(56px, 8vh, 96px);
+  view-timeline-name: --about-finale;
+  /* the range spans the width, so its heights are `cqw` of the finale */
+  container-type: inline-size;
+}
+
+.about-band {
+  flex: 1 0 14vh;
+}
+
+.about-foot {
+  flex: none;
+  height: calc(var(--about-foot) + var(--about-rise));
+}
+
+.about-dawn {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  container-type: size;
+}
+
+.about-daylight {
+  opacity: 0;
+}
+
+/* the range spans the width; its cloud line stands --about-foot above the bottom edge */
+.about-range {
+  inset: auto;
+  left: 0;
+  top: calc(100cqh - var(--about-foot) - var(--about-cloud-depth));
+  width: 100cqw;
+  aspect-ratio: var(--range-aspect);
+}
+
+.about-morning {
+  opacity: 0;
+}
+
+/* the climb's sun (by night, its moon) starts behind the right-hand ridge */
+.about-sun {
+  left: 86%;
+  top: calc(100cqh - var(--about-foot) + 2cqw);
+  translate: -50% -50%;
+}
+
+@supports (animation-timeline: view()) {
+  .about-daylight,
+  .about-morning {
+    animation: about-in linear both;
+    animation-timeline: --about-finale;
+    animation-range: entry 15% entry 90%;
+  }
+
+  .about-sun {
+    animation: about-sunrise linear both;
+    animation-timeline: --about-finale;
+    animation-range: entry 25% entry 100%;
+  }
+}
+
+@keyframes about-in {
+  to {
+    opacity: 1;
+  }
+}
+
+/* up over the ridge into the band of open sky, a little to the left as it climbs */
+@keyframes about-sunrise {
+  to {
+    translate: calc(-50% - 1cqw) calc(-50% - 8vh - 9cqw);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-daylight,
+  .about-morning,
+  .about-sun {
+    animation-timing-function: steps(1, end);
+  }
+}
+
+/*
+ * The easter egg. When the reader makes contact (components/contact-signal.tsx), a small saucer comes in from high
+ * in the sky, far off and tiny, down the open right side and along the band of sky to hover under the card; its
+ * lights blink twice, the contact; and it swings back round and up into the sky. Eight seconds, once. Each wrapper
+ * moves one way (across; up and down, with its distance; a hover), so the path curves without a motion path.
+ */
+.about-saucer {
+  position: absolute;
+  left: 44%;
+  top: calc(100cqh - var(--about-foot) - var(--about-rise) - 7vh);
+  width: 6.4cqw;
+  translate: -50% -50%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.about-saucer-across,
+.about-saucer-rise,
+.about-saucer-hover {
+  position: absolute;
+  inset: 0;
+}
+
+.about-saucer-light {
+  position: absolute;
+  width: 22%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--color-saucer-light),
+    color-mix(in oklab, var(--color-saucer-light) 50%, transparent) 30%,
+    transparent 68%
+  );
+  mix-blend-mode: plus-lighter;
+  opacity: 0;
+}
+
+[data-contact] .about-saucer {
+  opacity: 1;
+}
+
+[data-contact] .about-saucer-across {
+  animation: saucer-across 8s both;
+}
+
+[data-contact] .about-saucer-rise {
+  animation: saucer-rise 8s both;
+}
+
+[data-contact] .about-saucer-hover {
+  animation: saucer-hover 8s both;
+}
+
+[data-contact] .about-saucer-light {
+  animation: saucer-blink 8s both;
+}
+
+@keyframes saucer-across {
+  0% {
+    translate: 44cqw 0;
+    animation-timing-function: cubic-bezier(0.55, 0, 0.25, 1);
+  }
+
+  34%,
+  70% {
+    translate: 0 0;
+    animation-timing-function: cubic-bezier(0.5, 0, 0.4, 1);
+  }
+
+  100% {
+    translate: 48cqw 0;
+  }
+}
+
+@keyframes saucer-rise {
+  0% {
+    opacity: 0;
+    translate: 0 -64cqh;
+    scale: 0.14;
+    animation-timing-function: cubic-bezier(0.12, 0.75, 0.3, 1);
+  }
+
+  6% {
+    opacity: 1;
+  }
+
+  34%,
+  70% {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+    animation-timing-function: cubic-bezier(0.7, 0, 0.85, 0.35);
+  }
+
+  96% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    translate: 0 -70cqh;
+    scale: 0.12;
+  }
+}
+
+@keyframes saucer-hover {
+  0%,
+  34% {
+    translate: 0 0;
+  }
+
+  45% {
+    translate: 0 -3px;
+  }
+
+  58% {
+    translate: 0 1px;
+  }
+
+  68%,
+  100% {
+    translate: 0 0;
+  }
+}
+
+/* the contact: its lights blink twice while it hovers */
+@keyframes saucer-blink {
+  0%,
+  40% {
+    opacity: 0;
+  }
+
+  43%,
+  51% {
+    opacity: 1;
+  }
+
+  47% {
+    opacity: 0.1;
+  }
+
+  57%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* reduced motion: no flight; it fades in where it hovers, blinks, and fades out */
+@media (prefers-reduced-motion: reduce) {
+  [data-contact] .about-saucer {
+    animation: saucer-still 8s both;
+  }
+
+  [data-contact] .about-saucer-across,
+  [data-contact] .about-saucer-rise,
+  [data-contact] .about-saucer-hover {
+    animation: none;
+  }
+}
+
+@keyframes saucer-still {
+  0% {
+    opacity: 0;
+  }
+
+  18%,
+  74% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* phones: the card alone, clear of the dock */
+@media (max-width: 899.98px) {
+  .about-finale {
+    min-height: 0;
+    padding-top: 8px;
+    padding-bottom: 120px;
   }
 }
 
