@@ -20,22 +20,11 @@ export const FACTS: Fact[] = [
 /**
  * The three facts the Experience page carries under its title: the ones a CV is scanned for. Taken from FACTS by
  * label rather than written again, so the two pages can never drift. "Currently" is left out (the first card on
- * that page says it) and "Education" stays on /about. A test pins the count, so a rename here cannot go quiet.
+ * that page says it) and "Education" stays on /about, beside its text. A test pins the count, so a rename here cannot go quiet.
  */
 export const SUMMARY_FACTS: Fact[] = ['Experience', 'Based in', 'Languages'].flatMap(label =>
   FACTS.filter(fact => fact.label === label)
 );
-
-/**
- * The facts /about opens on, under its title: the job now, where, and how long. A recruiter's first three
- * questions, answered before anything else. Taken from FACTS by label, like SUMMARY_FACTS.
- */
-export const HERO_FACTS: Fact[] = ['Currently', 'Based in', 'Experience'].flatMap(label =>
-  FACTS.filter(fact => fact.label === label)
-);
-
-/** The rest of the facts, beside the About text: the ones nobody scans for first but somebody always asks. */
-export const ASIDE_FACTS: Fact[] = FACTS.filter(fact => !HERO_FACTS.includes(fact));
 
 /**
  * The degree. It reads as background on /about, so it stays out of the Experience page on screen — but a printed

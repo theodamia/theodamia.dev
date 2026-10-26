@@ -14,10 +14,15 @@ export type DockItem = {
 export const DOCK_ITEMS: DockItem[] = [
   { id: 'home', label: 'Home', page: '/' },
   { id: 'cv', label: 'Experience', page: '/cv' },
-  { id: 'about', label: 'About', page: '/about', section: 'about' },
+  { id: 'about', label: 'About', page: '/about' },
   { id: 'skills', label: 'Skills', page: '/about', section: 'skills' },
   { id: 'contact', label: 'Contact', page: '/about', section: 'contact' },
 ];
+
+/** What the dock calls a place: a page's header names it in the same word, so the two never disagree. */
+export function dockLabel(id: DockItemId): string {
+  return DOCK_ITEMS.find(item => item.id === id)?.label ?? id;
+}
 
 /** The item's `href`, and what the dock compares against to know it is already on that page (`/about#skills`). */
 export function dockHref(item: DockItem): string {

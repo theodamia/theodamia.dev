@@ -1,27 +1,38 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import About from '@/app/about/page';
-import { HERO_FACTS, OPINIONS, holdsInWords, WEEK } from '@/content/about';
+import { FACTS, OPINIONS, holdsInWords, WEEK } from '@/content/about';
 import { SKILL_GROUPS } from '@/content/skill-groups';
 
 describe('/about', () => {
-  it('opens on the title, the facts a recruiter scans first and the one action', () => {
+  it('opens on the header /cv opens on: the page named as the dock names it, the title and the one action', () => {
     render(<About />);
 
-    expect(screen.getByRole('heading', { level: 1, name: 'Behind the climb' })).toBeInTheDocument();
     const header = screen.getByRole('banner');
-    HERO_FACTS.forEach(fact => expect(within(header).getByText(fact.value)).toBeInTheDocument());
+    expect(within(header).getByText('About')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Behind the climb' })).toBeInTheDocument();
     expect(within(header).getByRole('link', { name: 'Email me' })).toHaveAttribute(
       'href',
       expect.stringMatching(/^mailto:/)
     );
   });
 
+  it('reads every fact once, beside the About text and not in the header', () => {
+    render(<About />);
+
+    const header = screen.getByRole('banner');
+    const about = screen.getByRole('region', { name: 'Building things that have to last' });
+    FACTS.forEach(fact => {
+      expect(within(about).getByText(fact.value)).toBeInTheDocument();
+      expect(within(header).queryByText(fact.value)).not.toBeInTheDocument();
+    });
+  });
+
   it('keeps the sections the dock links to, each named by its heading', () => {
     render(<About />);
 
     for (const [id, title] of [
-      ['about', 'Building things that have to last'],
+      ['background', 'Building things that have to last'],
       ['work', 'What ten years have settled into'],
       ['skills', 'What is in the pack'],
       ['contact', 'Putting a team together?'],

@@ -34,7 +34,7 @@ describe('Dock', () => {
     expect(nav.querySelectorAll('a')).toHaveLength(5);
     expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/');
     expect(screen.getByRole('link', { name: 'Experience' })).toHaveAttribute('href', '/cv');
-    expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about#about');
+    expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');
     expect(screen.getByRole('link', { name: 'Skills' })).toHaveAttribute('href', '/about#skills');
     expect(screen.getByRole('link', { name: 'Contact' })).toHaveAttribute('href', '/about#contact');
   });
@@ -63,12 +63,22 @@ describe('Dock', () => {
     expect(window.scrollTo).toHaveBeenCalledWith({ top: 0 });
   });
 
-  it('lights the section under the middle of the screen', () => {
+  it('lights the page itself, from its header on, until one of its sections is reached', () => {
     vi.mocked(usePathname).mockReturnValue('/about');
-    const about = document.createElement('section');
-    about.id = 'about';
-    about.getBoundingClientRect = () => ({ top: -100 }) as DOMRect;
-    document.body.append(about);
+
+    render(<Dock />);
+
+    expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('aria-current', 'true');
+    expect(screen.getByRole('link', { name: 'Skills' })).not.toHaveAttribute('aria-current');
+    expect(screen.getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current');
+  });
+
+  it('lights the section under the middle of the screen, and only it', () => {
+    vi.mocked(usePathname).mockReturnValue('/about');
+    const skills = document.createElement('section');
+    skills.id = 'skills';
+    skills.getBoundingClientRect = () => ({ top: -100 }) as DOMRect;
+    document.body.append(skills);
     vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => {
       callback(0);
 
@@ -77,7 +87,7 @@ describe('Dock', () => {
 
     render(<Dock />);
 
-    expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('aria-current', 'true');
-    expect(screen.getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current');
+    expect(screen.getByRole('link', { name: 'Skills' })).toHaveAttribute('aria-current', 'true');
+    expect(screen.getByRole('link', { name: 'About' })).not.toHaveAttribute('aria-current');
   });
 });

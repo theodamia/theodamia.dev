@@ -1,15 +1,16 @@
 import type { Metadata } from 'next';
 import { TrailLink } from '@/components/trail-link';
 import { ContactRows } from '@/components/contact-rows';
-import { FactItem } from '@/components/fact-item';
 import { FieldLog } from '@/components/field-log';
+import { PageHeader } from '@/components/page-header';
 import { YearBackdrop } from '@/components/scene/year-backdrop';
 import { YearReady } from '@/components/scene/year-ready';
 import { SectionCard } from '@/components/section-card';
 import { SocialLinks } from '@/components/social-links';
 import { quietLinkVariants } from '@/components/ui/button';
-import { Eyebrow, Heading } from '@/components/ui/text';
+import { Heading } from '@/components/ui/text';
 import { EDUCATION, SUMMARY_FACTS } from '@/content/about';
+import { dockLabel } from '@/content/dock-items';
 import { pageMetadata } from '@/lib/page-metadata';
 import { SITE } from '@/content/site';
 import { YEAR_TIMELINES } from '@/scene/seasons';
@@ -45,34 +46,27 @@ export default function Cv() {
 
       <div className='max-wide:px-4 relative z-1 mx-auto w-full max-w-[1180px] px-7 print:px-0'>
         <div className='max-w-[620px] pb-[140px] print:max-w-none print:pb-0'>
-          <header className='max-wide:pt-[84px] pt-[92px] print:pt-0'>
-            <Eyebrow className='text-[17px]'>
-              {SITE.title} · {SITE.location}
-            </Eyebrow>
-            {/* one line on wide screens: at 72px the name is a little wider than the log's column, never than the screen */}
-            <Heading as='h1' size='page' className='wide:whitespace-nowrap mt-2 print:text-[34px]'>
-              {SITE.name}
-            </Heading>
-            <SocialLinks className='print:hidden' />
+          {/* the role under the name, where a CV puts it; where I am is in the facts below */}
+          <PageHeader
+            eyebrow={dockLabel('cv')}
+            title={SITE.name}
+            lede={SITE.title}
+            facts={SUMMARY_FACTS}
+          >
+            <SocialLinks className='mt-0 print:hidden' />
             {/* those tiles are three unreadable logos on paper, and contact belongs on sheet one: spell them out */}
-            <p className='text-ink-2 mt-3 hidden text-[13.5px] leading-[1.7] print:block'>
+            <p className='text-ink-2 hidden text-[13.5px] leading-[1.7] print:block'>
               {[SITE.email, bareUrl(SITE.linkedin.url), bareUrl(SITE.github.url)].join(' · ')}
             </p>
+          </PageHeader>
 
-            <dl className='border-line max-wide:grid-cols-1 max-wide:gap-y-4 mt-10 grid grid-cols-3 gap-x-8 border-y py-6 print:mt-5 print:py-4'>
-              {SUMMARY_FACTS.map(fact => (
-                <FactItem key={fact.label} fact={fact} />
-              ))}
-            </dl>
-
-            {/* the years say the order on paper, and the climb is not somewhere a sheet of paper can go */}
-            <p className='text-ink-3 mt-7 mb-9 text-[15px] print:hidden'>
-              Newest first ·{' '}
-              <TrailLink href='/' className={QUIET_LINK}>
-                Walk the same ten years as a climb
-              </TrailLink>
-            </p>
-          </header>
+          {/* the years say the order on paper, and the climb is not somewhere a sheet of paper can go */}
+          <p className='text-ink-3 mt-7 mb-9 text-[15px] print:hidden'>
+            Newest first ·{' '}
+            <TrailLink href='/' className={QUIET_LINK}>
+              Walk the same ten years as a climb
+            </TrailLink>
+          </p>
 
           <FieldLog />
 
