@@ -19,13 +19,20 @@
  *
  * public/about/ belongs to this script: it is emptied first.
  */
-import { createHash } from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { format, resolveConfig } from 'prettier';
-import sharp from 'sharp';
-import { clampByte, key } from './flat-key.mjs';
+import { key } from './flat-key.mjs';
+import {
+  despill,
+  dropSpecks,
+  encodeWebp,
+  islands,
+  loadPainting,
+  repair,
+  writeHashed,
+  writeJson,
+} from './paintings.mjs';
 
 /* a closed output pipe (`| head`) must not stop the run half way, before the manifest is written */
 process.stdout.on('error', () => {});
@@ -37,6 +44,7 @@ const MANIFEST = path.join(ROOT, 'scene/about.json');
 
 const W = 1536;
 const H = 1024;
+const CANVAS = { W, H };
 /** The range's lights: the first is the outline every other one takes. */
 const LIGHTS = ['sunrise', 'day', 'night'];
 /**
@@ -53,198 +61,20 @@ const PAD = 4;
 /** A running light: warm and bright. Pieces of one light closer than LIGHT_MERGE pixels are one light. */
 const LIGHT = { r: 200, gMin: 80, gMax: 190, b: 110, min: 15 };
 const LIGHT_MERGE = 22;
-const ENCODE = { quality: 84, alphaQuality: 90, effort: 6, smartSubsample: true, exact: true };
+const ENCODE = { quality: 84, alphaQuality: 90, effort: 6, smartSubsample: true };
 
-async function load(file) {
-  const image = sharp(file).removeAlpha();
-  const { width, height } = await image.metadata();
-  const sized = width === W && height === H ? image : image.resize(W, H, { fit: 'fill' });
-
-  return (await sized.raw().toBuffer({ resolveWithObject: true })).data;
-}
-
-const neighbours = i => [i - 1, i + 1, i - W, i + W];
-
-/** Pixels within `reach` of the outline (alpha under a half), as a mask. */
-function nearOutline(alpha, reach) {
-  let near = Uint8Array.from(alpha, a => (a < 0.5 ? 1 : 0));
-
-  for (let pass = 0; pass < reach; pass++) {
-    const next = Uint8Array.from(near);
-
-    for (let y = 1; y < H - 1; y++) {
-      for (let x = 1; x < W - 1; x++) {
-        const i = y * W + x;
-        if (!(near[i - 1] || near[i + 1] || near[i - W] || near[i + W])) continue;
-        next[i] = 1;
-      }
-    }
-
-    near = next;
-  }
-
-  return near;
-}
-
-/**
- * Repaints the pixels whose colour cannot be trusted, each from the nearest one that can: those near the outline that
- * still carry the magenta's cast, and every pixel the outline keeps (`use`) that this painting (`own`) left out.
- */
-function repair(rgb, use, own = use) {
-  const band = nearOutline(use, 2);
-  const cast = i => Math.min(rgb[i * 3], rgb[i * 3 + 2]) - rgb[i * 3 + 1] > 4;
-  const need = Uint8Array.from(use, (a, i) =>
-    a > 0 && (own[i] < 0.5 || (band[i] && cast(i))) ? 1 : 0
-  );
-  const trusted = Uint8Array.from(use, (a, i) => (a >= 0.5 && !need[i] ? 1 : 0));
-
-  for (let pass = 0; pass < W; pass++) {
-    const grow = [];
-
-    for (let y = 1; y < H - 1; y++) {
-      for (let x = 1; x < W - 1; x++) {
-        const i = y * W + x;
-        if (!need[i]) continue;
-        const from = neighbours(i).find(n => trusted[n]);
-        if (from === undefined) continue;
-        grow.push([i, from]);
-      }
-    }
-
-    if (!grow.length) break;
-
-    for (const [i, from] of grow) {
-      rgb[i * 3] = rgb[from * 3];
-      rgb[i * 3 + 1] = rgb[from * 3 + 1];
-      rgb[i * 3 + 2] = rgb[from * 3 + 2];
-      trusted[i] = 1;
-      need[i] = 0;
-    }
-  }
-}
-
-/** Any magenta tint left (red and blue both above green) is pulled out. */
-function despill(rgb, alpha) {
-  for (let i = 0; i < W * H; i++) {
-    if (alpha[i] <= 0) continue;
-    const spill = Math.min(rgb[i * 3], rgb[i * 3 + 2]) - rgb[i * 3 + 1];
-    if (spill <= 0) continue;
-    rgb[i * 3] -= spill;
-    rgb[i * 3 + 2] -= spill;
-  }
-}
-
-/** The islands of a mask (8-connected), each with its pixels and centre. */
-function islands(mask, width, height) {
-  const seen = new Uint8Array(width * height);
-  const found = [];
-
-  for (let start = 0; start < width * height; start++) {
-    if (seen[start] || !mask[start]) continue;
-    const pixels = [start];
-    seen[start] = 1;
-
-    for (let k = 0; k < pixels.length; k++) {
-      const x = pixels[k] % width;
-      const y = Math.floor(pixels[k] / width);
-
-      for (let dy = -1; dy <= 1; dy++) {
-        for (let dx = -1; dx <= 1; dx++) {
-          const nx = x + dx;
-          const ny = y + dy;
-          if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
-          const j = ny * width + nx;
-          if (seen[j] || !mask[j]) continue;
-          seen[j] = 1;
-          pixels.push(j);
-        }
-      }
-    }
-
-    let sx = 0;
-    let sy = 0;
-
-    for (const i of pixels) {
-      sx += i % width;
-      sy += Math.floor(i / width);
-    }
-
-    found.push({ pixels, cx: sx / pixels.length, cy: sy / pixels.length });
-  }
-
-  return found;
-}
-
-/** Islands of paint under SPECK pixels, loose in the magenta, are dropped. */
-function dropSpecks(alpha) {
-  const paint = Uint8Array.from(alpha, a => (a > 0.05 ? 1 : 0));
-
-  for (const island of islands(paint, W, H)) {
-    if (island.pixels.length > SPECK) continue;
-
-    for (const i of island.pixels) {
-      alpha[i] = 0;
-    }
-  }
-}
-
-/** The colour under transparent pixels, grown from the nearest paint, so WebP cannot fringe the edges with it. */
-function bleed(rgb, alpha, width, height) {
-  const known = Uint8Array.from(alpha, a => (a > 0.02 ? 1 : 0));
-
-  for (let pass = 0; pass < 24; pass++) {
-    const grow = [];
-
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        const i = y * width + x;
-        if (known[i]) continue;
-        const sides = [
-          x > 0 && i - 1,
-          x < width - 1 && i + 1,
-          y > 0 && i - width,
-          y < height - 1 && i + width,
-        ];
-        const from = sides.find(n => n !== false && known[n]);
-        if (from === undefined) continue;
-        grow.push([i, from]);
-      }
-    }
-
-    if (!grow.length) break;
-
-    for (const [i, from] of grow) {
-      rgb[i * 3] = rgb[from * 3];
-      rgb[i * 3 + 1] = rgb[from * 3 + 1];
-      rgb[i * 3 + 2] = rgb[from * 3 + 2];
-      known[i] = 1;
-    }
-  }
-}
-
-async function encode({ rgb, alpha, width, height }, base) {
-  bleed(rgb, alpha, width, height);
-  const data = Buffer.alloc(width * height * 4);
-
-  for (let i = 0; i < width * height; i++) {
-    data[i * 4] = clampByte(rgb[i * 3]);
-    data[i * 4 + 1] = clampByte(rgb[i * 3 + 1]);
-    data[i * 4 + 2] = clampByte(rgb[i * 3 + 2]);
-    data[i * 4 + 3] = clampByte(alpha[i] * 255);
-  }
-
-  const bytes = await sharp(data, { raw: { width, height, channels: 4 } })
-    .webp(ENCODE)
-    .toBuffer();
-  const hash = createHash('sha256').update(bytes).digest('hex').slice(0, 8);
-  const name = `${base}.${hash}.webp`;
-  await fs.writeFile(path.join(OUT_DIR, name), bytes);
+async function encode(picture, base) {
+  const bytes = await encodeWebp(picture, ENCODE);
+  const name = await writeHashed(bytes, OUT_DIR, base);
   console.log(
-    `${name.padEnd(30)} ${String(width).padStart(4)} × ${height}  ${(bytes.length / 1000).toFixed(0)} KB`
+    `${name.padEnd(30)} ${String(picture.width).padStart(4)} × ${picture.height}  ${(bytes.length / 1000).toFixed(0)} KB`
   );
 
   return name;
 }
+
+/** A raw painting, loaded and keyed. */
+const keyed = async file => key(await loadPainting(path.join(RAW_DIR, file), CANVAS), CANVAS);
 
 /** The highest paint of the range, as a share of the painting's height: where its tallest summit's tip is. */
 function summitShare(alpha) {
@@ -320,15 +150,15 @@ const range = {};
 let outline = null;
 
 for (const light of LIGHTS) {
-  const painting = key(await load(path.join(RAW_DIR, `ahead/land-${light}.png`)), { W, H });
+  const painting = await keyed(`ahead/land-${light}.png`);
 
   if (!outline) {
-    dropSpecks(painting.alpha);
+    dropSpecks(painting.alpha, CANVAS, SPECK);
     outline = painting.alpha;
   }
 
-  repair(painting.rgb, outline, painting.alpha);
-  despill(painting.rgb, outline);
+  repair(painting.rgb, outline, painting.alpha, CANVAS);
+  despill(painting.rgb, outline, CANVAS);
   range[light] = await encode(
     { rgb: painting.rgb, alpha: Float32Array.from(outline), width: W, height: H },
     `range-${light}`
@@ -339,7 +169,7 @@ for (const light of LIGHTS) {
 const sheet = {};
 
 for (const theme of ['day', 'night']) {
-  sheet[theme] = key(await load(path.join(RAW_DIR, `ufo-${theme}.png`)), { W, H });
+  sheet[theme] = await keyed(`ufo-${theme}.png`);
 }
 
 const cellW = W / SHEET.columns;
@@ -368,8 +198,8 @@ const saucer = { size: [box.width, box.height] };
 
 for (const theme of ['day', 'night']) {
   const { rgb, alpha: own } = sheet[theme];
-  repair(rgb, saucerAlpha, own);
-  despill(rgb, saucerAlpha);
+  repair(rgb, saucerAlpha, own, CANVAS);
+  despill(rgb, saucerAlpha, CANVAS);
   const piece = crop(rgb, saucerAlpha, box);
   saucer[theme] = await encode(
     { ...piece, width: box.width, height: box.height },
@@ -388,10 +218,7 @@ const manifest = {
   range,
   saucer,
 };
-await fs.writeFile(
-  MANIFEST,
-  await format(JSON.stringify(manifest), { ...(await resolveConfig(MANIFEST)), parser: 'json' })
-);
+await writeJson(MANIFEST, manifest);
 
 console.log(
   `\nsummit at ${(manifest.summit * 100).toFixed(1)}% · cloud line at ${CLOUD_LINE * 100}% · ` +

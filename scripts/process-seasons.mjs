@@ -27,13 +27,22 @@
  *
  * public/seasons/ belongs to this script: it is emptied first.
  */
-import { createHash } from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { format, resolveConfig } from 'prettier';
 import sharp from 'sharp';
 import { clampByte, key, smooth } from './flat-key.mjs';
+import {
+  copyColour,
+  despill,
+  dropSpecks,
+  encodeWebp,
+  loadPainting,
+  nearOutline,
+  repair,
+  writeHashed,
+  writeJson,
+} from './paintings.mjs';
 
 /* a closed output pipe (`| head`) must not stop the run half way, before the manifest is written */
 process.stdout.on('error', () => {});
@@ -47,6 +56,7 @@ const SEASONS = ['winter', 'spring', 'summer', 'autumn'];
 const THEMES = ['day', 'night'];
 const W = 1536;
 const H = 1024;
+const CANVAS = { W, H };
 
 /** Where the wood stands in the grove: right of `x0`, above `y1` (the meadow's top edge is just below). */
 const TREE = { x0: 660, y1: 690 };
@@ -73,139 +83,6 @@ const TARGET = {
 };
 const MOONLIT = [222, 0.6];
 const SNOW_SHADE = [215, 0.3];
-
-async function load(file) {
-  const image = sharp(file).removeAlpha();
-  const { width, height } = await image.metadata();
-  const sized = width === W && height === H ? image : image.resize(W, H, { fit: 'fill' });
-
-  return (await sized.raw().toBuffer({ resolveWithObject: true })).data;
-}
-
-const neighbours = i => [i - 1, i + 1, i - W, i + W];
-
-function copyColour(rgb, to, from) {
-  rgb[to * 3] = rgb[from * 3];
-  rgb[to * 3 + 1] = rgb[from * 3 + 1];
-  rgb[to * 3 + 2] = rgb[from * 3 + 2];
-}
-
-/** Red and blue both above green by more than this: a pixel with the magenta's cast. */
-const CAST = 4;
-
-/**
- * Repaints the pixels whose colour cannot be trusted, each from the nearest one that can, grown inward until all are
- * covered: those within two pixels of the outline that still carry the magenta's cast (the generator anti-aliases
- * its edge with pinks too faint to key), and, for a night, every pixel the day keeps (`use`) but the night's own
- * painting (`own`) left out, where it drifted off the day. Everything else keeps its own colour: a twig two or three
- * pixels thin is all edge, and repainting all of it smears colour along it from wherever paint is solid.
- */
-function repair(rgb, use, own = use) {
-  const band = nearOutline(use, 2);
-  const cast = i => Math.min(rgb[i * 3], rgb[i * 3 + 2]) - rgb[i * 3 + 1] > CAST;
-  const need = Uint8Array.from(use, (a, i) =>
-    a > 0 && (own[i] < 0.5 || (band[i] && cast(i))) ? 1 : 0
-  );
-  const trusted = Uint8Array.from(use, (a, i) => (a >= 0.5 && !need[i] ? 1 : 0));
-
-  for (let pass = 0; pass < W; pass++) {
-    const grow = [];
-
-    for (let y = 1; y < H - 1; y++) {
-      for (let x = 1; x < W - 1; x++) {
-        const i = y * W + x;
-        if (!need[i]) continue;
-        const from = neighbours(i).find(n => trusted[n]);
-        if (from === undefined) continue;
-        grow.push([i, from]);
-      }
-    }
-
-    if (!grow.length) break;
-
-    for (const [i, from] of grow) {
-      copyColour(rgb, i, from);
-      trusted[i] = 1;
-      need[i] = 0;
-    }
-  }
-}
-
-/** Pixels within `reach` of the outline (alpha under a half), as a mask. */
-function nearOutline(alpha, reach) {
-  let near = Uint8Array.from(alpha, a => (a < 0.5 ? 1 : 0));
-
-  for (let pass = 0; pass < reach; pass++) {
-    const next = Uint8Array.from(near);
-
-    for (let y = 1; y < H - 1; y++) {
-      for (let x = 1; x < W - 1; x++) {
-        const i = y * W + x;
-        if (!(near[i - 1] || near[i + 1] || near[i - W] || near[i + W])) continue;
-        next[i] = 1;
-      }
-    }
-
-    near = next;
-  }
-
-  return near;
-}
-
-/**
- * Any magenta tint left (red and blue both above green) is pulled out, from pixel `from` on. Spring's meadow has
- * real purple, its crocuses, so there it is only done near the outline.
- */
-function despill(rgb, alpha, everywhere, from = 0) {
-  const near = everywhere ? null : nearOutline(alpha, 4);
-
-  for (let i = from; i < W * H; i++) {
-    if (alpha[i] <= 0 || (near && !near[i])) continue;
-    const spill = Math.min(rgb[i * 3], rgb[i * 3 + 2]) - rgb[i * 3 + 1];
-    if (spill <= 0) continue;
-    rgb[i * 3] -= spill;
-    rgb[i * 3 + 2] -= spill;
-  }
-}
-
-/** Islands of paint under SPECK pixels, loose in the magenta, are dropped; returns how many. */
-function dropSpecks(alpha) {
-  const seen = new Uint8Array(W * H);
-  let dropped = 0;
-
-  for (let start = 0; start < W * H; start++) {
-    if (seen[start] || alpha[start] <= 0.05) continue;
-    const piece = [start];
-    seen[start] = 1;
-
-    for (let k = 0; k < piece.length; k++) {
-      const x = piece[k] % W;
-      const y = Math.floor(piece[k] / W);
-
-      for (let dy = -1; dy <= 1; dy++) {
-        for (let dx = -1; dx <= 1; dx++) {
-          const nx = x + dx;
-          const ny = y + dy;
-          if (nx < 0 || ny < 0 || nx >= W || ny >= H) continue;
-          const j = ny * W + nx;
-          if (seen[j] || alpha[j] <= 0.05) continue;
-          seen[j] = 1;
-          piece.push(j);
-        }
-      }
-    }
-
-    if (piece.length > SPECK) continue;
-
-    for (const i of piece) {
-      alpha[i] = 0;
-    }
-
-    dropped++;
-  }
-
-  return dropped;
-}
 
 function hsl(r, g, b) {
   const [rr, gg, bb] = [r / 255, g / 255, b / 255];
@@ -290,7 +167,7 @@ function fixWood(rgb, alpha, season, theme) {
  * the nearest grass inside it; returns how many.
  */
 function healSkyline(rgb, alpha, hasWood) {
-  const near = nearOutline(alpha, SKYLINE);
+  const near = nearOutline(alpha, CANVAS, SKYLINE);
   const bad = new Uint8Array(W * H);
   let count = 0;
 
@@ -374,58 +251,12 @@ function tile(rgb, alpha) {
  * The colour hidden under transparent pixels becomes the nearest painted one, grown outward a few pixels: WebP keeps
  * colour at half resolution, and whatever hides there would bleed into thin twigs.
  */
-function bleed(rgb, alpha, width) {
-  const height = alpha.length / width;
-  const known = Uint8Array.from(alpha, a => (a > 0.02 ? 1 : 0));
-
-  for (let pass = 0; pass < 12; pass++) {
-    const grow = [];
-
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        const i = y * width + x;
-        if (known[i]) continue;
-        const sides = [
-          x > 0 && i - 1,
-          x < width - 1 && i + 1,
-          y > 0 && i - width,
-          y < height - 1 && i + width,
-        ];
-        const from = sides.find(n => n !== false && known[n]);
-        if (from === undefined) continue;
-        grow.push([i, from]);
-      }
-    }
-
-    if (!grow.length) break;
-
-    for (const [i, from] of grow) {
-      rgb[i * 3] = rgb[from * 3];
-      rgb[i * 3 + 1] = rgb[from * 3 + 1];
-      rgb[i * 3 + 2] = rgb[from * 3 + 2];
-      known[i] = 1;
-    }
-  }
-}
+/** A raw painting, loaded and keyed. */
+const keyed = async file => key(await loadPainting(path.join(RAW_DIR, file), CANVAS), CANVAS);
 
 async function encode({ rgb, alpha, width, height = H }, base) {
-  bleed(rgb, alpha, width);
-  const n = alpha.length;
-  const data = Buffer.alloc(n * 4);
-
-  for (let i = 0; i < n; i++) {
-    data[i * 4] = clampByte(rgb[i * 3]);
-    data[i * 4 + 1] = clampByte(rgb[i * 3 + 1]);
-    data[i * 4 + 2] = clampByte(rgb[i * 3 + 2]);
-    data[i * 4 + 3] = clampByte(alpha[i] * 255);
-  }
-
-  const bytes = await sharp(data, { raw: { width, height, channels: 4 } })
-    .webp(ENCODE)
-    .toBuffer();
-  const hash = createHash('sha256').update(bytes).digest('hex').slice(0, 8);
-  const name = `${base}.${hash}.webp`;
-  await fs.writeFile(path.join(OUT_DIR, name), bytes);
+  const bytes = await encodeWebp({ rgb, alpha, width, height }, ENCODE);
+  const name = await writeHashed(bytes, OUT_DIR, base);
   console.log(
     `${name.padEnd(36)} ${String(width).padStart(4)} × ${height}  ${(bytes.length / 1000).toFixed(0)} KB`
   );
@@ -464,19 +295,19 @@ for (const season of SEASONS) {
 
   for (const kind of ['grove', 'meadow']) {
     const grove = kind === 'grove';
-    const day = key(await load(path.join(RAW_DIR, `${kind}-${season}-day.png`)), { W, H });
-    const night = key(await load(path.join(RAW_DIR, `${kind}-${season}-night.png`)), { W, H });
-    const specks = dropSpecks(day.alpha);
+    const day = await keyed(`${kind}-${season}-day.png`);
+    const night = await keyed(`${kind}-${season}-night.png`);
+    const specks = dropSpecks(day.alpha, CANVAS, SPECK);
     const notes = [`${specks} specks`];
 
-    repair(day.rgb, day.alpha);
-    repair(night.rgb, day.alpha, night.alpha);
+    repair(day.rgb, day.alpha, day.alpha, CANVAS);
+    repair(night.rgb, day.alpha, night.alpha, CANVAS);
 
     for (const [theme, painting] of [
       ['day', day],
       ['night', night],
     ]) {
-      despill(painting.rgb, day.alpha, season !== 'spring');
+      despill(painting.rgb, day.alpha, CANVAS, { nearEdgeOnly: season === 'spring' });
       const wood = grove ? fixWood(painting.rgb, day.alpha, season, theme) : 0;
       const sky = healSkyline(painting.rgb, day.alpha, grove);
       notes.push(`${theme}: ${wood} tinted, ${sky} on the skyline`);
@@ -597,16 +428,16 @@ function cropRgba(rgb, alpha, box) {
 }
 
 async function weatherKit() {
-  const day = key(await load(path.join(RAW_DIR, 'weather-day.png')), { W, H });
-  const night = key(await load(path.join(RAW_DIR, 'weather-night.png')), { W, H });
-  dropSpecks(day.alpha);
-  repair(day.rgb, day.alpha);
-  repair(night.rgb, day.alpha, night.alpha);
+  const day = await keyed('weather-day.png');
+  const night = await keyed('weather-night.png');
+  dropSpecks(day.alpha, CANVAS, SPECK);
+  repair(day.rgb, day.alpha, day.alpha, CANVAS);
+  repair(night.rgb, day.alpha, night.alpha, CANVAS);
   /* the petals' soft pink is their own: only the rows below them lose any magenta tint */
   const petalRows = H / KIT_ROWS.length;
 
   for (const painting of [day, night]) {
-    despill(painting.rgb, day.alpha, true, petalRows * W);
+    despill(painting.rgb, day.alpha, CANVAS, { from: petalRows * W });
   }
 
   /* the colours the painter let drift: autumn's tufts and leaves keep only gold (no green or pink needles), and
@@ -675,10 +506,7 @@ async function weatherKit() {
 
 const weather = await weatherKit();
 const manifest = { ground, tile: W - BAND, canvas: [W, H], art, weather };
-await fs.writeFile(
-  MANIFEST,
-  await format(JSON.stringify(manifest), { ...(await resolveConfig(MANIFEST)), parser: 'json' })
-);
+await writeJson(MANIFEST, manifest);
 
 console.log(
   `\nmeadow line at ${(ground * 100).toFixed(1)}% · all four seasons: ` +

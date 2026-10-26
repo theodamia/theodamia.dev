@@ -27,13 +27,12 @@
  *
  * public/scene/ belongs to this script: it is emptied first. Check PNGs go to art/scene/flats/check/.
  */
-import { createHash } from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { format, resolveConfig } from 'prettier';
 import sharp from 'sharp';
 import { clampByte, key, smooth } from './flat-key.mjs';
+import { loadPainting, writeHashed, writeJson } from './paintings.mjs';
 import { sceneTokenRgb } from './scene-token-rgb.mjs';
 
 /* a closed output pipe (`| head`) must not stop the run half way, before the manifest is written */
@@ -215,17 +214,6 @@ for (const flat of FLATS) {
 }
 
 /** A painting as raw RGB at its canvas size: a generator that returns a few pixels more is scaled back, never cropped. */
-async function load(file, canvas) {
-  const image = sharp(file).removeAlpha();
-  const { width, height } = await image.metadata();
-  const sized =
-    width === canvas.W && height === canvas.H
-      ? image
-      : image.resize(canvas.W, canvas.H, { fit: 'fill' });
-
-  return (await sized.raw().toBuffer({ resolveWithObject: true })).data;
-}
-
 /** Grows trusted colours into the pixels that need one: a night painting's drift off the day silhouette. */
 function fillInward(rgb, trusted, needed, canvas, wrap = false) {
   const { W, H } = canvas;
@@ -421,9 +409,7 @@ const written = [];
 async function emit(png, base, options, width) {
   const image = width ? sharp(png).resize(width) : sharp(png);
   const bytes = await image.webp(options).toBuffer();
-  const hash = createHash('sha256').update(bytes).digest('hex').slice(0, 8);
-  const name = `${base}.${hash}.webp`;
-  await fs.writeFile(path.join(OUT_DIR, name), bytes);
+  const name = await writeHashed(bytes, OUT_DIR, base);
   written.push({ name, bytes: bytes.length });
 
   return name;
@@ -464,8 +450,8 @@ function inside(alpha, canvas, wrap = false) {
  */
 async function keyPair(raw, { edges = true, wrap = false } = {}) {
   const canvas = canvasOf(raw);
-  const day = key(await load(path.join(RAW_DIR, `${raw}-day.png`), canvas), canvas);
-  const night = key(await load(path.join(RAW_DIR, `${raw}-night.png`), canvas), canvas);
+  const day = key(await loadPainting(path.join(RAW_DIR, `${raw}-day.png`), canvas), canvas);
+  const night = key(await loadPainting(path.join(RAW_DIR, `${raw}-night.png`), canvas), canvas);
   const needed = Uint8Array.from(day.alpha, a => (a > 0 ? 1 : 0));
 
   if (edges) {
@@ -962,10 +948,7 @@ const manifest = {
   cairn: await processCairn(),
 };
 /* formatted as the repo formats it (its line width), so `pnpm check` passes on what this writes */
-await fs.writeFile(
-  MANIFEST,
-  await format(JSON.stringify(manifest), { ...(await resolveConfig(MANIFEST)), parser: 'json' })
-);
+await writeJson(MANIFEST, manifest);
 
 /* what a visit costs, per theme and device: every flat's near and far versions, the flag, the clouds and the
    cairn (fetched once the closing card comes into view, so only by whoever reaches the end, but counted) */

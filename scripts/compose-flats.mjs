@@ -18,9 +18,9 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { format } from 'prettier';
 import sharp from 'sharp';
 import { clampByte, key, smooth } from './flat-key.mjs';
+import { writeJson } from './paintings.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const FLATS_DIR = path.join(ROOT, 'art/scene/flats');
@@ -401,7 +401,7 @@ async function bleedJoin() {
   const [x0, y0, , h0] = guide.originalRect;
   guide.canvas = [wide, H];
   guide.rect = [+(x0 - BLEED.LEFT / ppu).toFixed(4), y0, +(wide / ppu).toFixed(4), h0];
-  await fs.writeFile(GUIDES, await format(JSON.stringify(guides), { parser: 'json' }));
+  await writeJson(GUIDES, guides);
   console.log(`wrote raw/${raw}-${theme}.png (${wide}×${H}); guide rect ${guide.rect.join(', ')}`);
 }
 
