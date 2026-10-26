@@ -19,6 +19,7 @@ Personal portfolio website for Theodore Damianidis - Senior Software Engineer. "
 - 🏔️ The CV as a climb: the camera walks into a painted mountain, one camp and one card per job, a summit that is never reached
 - 📓 `/cv`: every role on one page, newest first, with the year turning in the valley behind it; it prints as a CV
 - 🌅 `/about`: about, how I work, skills and contact, ending on the next range at sunrise
+- 🤖 `/ai`: how I set AI up for frontend teams, and how this site was made with it
 - 🌙 Day and night: every painting has a moonlit twin, and the night spreads from the switch as a soft circle
 - 🧭 An altimeter with clickable year marks and a floating icon dock that works across all three pages
 - ⚡ Scroll frames that only write transforms, so the climb stays smooth
@@ -36,6 +37,7 @@ theodamia.dev/
 │   ├── page.tsx           # "/" — hero and the climb
 │   ├── cv/page.tsx        # "/cv" — the field log of every role
 │   ├── about/page.tsx     # "/about" — about, how I work, skills, contact
+│   ├── ai/page.tsx        # "/ai" — working with AI
 │   └── globals.css        # Design tokens (@theme) and the scene's CSS
 ├── components/             # React components
 │   ├── scene/             # The climb's stage, the sky, /cv's year and /about's dawn
@@ -99,7 +101,7 @@ pnpm dev
 - `pnpm format` - Format code with Prettier
 - `pnpm format:check` - Check code formatting
 - `pnpm check` - Types, ESLint, Prettier and the tests
-- `pnpm flats`, `pnpm seasons`, `pnpm about` - Rebuild the paintings of `/`, `/cv` and `/about` from `art/`
+- `pnpm flats`, `pnpm seasons`, `pnpm about`, `pnpm ai` - Rebuild the paintings of `/`, `/cv`, `/about` and `/ai` from `art/`
 - `pnpm icons` - Rebuild the site's icons (TD in trail paint) from `art/icon/`
 - `pnpm test` - Run tests in watch mode
 - `pnpm test:run` - Run tests once

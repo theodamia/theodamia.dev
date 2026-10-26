@@ -64,3 +64,5 @@ coverage
 /art/about/raw/
 # and the site icon's (prompts in art/icon/*.md)
 /art/icon/raw/
+# and /ai's (prompts in art/ai/*.md)
+/art/ai/raw/

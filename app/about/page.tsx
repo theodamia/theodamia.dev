@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { AboutFinale } from '@/components/about-finale';
 import { AboutHero } from '@/components/about-hero';
-import { AboutSection } from '@/components/about-section';
+import { PageSection } from '@/components/page-section';
 import { FactItem } from '@/components/fact-item';
 import { OpinionList } from '@/components/opinion-list';
 import { SkillColumns } from '@/components/skill-columns';
@@ -31,8 +31,8 @@ export default function About() {
       <AboutHero />
 
       <div className='max-wide:px-4 mx-auto w-full max-w-[1180px] px-7'>
-        <AboutSection id='background' name='Background' title='Building things that have to last'>
-          <div className='wide:grid-cols-[minmax(0,1fr)_220px] mt-9 grid gap-x-14 gap-y-7'>
+        <PageSection id='background' name='Background' title='Building things that have to last'>
+          <div className='wide:grid-cols-[minmax(0,1fr)_220px] grid gap-x-14 gap-y-7'>
             <div className='flex max-w-[62ch] flex-col gap-[18px]'>
               {/* the first paragraph is the introduction: a size up, in ink */}
               <p className='text-ink text-[20px] leading-[1.5] text-pretty'>{lead}</p>
@@ -48,16 +48,16 @@ export default function About() {
               ))}
             </dl>
           </div>
-        </AboutSection>
+        </PageSection>
 
-        <AboutSection id='work' name='How I work' title='What ten years have settled into'>
+        <PageSection id='work' name='How I work' title='What ten years have settled into'>
           <OpinionList opinions={OPINIONS} />
           <WeekBar week={WEEK} />
-        </AboutSection>
+        </PageSection>
 
-        <AboutSection id='skills' name='Skills' title='What is in the pack'>
+        <PageSection id='skills' name='Skills' title='What is in the pack'>
           <SkillColumns groups={SKILL_GROUPS} />
-        </AboutSection>
+        </PageSection>
       </div>
 
       <AboutFinale />

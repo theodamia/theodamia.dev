@@ -1,5 +1,5 @@
-import { LogEntry } from '@/components/log-entry';
-import { JOBS, TRAILHEAD } from '@/content/jobs';
+import { LogEntry, type LogItem } from '@/components/log-entry';
+import { JOBS, TRAILHEAD, type Job } from '@/content/jobs';
 import { SUMMIT_LINE } from '@/content/site';
 import { YEAR_STATES, yearTimeline } from '@/scene/seasons';
 import { cn } from '@/utils/cn';
@@ -7,6 +7,17 @@ import { cn } from '@/utils/cn';
 /** Newest first, the way a CV is read, while the climb keeps telling it from the beginning. */
 const ENTRIES = JOBS.map((job, index) => ({ job, index })).reverse();
 const NOW = JOBS.length - 1;
+
+/** A job as the log reads it: "Mar 2026 – present · 7 months", the role, the company. */
+const entryOf = (job: Job): LogItem => ({
+  id: `entry-${job.start}`,
+  when: `${job.period} · ${job.duration}`,
+  title: job.role,
+  place: job.company,
+  url: job.url,
+  summary: job.summary,
+  points: job.highlights,
+});
 
 /** The rail and its gutter: the same two columns for an entry and for the two ends that close the log. */
 const RAIL = 'grid grid-cols-[12px_minmax(0,1fr)] gap-x-5 print:block';
@@ -55,7 +66,7 @@ export function FieldLog() {
                 )}
               />
             </span>
-            <LogEntry job={job} />
+            <LogEntry entry={entryOf(job)} />
           </li>
         ))}
       </ol>

@@ -50,6 +50,7 @@ export default function Cv() {
           <PageHeader
             eyebrow={dockLabel('cv')}
             title={SITE.name}
+            oneLine
             lede={SITE.title}
             facts={SUMMARY_FACTS}
           >

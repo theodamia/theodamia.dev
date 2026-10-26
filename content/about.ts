@@ -36,6 +36,8 @@ export type Opinion = {
   name: string;
   /** How often it holds, 0 ("it depends") to 1 ("every time"). */
   holds: number;
+  /** A page that shows it in practice, which the opinion links to. */
+  href?: string;
 };
 
 /** Ordered by how often each holds, strongest first: the bars read as one falling line down the section. */
@@ -43,7 +45,7 @@ export const OPINIONS: Opinion[] = [
   { name: 'What we are solving, before how', holds: 0.92 },
   { name: 'Boring code beats clever code', holds: 0.9 },
   { name: 'A design system beats one-off UI', holds: 0.88 },
-  { name: 'AI writes the draft, not the decisions', holds: 0.85 },
+  { name: 'AI writes the draft, not the decisions', holds: 0.85, href: '/ai' },
   { name: 'Write it twice, then abstract', holds: 0.74 },
   { name: 'Tests where they earn their keep', holds: 0.62 },
 ];

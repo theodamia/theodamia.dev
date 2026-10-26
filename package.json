@@ -29,6 +29,7 @@
     "flats:compose": "node scripts/compose-flats.mjs",
     "seasons": "node scripts/process-seasons.mjs",
     "about": "node scripts/process-about.mjs",
+    "ai": "node scripts/process-ai.mjs",
     "icons": "node scripts/process-icons.mjs"
   },
   "lint-staged": {

@@ -22,7 +22,7 @@ const HERO_CLOUDS: CloudWind[] = [
 export function AboutHero() {
   return (
     <div className='relative isolate'>
-      <div aria-hidden='true' className='about-sky max-wide:hidden print:hidden'>
+      <div aria-hidden='true' className='summit-sky max-wide:hidden print:hidden'>
         <Stars />
         <PaintedClouds winds={HERO_CLOUDS} />
       </div>

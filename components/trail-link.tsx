@@ -6,10 +6,10 @@ import type React from 'react';
 import { addTransitionType, startTransition } from 'react';
 
 /**
- * The three pages are three heights on one mountain: /cv the valley at its foot (where the trail starts), / the
- * climb itself, /about the summit's strip. A page that is not on this map counts as the climb's height.
+ * The pages are heights on one mountain: /cv the valley at its foot (where the trail starts), / the climb itself,
+ * /about the summit's strip, and /ai beside it, read from it. A page that is not on this map counts as the climb's.
  */
-const ALTITUDE: Record<string, number> = { '/cv': 0, '/': 1, '/about': 2 };
+const ALTITUDE: Record<string, number> = { '/cv': 0, '/': 1, '/about': 2, '/ai': 2 };
 
 type TrailDirection = 'trail-up' | 'trail-down' | 'trail-across';
 
