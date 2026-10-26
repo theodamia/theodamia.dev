@@ -8,7 +8,13 @@ import { DOCK_ICON_STROKE, SECTION_SCROLL_OFFSET_PX } from '@/constants';
 import { TrailLink } from '@/components/trail-link';
 import { DockBubble } from '@/components/dock-bubble';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { DOCK_ITEMS, dockHref, type DockItem, type DockItemId } from '@/content/dock-items';
+import {
+  DOCK_ITEMS,
+  dockHref,
+  dockItemOn,
+  type DockItem,
+  type DockItemId,
+} from '@/content/dock-items';
 import { cn } from '@/utils/cn';
 
 /** The dock lights the section under this share of the screen height. */
@@ -35,9 +41,9 @@ function useActiveSection(pathname: string): string | null {
   const [active, setActive] = useState<string | null>(null);
 
   useEffect(() => {
-    const ids = DOCK_ITEMS.filter(item => item.page === pathname && item.section).map(
-      item => item.section as string
-    );
+    const ids = DOCK_ITEMS.map(item => dockItemOn(item, pathname))
+      .filter(item => item.page === pathname && item.section)
+      .map(item => item.section as string);
     let tops: number[] = [];
     let probeOffset = 0;
     let raf = 0;
@@ -114,20 +120,24 @@ export function Dock() {
       className='rounded-dock border-line shadow-dock bg-card/96 touch:p-1 fixed bottom-4 left-1/2 z-[90] flex max-w-[calc(100vw-20px)] -translate-x-1/2 items-center border p-1.5 print:hidden'
     >
       <nav aria-label='Sections' className='touch:gap-0 flex items-center gap-0.5'>
-        {DOCK_ITEMS.map(item => {
+        {DOCK_ITEMS.map(placed => {
+          const item = dockItemOn(placed, pathname);
           const Icon = ICONS[item.id];
           const isHome = item.id === 'home';
           /* a page's own item is lit on that page until one of its sections is under the middle of the screen */
           const isOn = item.section
             ? item.section === active
             : !isHome && item.page === pathname && !active;
+          /* what is current: the page itself, or a place within it; Home is the climb, the page it names */
+          const current = item.section ? 'location' : 'page';
+          const isHere = isOn || (isHome && pathname === item.page);
 
           return (
             <TrailLink
               key={item.id}
               href={dockHref(item)}
               aria-label={item.label}
-              aria-current={isOn ? 'true' : undefined}
+              aria-current={isHere ? current : undefined}
               onClick={event => onClick(event, item)}
               className={cn(
                 'group rounded-ctl text-ink-2 relative inline-flex size-11 shrink-0 items-center justify-center gap-2 text-[15px] font-semibold whitespace-nowrap transition-colors duration-200 motion-reduce:transition-none',

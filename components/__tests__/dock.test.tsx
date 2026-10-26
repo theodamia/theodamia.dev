@@ -23,8 +23,28 @@ describe('Dock', () => {
 
     expect(screen.getByRole('link', { name: 'Experience' })).toHaveAttribute(
       'aria-current',
-      'true'
+      'page'
     );
+  });
+
+  it('marks Home as the current page on the climb', () => {
+    render(<Dock />);
+
+    expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('keeps Contact on a page that ends on its own card, and sends it to /about from the climb', () => {
+    for (const [pathname, href] of [
+      ['/', '/about#contact'],
+      ['/cv', '/cv#contact'],
+      ['/about', '/about#contact'],
+      ['/ai', '/ai#contact'],
+    ]) {
+      vi.mocked(usePathname).mockReturnValue(pathname);
+      const { unmount } = render(<Dock />);
+      expect(screen.getByRole('link', { name: 'Contact' })).toHaveAttribute('href', href);
+      unmount();
+    }
   });
 
   it('names its four icon links, the three pages and the one action', () => {
@@ -68,7 +88,7 @@ describe('Dock', () => {
 
     render(<Dock />);
 
-    expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('aria-current', 'true');
+    expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('link', { name: 'Contact' })).not.toHaveAttribute('aria-current');
     expect(screen.getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current');
   });
@@ -87,7 +107,10 @@ describe('Dock', () => {
 
     render(<Dock />);
 
-    expect(screen.getByRole('link', { name: 'Contact' })).toHaveAttribute('aria-current', 'true');
+    expect(screen.getByRole('link', { name: 'Contact' })).toHaveAttribute(
+      'aria-current',
+      'location'
+    );
     expect(screen.getByRole('link', { name: 'About' })).not.toHaveAttribute('aria-current');
   });
 });
