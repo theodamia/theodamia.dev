@@ -54,4 +54,12 @@ describe('/ai', () => {
 
     expect(screen.getByRole('heading', { name: AI_CONTACT_TITLE })).toBeInTheDocument();
   });
+
+  it('keeps its two scenes out of the accessibility tree: they are pictures of the idea, not content', () => {
+    const { container } = render(<Ai />);
+
+    const pictures = container.querySelectorAll('.theme-art');
+    expect(pictures.length).toBeGreaterThanOrEqual(4);
+    pictures.forEach(picture => expect(picture.closest('[aria-hidden="true"]')).not.toBeNull());
+  });
 });

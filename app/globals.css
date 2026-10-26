@@ -1487,8 +1487,11 @@
  * dusk becomes midnight and the moon rises). Wide screens only: on phones the page is just the words.
  */
 
-/* the opening's sky: the climb's tokens, mixed by the hour; it eases into the page below the facts */
-.about-sky {
+/*
+ * The summit's sky, at the top of /about and of /ai (the two pages up there): the climb's tokens, mixed by the hour.
+ * It eases into the page below, over whatever stands at its foot (z-index 2: above a painting's own layer).
+ */
+.summit-sky {
   position: absolute;
   inset: 0;
   z-index: -1;
@@ -1503,16 +1506,17 @@
   );
 }
 
-.about-sky::after {
+.summit-sky::after {
   content: '';
   position: absolute;
+  z-index: 2;
   inset: auto 0 0;
   height: 30%;
   background: linear-gradient(to bottom, transparent, var(--color-page));
 }
 
 /* by day: morning is the dawn (above), midday the day, evening a warmer day; at night the light theme is first light */
-:root[data-daypart='midday'] .about-sky {
+:root[data-daypart='midday'] .summit-sky {
   background: linear-gradient(
     to bottom,
     var(--color-day-top),
@@ -1521,7 +1525,7 @@
   );
 }
 
-:root[data-daypart='evening'] .about-sky {
+:root[data-daypart='evening'] .summit-sky {
   background: linear-gradient(
     to bottom,
     color-mix(in oklab, var(--color-day-top) 62%, var(--color-dawn-top)),
@@ -1531,7 +1535,7 @@
 }
 
 /* by night the dawn tokens are dusk and the day's are midnight: dusk until evening, then deeper, then midnight */
-:root[data-theme='dark'][data-daypart='midday'] .about-sky {
+:root[data-theme='dark'][data-daypart='midday'] .summit-sky {
   background: linear-gradient(
     to bottom,
     var(--color-dawn-top),
@@ -1540,7 +1544,7 @@
   );
 }
 
-:root[data-theme='dark'][data-daypart='evening'] .about-sky {
+:root[data-theme='dark'][data-daypart='evening'] .summit-sky {
   background: linear-gradient(
     to bottom,
     color-mix(in oklab, var(--color-day-top) 50%, var(--color-dawn-top)),
@@ -1549,7 +1553,7 @@
   );
 }
 
-:root[data-theme='dark'][data-daypart='night'] .about-sky {
+:root[data-theme='dark'][data-daypart='night'] .summit-sky {
   background: linear-gradient(
     to bottom,
     var(--color-day-top),
@@ -1839,6 +1843,63 @@
 /* phones: the card alone, clear of the dock */
 @media (max-width: 899.98px) {
   .about-finale {
+    min-height: 0;
+    padding-top: 8px;
+    padding-bottom: 120px;
+  }
+}
+
+/*
+ * /ai (app/ai/page.tsx, scene/ai.ts): the summit's sky at the top, as on /about, with the giant at its foot looking
+ * at a range that turns from a wireframe draft into paint; and the page ends as /about does, the card near the top
+ * of one screen, open sky, and the giant at a fork along the bottom edge. Wide screens only.
+ */
+
+/* flush with the screen's right edge; never wider than the room right of the title (the title ends near 45vw + 50px
+   from the right at every wide width), and its left end dissolves into the sky (scripts/process-ai.mjs) */
+.ai-giant {
+  inset: auto 0 0 auto;
+  width: min(760px, calc(45vw + 50px));
+  aspect-ratio: var(--scene-aspect);
+}
+
+.ai-finale {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-top: clamp(56px, 8vh, 96px);
+  /* the scene spans the width, so its height is `cqw` of the finale */
+  container-type: inline-size;
+}
+
+/* the finale's sky comes in from the page above it and runs to the bottom edge, where the meadow stands */
+.ai-finale-sky::after {
+  inset: 0 0 auto;
+  height: 22%;
+  background: linear-gradient(to bottom, var(--color-page), transparent);
+}
+
+.ai-band {
+  flex: 1 0 12vh;
+}
+
+/* room for the scene's lower half: the card, on the left, may stand over its far range, never over the giant */
+.ai-foot {
+  flex: none;
+  height: calc(55cqw / var(--scene-aspect));
+}
+
+.ai-fork {
+  inset: auto 0 0;
+  width: 100%;
+  aspect-ratio: var(--scene-aspect);
+}
+
+/* phones: the card alone, clear of the dock */
+@media (max-width: 899.98px) {
+  .ai-finale {
     min-height: 0;
     padding-top: 8px;
     padding-bottom: 120px;
