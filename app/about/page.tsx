@@ -6,7 +6,7 @@ import { FactItem } from '@/components/fact-item';
 import { OpinionList } from '@/components/opinion-list';
 import { SkillColumns } from '@/components/skill-columns';
 import { WeekBar } from '@/components/week-bar';
-import { ABOUT_PARAGRAPHS, ASIDE_FACTS, OPINIONS, WEEK } from '@/content/about';
+import { ABOUT_PARAGRAPHS, FACTS, OPINIONS, WEEK } from '@/content/about';
 import { pageMetadata } from '@/lib/page-metadata';
 import { SITE } from '@/content/site';
 import { SKILL_GROUPS } from '@/content/skill-groups';
@@ -31,7 +31,7 @@ export default function About() {
       <AboutHero />
 
       <div className='max-wide:px-4 mx-auto w-full max-w-[1180px] px-7'>
-        <AboutSection id='about' name='About' title='Building things that have to last'>
+        <AboutSection id='background' name='Background' title='Building things that have to last'>
           <div className='wide:grid-cols-[minmax(0,1fr)_220px] mt-9 grid gap-x-14 gap-y-7'>
             <div className='flex max-w-[62ch] flex-col gap-[18px]'>
               {/* the first paragraph is the introduction: a size up, in ink */}
@@ -43,7 +43,7 @@ export default function About() {
               ))}
             </div>
             <dl className='flex flex-col gap-5 pt-1.5'>
-              {ASIDE_FACTS.map(fact => (
+              {FACTS.map(fact => (
                 <FactItem key={fact.label} fact={fact} className='max-w-[26ch]' />
               ))}
             </dl>

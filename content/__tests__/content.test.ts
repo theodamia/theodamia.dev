@@ -1,16 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
-  ASIDE_FACTS,
   EDUCATION,
-  FACTS,
-  HERO_FACTS,
   HOLDS_IN_WORDS,
   holdsInWords,
   OPINIONS,
   SUMMARY_FACTS,
   WEEK,
 } from '@/content/about';
-import { DOCK_ITEMS, dockHref } from '@/content/dock-items';
+import { DOCK_ITEMS, dockHref, dockLabel } from '@/content/dock-items';
 import { JOBS } from '@/content/jobs';
 import { SKILL_GROUPS } from '@/content/skill-groups';
 
@@ -66,11 +63,6 @@ describe('about', () => {
     expect(HOLDS_IN_WORDS.at(-1)?.from).toBe(0);
   });
 
-  it('opens /about on the job now, where and how long, and keeps the rest beside its text', () => {
-    expect(HERO_FACTS.map(fact => fact.label)).toEqual(['Currently', 'Based in', 'Experience']);
-    expect([...HERO_FACTS, ...ASIDE_FACTS]).toHaveLength(FACTS.length);
-  });
-
   it('finds every fact the Experience page summarises, so a rename cannot go quiet', () => {
     expect(SUMMARY_FACTS.map(fact => fact.label)).toEqual(['Experience', 'Based in', 'Languages']);
   });
@@ -96,9 +88,13 @@ describe('dock items', () => {
     expect(DOCK_ITEMS.map(dockHref)).toEqual([
       '/',
       '/cv',
-      '/about#about',
+      '/about',
       '/about#skills',
       '/about#contact',
     ]);
+  });
+
+  it("names a page's header in the dock's own word", () => {
+    expect([dockLabel('cv'), dockLabel('about')]).toEqual(['Experience', 'About']);
   });
 });

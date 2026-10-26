@@ -126,7 +126,10 @@ export function Dock() {
         {DOCK_ITEMS.map(item => {
           const Icon = ICONS[item.id];
           const isHome = item.id === 'home';
-          const isOn = item.section ? item.section === active : !isHome && item.page === pathname;
+          /* a page's own item is lit on that page until one of its sections is under the middle of the screen */
+          const isOn = item.section
+            ? item.section === active
+            : !isHome && item.page === pathname && !active;
 
           return (
             <TrailLink
