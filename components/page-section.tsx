@@ -1,7 +1,7 @@
 import type React from 'react';
 import { Heading } from '@/components/ui/text';
 
-type AboutSectionProps = {
+type PageSectionProps = {
   id: string;
   /** The section's name, in the margin on wide screens: where the reader is, while they read it. */
   name: string;
@@ -10,11 +10,11 @@ type AboutSectionProps = {
 };
 
 /**
- * One section of /about, open on the page: its name in a margin that stays in view while the section is read
- * (wayfinding, so the heading does not need a label above it), and its heading and content beside it. Hairlines
- * between sections, as on /cv. On phones the name sits above the heading.
+ * One section of a reading page (/about, /ai), open on the page: its name in a margin that stays in view while the
+ * section is read (wayfinding, so the heading does not need a label above it), and its heading and content beside
+ * it. Hairlines between sections, as on /cv. On phones the name sits above the heading.
  */
-export function AboutSection({ id, name, title, children }: AboutSectionProps) {
+export function PageSection({ id, name, title, children }: PageSectionProps) {
   return (
     <section
       id={id}

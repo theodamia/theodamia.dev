@@ -28,6 +28,14 @@ describe('/about', () => {
     });
   });
 
+  it('links the AI opinion to the page that shows it in practice', () => {
+    render(<About />);
+
+    expect(
+      screen.getByRole('link', { name: 'AI writes the draft, not the decisions' })
+    ).toHaveAttribute('href', '/ai');
+  });
+
   it('keeps the sections the dock links to, each named by its heading', () => {
     render(<About />);
 

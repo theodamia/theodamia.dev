@@ -5,9 +5,14 @@ import type { Fact } from '@/content/about';
 import { cn } from '@/utils/cn';
 
 type PageHeaderProps = {
-  /** The page's name, in the dock's word for it. The dock shows only icons, so this is what says where you are. */
+  /**
+   * The page's name, in the dock's word for it where the dock has one. The dock shows only icons, so this is what
+   * says where you are.
+   */
   eyebrow: string;
   title: string;
+  /** Keep the title on one line on wide screens: for a name, which reads badly broken. A sentence wraps, balanced. */
+  oneLine?: boolean;
   /** One line under the title: what the page is, or who. */
   lede: React.ReactNode;
   /** A row of facts between two hairlines, after the actions. Each fact belongs to one page's header only. */
@@ -22,16 +27,27 @@ type PageHeaderProps = {
  * and nothing else. The title is set at the page size; the hero's bigger type belongs to the climb alone, which is
  * where the site makes its first impression. The page around it sets the width and what stands behind it.
  */
-export function PageHeader({ eyebrow, title, lede, facts, children, className }: PageHeaderProps) {
+export function PageHeader({
+  eyebrow,
+  title,
+  oneLine = false,
+  lede,
+  facts,
+  children,
+  className,
+}: PageHeaderProps) {
   return (
     <header className={cn('max-wide:pt-[84px] pt-[92px] print:pt-0', className)}>
       {/* the page's name is for finding your way on screen; on paper the sheet is already the CV */}
       <Eyebrow className='print:hidden'>{eyebrow}</Eyebrow>
-      {/* one line on wide screens: at 72px a name is a little wider than /cv's column, never than the screen */}
+      {/* one line, where asked: at 72px a name is a little wider than /cv's column, never than the screen */}
       <Heading
         as='h1'
         size='page'
-        className='wide:whitespace-nowrap mt-2 print:mt-0 print:text-[34px]'
+        className={cn(
+          'mt-2 max-w-[18ch] text-balance print:mt-0 print:text-[34px]',
+          oneLine && 'wide:max-w-none wide:whitespace-nowrap'
+        )}
       >
         {title}
       </Heading>

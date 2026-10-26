@@ -7,6 +7,7 @@ import {
   SUMMARY_FACTS,
   WEEK,
 } from '@/content/about';
+import { AI_PAGE, AI_PLACES } from '@/content/ai';
 import { DOCK_ITEMS, dockHref, dockLabel } from '@/content/dock-items';
 import { JOBS } from '@/content/jobs';
 import { SKILL_GROUPS } from '@/content/skill-groups';
@@ -80,6 +81,19 @@ describe('about', () => {
     SKILL_GROUPS.forEach(group =>
       expect(group.items.length).toBeLessThanOrEqual(MAX_SKILLS_PER_GROUP)
     );
+  });
+});
+
+describe('ai', () => {
+  it('is titled with the opinion on /about that links to it, so the two cannot drift apart', () => {
+    expect(OPINIONS.find(opinion => opinion.href === '/ai')?.name).toBe(AI_PAGE.title);
+  });
+
+  it('keeps each place to the log’s shape: a sentence, then three to five points', () => {
+    AI_PLACES.forEach(place => {
+      expect(place.points.length).toBeGreaterThanOrEqual(3);
+      expect(place.points.length).toBeLessThanOrEqual(5);
+    });
   });
 });
 

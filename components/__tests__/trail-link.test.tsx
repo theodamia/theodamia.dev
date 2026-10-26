@@ -12,6 +12,11 @@ describe('trailDirection', () => {
     expect(trailDirection('/', '/cv')).toBe('trail-down');
   });
 
+  it('reads /ai beside the summit, across from /about', () => {
+    expect(trailDirection('/about', '/ai')).toBe('trail-across');
+    expect(trailDirection('/', '/ai')).toBe('trail-up');
+  });
+
   it('counts a page off the map as the climb itself', () => {
     expect(trailDirection('/somewhere', '/')).toBe('trail-across');
   });
