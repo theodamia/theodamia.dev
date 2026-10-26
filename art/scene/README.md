@@ -22,6 +22,7 @@ Each flat has a day and a night painting with identical silhouettes. The page sc
 | `flats/ENVELOPE-README.md`                                                 | the prompts of the seam and bleed edits                          | yes                                   |
 | `flats/camp-kit-day.png`                                                   | the camp kit reference sheet                                     | no                                    |
 | `flats/PAINT-README.md`, `KIT-README.md`, `NIGHT-README.md`                | the exact prompts and inputs of every painting                   | yes                                   |
+| `flats/CLOUDS-README.md`, `AURORA-README.md`, `CAIRN-README.md`            | the sky's clouds, the night's aurora and today's cairn           | yes                                   |
 | `style/frames/README.md`                                                   | the style exploration that set the look (its frames stay local)  | yes                                   |
 | `../../public/scene/*.webp`, `../../scene/flats.json`                      | the processed flats and their manifest                           | yes                                   |
 

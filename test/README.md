@@ -4,7 +4,7 @@ This project uses [Vitest](https://vitest.dev/) and [React Testing Library](http
 
 ## Test Structure
 
-- **Unit Tests**: Test individual utilities and functions (`lib/__tests__/`)
+- **Unit Tests**: Test the pure modules (`scene/__tests__/`, `content/__tests__/`, `lib/__tests__/`, `utils/__tests__/`)
 - **Component Tests**: Test React components (`components/__tests__/`)
 - **Integration Tests**: Test component interactions (can be added as needed)
 

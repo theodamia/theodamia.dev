@@ -1,6 +1,6 @@
 # theodamia.dev
 
-Personal portfolio website for Theodore Damianidis - Senior Software Engineer. "The Ascent": ten years of software engineering drawn as one long, scroll-driven climb up a mountain, with a second, quiet page for about, skills and contact.
+Personal portfolio website for Theodore Damianidis - Senior Software Engineer. "The Ascent": ten years of software engineering drawn as one long, scroll-driven climb up a painted mountain, the same years read plainly as a field log on `/cv`, and a page about what's ahead on `/about`.
 
 ## 🚀 Tech Stack
 
@@ -8,7 +8,7 @@ Personal portfolio website for Theodore Damianidis - Senior Software Engineer. "
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **UI Library**: [React 19](https://react.dev/)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) with `class-variance-authority`
-- **Scene**: hand-written SVG + CSS, generated deterministically — no WebGL, no chart or animation library
+- **Scene**: painted flats (WebP) moved by a small camera in plain TypeScript and CSS transforms — no WebGL, no canvas, no animation library
 - **Icons**: [Lucide](https://lucide.dev/) for the dock (plus one hand-drawn ice axe) and for skills without a logo, [Simple Icons](https://simpleicons.org/) for brand logos in Skills and the links
 - **Type**: Bricolage Grotesque and Instrument Sans via `next/font`
 - **Analytics**: [Vercel Analytics](https://vercel.com/analytics)
@@ -16,9 +16,11 @@ Personal portfolio website for Theodore Damianidis - Senior Software Engineer. "
 
 ## ✨ Features
 
-- 🏔️ The CV as a climb: a sticky parallax mountain, one camp and one card per job, a summit that is never reached
-- 🧭 An altimeter with clickable year marks and a floating icon dock that works across both pages
-- 📖 A quiet `/about` page: about, how I work, skills and contact
+- 🏔️ The CV as a climb: the camera walks into a painted mountain, one camp and one card per job, a summit that is never reached
+- 📓 `/cv`: every role on one page, newest first, with the year turning in the valley behind it; it prints as a CV
+- 🌅 `/about`: about, how I work, skills and contact, ending on the next range at sunrise
+- 🌙 Day and night: every painting has a moonlit twin, and the night spreads from the switch as a soft circle
+- 🧭 An altimeter with clickable year marks and a floating icon dock that works across all three pages
 - ⚡ Scroll frames that only write transforms, so the climb stays smooth
 - 📱 Responsive down to 320px, with touch-specific dock behaviour
 - ♿ Semantic HTML, keyboard-reachable everything, reduced-motion support
@@ -32,23 +34,26 @@ theodamia.dev/
 ├── app/                    # Next.js App Router
 │   ├── layout.tsx         # Root layout: fonts, metadata, the dock
 │   ├── page.tsx           # "/" — hero and the climb
+│   ├── cv/page.tsx        # "/cv" — the field log of every role
 │   ├── about/page.tsx     # "/about" — about, how I work, skills, contact
-│   └── globals.css        # Design tokens (@theme) and scene layer CSS
+│   └── globals.css        # Design tokens (@theme) and the scene's CSS
 ├── components/             # React components
-│   ├── scene/             # The SVG stage, the still summit strip, shared layers
+│   ├── scene/             # The climb's stage, the sky, /cv's year and /about's dawn
 │   ├── icons/             # Inline SVG icons
-│   ├── ui/                # Small primitives (button, pill, text)
+│   ├── ui/                # Small primitives (button, text)
 │   ├── climb.tsx          # Client shell of the main page
 │   ├── job-card.tsx       # One stop on the climb
 │   ├── altimeter.tsx      # Year rail, needle and the "Now" card
 │   └── dock.tsx           # The only navigation
-├── hooks/                 # use-climb-scroll (scroll controller), use-reduced-motion
+├── hooks/                 # use-climb-scroll (scroll controller), use-theme, use-in-view, use-reduced-motion
 ├── content/               # Every word on the site
 │   ├── jobs.ts            # Career timeline (source of truth)
 │   ├── skill-groups.ts    # Skills by category
 │   ├── about.ts           # About copy, facts, opinions, week split
 │   └── site.ts            # Name, title, links
-├── scene/                 # The mountain as numbers (world.ts, scenery.ts)
+├── scene/                 # The climb as numbers: the camera, the paintings' manifests, the sky
+├── scripts/               # The art pipelines: raw paintings in, WebP and manifests out
+├── art/                   # Prompts and records of every painting (the raw files stay local)
 ├── lib/                   # Where our code meets someone else's
 ├── utils/                 # Our own helpers, one per file
 ├── constants/             # Values shared across modules
@@ -93,7 +98,8 @@ pnpm dev
 - `pnpm lint` - Run ESLint
 - `pnpm format` - Format code with Prettier
 - `pnpm format:check` - Check code formatting
-- `pnpm check` - Run both ESLint and Prettier checks
+- `pnpm check` - Types, ESLint, Prettier and the tests
+- `pnpm flats`, `pnpm seasons`, `pnpm about` - Rebuild the paintings of `/`, `/cv` and `/about` from `art/`
 - `pnpm test` - Run tests in watch mode
 - `pnpm test:run` - Run tests once
 - `pnpm test:ui` - Run tests with UI
@@ -106,6 +112,7 @@ This project uses Tailwind CSS with the following configuration:
 - **Design System**: "Alpine" — cool slate interface, hairline borders, one orange accent; green lives only in the scene
 - **Tokens**: every colour, radius, shadow and easing is declared in `@theme` in `app/globals.css`
 - **Day and night**: a toggle at the end of the dock. The night spreads from it as a soft circle (a view transition), the sun turns into the moon and the stars come out as it passes. First visits follow the system setting
+- **The scene**: green belongs to the paintings, never to the interface
 
 ## 🔧 Code Quality
 
