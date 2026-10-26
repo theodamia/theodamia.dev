@@ -200,7 +200,7 @@ export function bounds(width, height, keep, [from, to] = [0, width]) {
 }
 
 /** The colour under transparent pixels, grown from the nearest paint, so WebP cannot fringe the edges with it. */
-export function bleed(rgb, alpha, width, height) {
+function bleed(rgb, alpha, width, height) {
   const known = Uint8Array.from(alpha, a => (a > 0.02 ? 1 : 0));
 
   for (let pass = 0; pass < BLEED_REACH; pass++) {

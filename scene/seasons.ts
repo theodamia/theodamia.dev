@@ -47,7 +47,7 @@ export const DEFAULT_START = 2;
  */
 export const seasonOf = (j: number, k: number): Season => SEASONS[(j + k) % SEASONS.length];
 
-export type SeasonArt = { grove: string; meadow: string };
+type SeasonArt = { grove: string; meadow: string };
 
 /** The paintings (scripts/process-seasons.mjs): a grove and a repeating meadow per season and time. */
 export const SEASON_ART: Record<Season, Record<Theme, SeasonArt>> = manifest.art;
@@ -68,10 +68,10 @@ export const seasonUrl = (file: string) => `/seasons/${file}`;
  * one small atlas per theme), and in winter the climb's own snow, a soft round flake. Few and slow on purpose: it is
  * weather beside a list somebody is reading.
  */
-export type WeatherKind = 'petal' | 'seed' | 'leaf' | 'flake';
+type WeatherKind = 'petal' | 'seed' | 'leaf' | 'flake';
 
 /** The kit's atlas: its files, its size in px, the square every sprite was fitted into, and each season's boxes. */
-export type WeatherAtlas = {
+type WeatherAtlas = {
   atlas: Record<Theme, string>;
   size: [number, number];
   sprite: number;
@@ -117,7 +117,7 @@ const WEATHER: Record<Season, WeatherSpec> = {
 };
 
 /** Each kind has this many paths, so neighbours never fall in step. */
-export const WEATHER_PATHS = 4;
+const WEATHER_PATHS = 4;
 
 /**
  * Passes in one animation cycle. A bit runs on the compositor, but the browser wakes the main thread each time a
@@ -129,7 +129,7 @@ const STEPS_PER_PASS = 12;
 /** The second pass of a cycle runs this many px to the side of the first. */
 const LANE = 31;
 
-export type WeatherBit = {
+type WeatherBit = {
   key: number;
   kind: WeatherKind;
   /** Which of its kind's paths it follows, from 1. */

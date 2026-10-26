@@ -7,7 +7,7 @@ import { createContext, useContext, type RefObject } from 'react';
  * it again. The climb owns it (components/climb.tsx), because both ends live there: the card in the page, and the
  * cairn the stage keeps on the camp.
  */
-export type Scenery = {
+type Scenery = {
   /** The card is set aside, kept in the cairn. */
   viewing: boolean;
   /** Set the card aside (true) or take it out again (false), carried by a view transition. */

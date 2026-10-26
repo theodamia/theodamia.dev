@@ -11,7 +11,7 @@ import { addTransitionType, startTransition } from 'react';
  */
 const ALTITUDE: Record<string, number> = { '/cv': 0, '/': 1, '/about': 2 };
 
-export type TrailDirection = 'trail-up' | 'trail-down' | 'trail-across';
+type TrailDirection = 'trail-up' | 'trail-down' | 'trail-across';
 
 /** Which way a move between two pages goes on the mountain. */
 export function trailDirection(from: string, to: string): TrailDirection {

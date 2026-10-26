@@ -43,7 +43,7 @@ type Star = {
   tint: StarTint;
 };
 
-export type StarTint = 'cool' | 'white' | 'warm';
+type StarTint = 'cool' | 'white' | 'warm';
 
 const SEED = 5100;
 /** Share of a cell a star may wander from its centre, so the grid never shows. */

@@ -54,7 +54,7 @@ export type Flat = {
 /** One of the sky's painted clouds: its painted size in pixels (its shape), and its picture per theme. */
 export type Cloud = { w: number; h: number; art: Record<Theme, string> };
 
-export type Flag = {
+type Flag = {
   /** Pixel sizes of the pole picture, and where on it the pennant's hem hangs (just under the cap). */
   pole: { w: number; h: number; ax: number; ay: number };
   /** Pixel sizes of the pennant picture, and its hem's top corner. */
@@ -104,7 +104,7 @@ export const AURORA: { w: number; h: number; art: string }[] = manifest.aurora;
  * The cairn's picture: its size in pixels (its shape), where its stones stand on the snow as a share of its height
  * from the top (its patch of snow spreads in front, below that line), and its file per theme.
  */
-export type Cairn = { w: number; h: number; ground: number; art: Record<Theme, string> };
+type Cairn = { w: number; h: number; ground: number; art: Record<Theme, string> };
 
 /** The cairn by today's camp (components/scene/cairn.tsx). */
 export const CAIRN: Cairn = manifest.cairn;

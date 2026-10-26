@@ -8,7 +8,7 @@ import manifest from './about.json';
  */
 
 /** The range's lights: the finale opens on the sunrise and turns to morning by day; by night it is the night. */
-export type RangeLight = 'sunrise' | 'day' | 'night';
+type RangeLight = 'sunrise' | 'day' | 'night';
 
 export const RANGE_ART: Record<RangeLight, string> = manifest.range;
 
@@ -45,10 +45,10 @@ export const aboutUrl = (file: string) => `/about/${file}`;
  * night the dark theme's dusk, or deep night. Mirrored by DAYPART_SCRIPT, which a test holds to it.
  */
 export const DAYPARTS = ['morning', 'midday', 'evening', 'night'] as const;
-export type DayPart = (typeof DAYPARTS)[number];
+type DayPart = (typeof DAYPARTS)[number];
 
 /** The hour each part begins at, in order: morning at 5, midday at 10, evening at 16, night at 20. */
-export const DAYPART_STARTS = [5, 10, 16, 20] as const;
+const DAYPART_STARTS = [5, 10, 16, 20] as const;
 
 export function dayPartAt(hour: number): DayPart {
   const index = DAYPART_STARTS.findLastIndex(start => hour >= start);

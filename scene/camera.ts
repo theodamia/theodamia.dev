@@ -12,7 +12,7 @@ import { CAMP_COUNT, LEG_WEIGHTS, SIDES } from '@/scene/world';
  */
 
 /** The story column: the stage scale makes this fit the screen; everything outside it is painted falloff. */
-export const COLUMN = { WIDTH: 560, HEIGHT: 900 } as const;
+const COLUMN = { WIDTH: 560, HEIGHT: 900 } as const;
 /** Depth per unit of leg weight: long jobs sit deeper and scroll longer, so the camera keeps one speed. */
 const DEPTH_PER_WEIGHT = 1.2;
 /** A ridge's box is authored at this times its stop size, so the scale written is always 1 or less. */
@@ -79,10 +79,10 @@ export const PAINTED_ASPECT = { WIDE: 2.4, TALL: 9 / 21 } as const;
 /** Where the haze fill under the backdrop ends, in units below the focus: past the foot of any screen. */
 export const FOOT_END = 4000;
 
-export const clamp = (x: number, min: number, max: number) => Math.min(max, Math.max(min, x));
+const clamp = (x: number, min: number, max: number) => Math.min(max, Math.max(min, x));
 
 /** Hermite smoothstep from `a` to `b`. */
-export function smoothstep(a: number, b: number, x: number): number {
+function smoothstep(a: number, b: number, x: number): number {
   const t = clamp((x - a) / (b - a), 0, 1);
 
   return t * t * (3 - 2 * t);
@@ -92,7 +92,7 @@ export function smoothstep(a: number, b: number, x: number): number {
 export const ease = (f: number) => 0.5 * f + 0.5 * f * f * (3 - 2 * f);
 
 /** Each camp's depth: the leg weights, summed. */
-export const CAMP_Z: number[] = LEG_WEIGHTS.reduce(
+const CAMP_Z: number[] = LEG_WEIGHTS.reduce(
   (depths, weight) => [...depths, depths[depths.length - 1] + DEPTH_PER_WEIGHT * weight],
   [0]
 );
@@ -111,7 +111,7 @@ const legOf = (u: number) => {
 };
 
 /** The camera's depth at station `u`. */
-export function cameraZ(u: number): number {
+function cameraZ(u: number): number {
   const { leg, f } = legOf(u);
 
   return CAMERA_AT[leg] + (CAMERA_AT[leg + 1] - CAMERA_AT[leg]) * ease(f);
@@ -148,7 +148,7 @@ export const BACKDROP_TILES: number[] = (() => {
 const lean = (k: number) => (k < 1 ? 0 : SIDES[Math.min(k, LAST)]);
 
 /** The focus of expansion on screen, in pixels, and the stage scale `v`. */
-export function focusAt(u: number, view: View) {
+function focusAt(u: number, view: View) {
   const { width, height, wide } = view;
   const v = stageScale(width, height);
   const { leg, f } = legOf(u);
@@ -201,7 +201,7 @@ function scaleOf(flat: Flat, z: number): number {
   return ahead > NEAR_LIMIT ? 1 / ahead : Number.POSITIVE_INFINITY;
 }
 
-export type FlatPose = {
+type FlatPose = {
   id: string;
   /** Pixels: where the box's top-left corner goes, and the scale written (always 1 or less). */
   x: number;
@@ -213,9 +213,9 @@ export type FlatPose = {
   far: number;
 };
 
-export type LabelPose = { camp: number; x: number; y: number; opacity: number };
+type LabelPose = { camp: number; x: number; y: number; opacity: number };
 
-export type Pose = {
+type Pose = {
   focus: { x: number; y: number; v: number };
   flats: FlatPose[];
   labels: LabelPose[];
@@ -304,7 +304,7 @@ export function poseAt(u: number, view: View): Pose {
 type Rect = { left: number; top: number; width: number; height: number };
 
 /** Today's cairn, in pixels: the box it answers clicks in, from the camp's trail point, and its stones in the box. */
-export type TodayCairn = { box: Rect; stones: Rect };
+type TodayCairn = { box: Rect; stones: Rect };
 
 /**
  * Where the cairn by today's camp stands at the summit, for the way back to the closing card: the picture, drawn

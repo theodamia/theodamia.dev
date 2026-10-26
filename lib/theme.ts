@@ -99,7 +99,7 @@ function track(transition: ViewTransition, cleanUp?: () => void) {
  * Reduced motion gets the browser's own cross-fade and no wave; without view transitions the colours switch at
  * once but the sky still waves. `flip` runs inside the transition and must only set the attribute.
  */
-export function reveal(from: HTMLElement, flip: () => void): void {
+function reveal(from: HTMLElement, flip: () => void): void {
   const root = document.documentElement;
 
   running?.skipTransition();
@@ -180,7 +180,7 @@ export function reveal(from: HTMLElement, flip: () => void): void {
 }
 
 /** Remembers a choice, where the browser allows it. In private mode it lasts until the page is left. */
-export function remember(key: string, value: string) {
+function remember(key: string, value: string) {
   try {
     localStorage.setItem(key, value);
   } catch {
