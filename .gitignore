@@ -62,3 +62,5 @@ coverage
 /art/cv/raw/
 # and the ones of /about (prompts in art/about/*.md)
 /art/about/raw/
+# and the site icon's (prompts in art/icon/*.md)
+/art/icon/raw/
