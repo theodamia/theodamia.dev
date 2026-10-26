@@ -55,9 +55,8 @@ export const SEASON_ART: Record<Season, Record<Theme, SeasonArt>> = manifest.art
 /** The meadow's top edge, as a share of the screen's height from the bottom (the paintings fill the screen). */
 export const GROUND_SHARE = manifest.ground;
 
-/** The grove's width and the meadow tile's, each against its height. */
+/** The grove's width against its height. */
 export const GROVE_ASPECT = manifest.canvas[0] / manifest.canvas[1];
-export const MEADOW_ASPECT = manifest.tile / manifest.canvas[1];
 
 export const seasonUrl = (file: string) => `/seasons/${file}`;
 
