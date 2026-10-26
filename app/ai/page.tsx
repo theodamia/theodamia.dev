@@ -11,7 +11,7 @@ import { pageMetadata } from '@/lib/page-metadata';
 export const metadata: Metadata = pageMetadata({
   title: `Working with AI | ${SITE.name}`,
   description:
-    'How I set AI up for frontend teams: the rules it works by, the reviews it joins, the skills the team shares and code written for people to read.',
+    'How I set AI up for software teams: the rules it works by, the reviews it joins, the skills the team shares and code written for people to read.',
   path: '/ai',
 });
 

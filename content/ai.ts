@@ -4,13 +4,13 @@ import type { LogItem } from '@/components/log-entry';
 export type AiPoint = { name: string; text: string };
 
 /**
- * /ai: how I set AI up for frontend teams, told as evidence, not opinion. The title is the stance /about's opinions
+ * /ai: how I set AI up for software teams, told as evidence, not opinion. The title is the stance /about's opinions
  * already hold ("AI writes the draft, not the decisions"); that line on /about links here.
  */
 export const AI_PAGE = {
   eyebrow: 'Working with AI',
   title: 'AI writes the draft, not the decisions',
-  lede: 'I set AI up for frontend teams: the rules it works by, the reviews it takes part in and the skills the team calls on, kept current as the tools change.',
+  lede: 'I set AI up for software teams: the rules it works by, the reviews it takes part in and the skills the team calls on, kept current as the tools change.',
 } as const;
 
 /** What I set up, wherever I go. Practices, not products: the tools change every few months, these do not. */
@@ -102,4 +102,4 @@ export const AI_LIMITS: AiPoint[] = [
 ];
 
 /** The closing card's question: the reader this page is for. */
-export const AI_CONTACT_TITLE = 'Bringing AI into a frontend team?';
+export const AI_CONTACT_TITLE = 'Bringing AI into a software team?';
