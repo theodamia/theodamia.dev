@@ -27,15 +27,15 @@ describe('Dock', () => {
     );
   });
 
-  it('names its five icon links and points them across all three pages', () => {
+  it('names its four icon links, the three pages and the one action', () => {
     render(<Dock />);
 
     const nav = screen.getByRole('navigation', { name: 'Sections' });
-    expect(nav.querySelectorAll('a')).toHaveLength(5);
+    expect(nav.querySelectorAll('a')).toHaveLength(4);
     expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/');
     expect(screen.getByRole('link', { name: 'Experience' })).toHaveAttribute('href', '/cv');
     expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');
-    expect(screen.getByRole('link', { name: 'Skills' })).toHaveAttribute('href', '/about#skills');
+    expect(screen.queryByRole('link', { name: 'Skills' })).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Contact' })).toHaveAttribute('href', '/about#contact');
   });
 
@@ -50,9 +50,9 @@ describe('Dock', () => {
   it('keeps icons and bubbles out of the accessibility tree', () => {
     render(<Dock />);
 
-    const skills = screen.getByRole('link', { name: 'Skills' });
-    expect(skills.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
-    expect(skills.querySelector('span[aria-hidden="true"]')).toHaveTextContent('Skills');
+    const contact = screen.getByRole('link', { name: 'Contact' });
+    expect(contact.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
+    expect(contact.querySelector('span[aria-hidden="true"]')).toHaveTextContent('Contact');
   });
 
   it('goes back to the top from Home', async () => {
@@ -69,16 +69,16 @@ describe('Dock', () => {
     render(<Dock />);
 
     expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('aria-current', 'true');
-    expect(screen.getByRole('link', { name: 'Skills' })).not.toHaveAttribute('aria-current');
+    expect(screen.getByRole('link', { name: 'Contact' })).not.toHaveAttribute('aria-current');
     expect(screen.getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current');
   });
 
   it('lights the section under the middle of the screen, and only it', () => {
     vi.mocked(usePathname).mockReturnValue('/about');
-    const skills = document.createElement('section');
-    skills.id = 'skills';
-    skills.getBoundingClientRect = () => ({ top: -100 }) as DOMRect;
-    document.body.append(skills);
+    const contact = document.createElement('section');
+    contact.id = 'contact';
+    contact.getBoundingClientRect = () => ({ top: -100 }) as DOMRect;
+    document.body.append(contact);
     vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => {
       callback(0);
 
@@ -87,7 +87,7 @@ describe('Dock', () => {
 
     render(<Dock />);
 
-    expect(screen.getByRole('link', { name: 'Skills' })).toHaveAttribute('aria-current', 'true');
+    expect(screen.getByRole('link', { name: 'Contact' })).toHaveAttribute('aria-current', 'true');
     expect(screen.getByRole('link', { name: 'About' })).not.toHaveAttribute('aria-current');
   });
 });

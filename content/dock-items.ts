@@ -1,4 +1,4 @@
-export type DockItemId = 'home' | 'cv' | 'about' | 'skills' | 'contact';
+export type DockItemId = 'home' | 'cv' | 'about' | 'contact';
 
 export type DockItem = {
   id: DockItemId;
@@ -10,12 +10,14 @@ export type DockItem = {
   section?: string;
 };
 
-/** The dock is the only navigation and works across all three pages. */
+/**
+ * The dock is the only navigation and works across all three pages: the three pages, then the one action. Sections
+ * are reached by reading on, so Skills is not here: it is part of /about, not a place of its own.
+ */
 export const DOCK_ITEMS: DockItem[] = [
   { id: 'home', label: 'Home', page: '/' },
   { id: 'cv', label: 'Experience', page: '/cv' },
   { id: 'about', label: 'About', page: '/about' },
-  { id: 'skills', label: 'Skills', page: '/about', section: 'skills' },
   { id: 'contact', label: 'Contact', page: '/about', section: 'contact' },
 ];
 

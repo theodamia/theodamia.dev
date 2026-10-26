@@ -85,13 +85,7 @@ describe('about', () => {
 
 describe('dock items', () => {
   it('links sections with a hash, and whole pages without one', () => {
-    expect(DOCK_ITEMS.map(dockHref)).toEqual([
-      '/',
-      '/cv',
-      '/about',
-      '/about#skills',
-      '/about#contact',
-    ]);
+    expect(DOCK_ITEMS.map(dockHref)).toEqual(['/', '/cv', '/about', '/about#contact']);
   });
 
   it("names a page's header in the dock's own word", () => {
