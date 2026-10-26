@@ -652,6 +652,22 @@ async function processFlat(flat) {
   return entry;
 }
 
+/**
+ * One theme's picture of a keyed pair, with the day's outline and no fades, cut to `box`: as a PNG to encode, and
+ * saved under CHECK_DIR as `name` for review.
+ */
+async function cutOut(pair, theme, box, name) {
+  const { W, H } = pair.canvas;
+  const rgba = compose(pair[theme].rgb, pair.day.alpha, { fades: [] }, null, pair.canvas);
+  const png = await sharp(rgba, { raw: { width: W, height: H, channels: 4 } })
+    .extract(box)
+    .png()
+    .toBuffer();
+  await fs.writeFile(path.join(CHECK_DIR, `${name}.png`), png);
+
+  return png;
+}
+
 /** The flag sheet: the pole on the left half, the pennant on the right, each trimmed on its own. */
 async function processFlag() {
   const pair = await keyPair('flag-parts', { edges: false });
@@ -759,27 +775,13 @@ async function processClouds() {
   const clouds = [];
 
   for (const [x0, x1] of runs) {
-    let [y0, y1] = [H, 0];
-
-    for (let y = 0; y < H; y++) {
-      for (let x = x0; x < x1; x++) {
-        if (alpha[y * W + x] <= CLOUDS.EMPTY) continue;
-        y0 = Math.min(y0, y);
-        y1 = Math.max(y1, y);
-      }
-    }
-
-    const box = { left: x0, top: y0, width: x1 - x0, height: y1 - y0 + 1 };
+    /* a run starts and ends on a painted column, so its box spans the run's full width */
+    const box = bounds(W, H, i => alpha[i] > CLOUDS.EMPTY, [x0, x1]);
     const index = clouds.length + 1;
     const art = {};
 
     for (const theme of ['day', 'night']) {
-      const rgba = compose(pair[theme].rgb, alpha, { fades: [] }, null, pair.canvas);
-      const png = await sharp(rgba, { raw: { width: W, height: H, channels: 4 } })
-        .extract(box)
-        .png()
-        .toBuffer();
-      await fs.writeFile(path.join(CHECK_DIR, `cloud-${index}-${theme}.png`), png);
+      const png = await cutOut(pair, theme, box, `cloud-${index}-${theme}`);
       art[theme] = await emit(
         png,
         `cloud-${index}-${theme}`,
@@ -853,12 +855,7 @@ async function processCairn() {
   const art = {};
 
   for (const theme of ['day', 'night']) {
-    const rgba = compose(pair[theme].rgb, alpha, { fades: [] }, null, pair.canvas);
-    const png = await sharp(rgba, { raw: { width: W, height: H, channels: 4 } })
-      .extract(trim)
-      .png()
-      .toBuffer();
-    await fs.writeFile(path.join(CHECK_DIR, `cairn-${theme}.png`), png);
+    const png = await cutOut(pair, theme, trim, `cairn-${theme}`);
     art[theme] = await emit(png, `cairn-${theme}`, ENCODE.CAIRN, width);
   }
 
