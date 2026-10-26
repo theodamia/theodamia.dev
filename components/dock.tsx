@@ -152,15 +152,14 @@ export function Dock() {
         })}
       </nav>
       {/*
-        the night needs light-dark() (the scene's colours use it); without it the site stays in daylight.
         The hairline sits further from Contact than from the switch: Contact's outline is at the edge of its box,
         the switch's icon 10px inside its own, so this is what centres it between the two things you see.
       */}
       <span
         aria-hidden='true'
-        className='bg-line touch:ml-2 touch:mr-0 mr-0.5 ml-3 h-6 w-px shrink-0 not-supports-[color:light-dark(#000,#fff)]:hidden'
+        className='bg-line touch:ml-2 touch:mr-0 mr-0.5 ml-3 h-6 w-px shrink-0'
       />
-      <ThemeToggle className='not-supports-[color:light-dark(#000,#fff)]:hidden' />
+      <ThemeToggle />
     </div>
   );
 }

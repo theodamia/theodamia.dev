@@ -16,7 +16,7 @@ const ICON =
  * icons follow `data-theme` through CSS, so they are right from the first paint; the name and the bubble come from
  * the theme store and settle right after hydration. The reveal itself is in `lib/theme.ts`.
  */
-export function ThemeToggle({ className }: { className?: string }) {
+export function ThemeToggle() {
   const night = useTheme() === 'dark';
   useFollowSystemTheme();
 
@@ -25,10 +25,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       type='button'
       aria-label={night ? 'Switch to day' : 'Switch to night'}
       onClick={event => switchTheme(event.currentTarget)}
-      className={cn(
-        'group rounded-ctl text-ink-2 hover:bg-ice hover:text-ink relative inline-flex size-11 shrink-0 cursor-pointer items-center justify-center transition-colors duration-200 motion-reduce:transition-none',
-        className
-      )}
+      className='group rounded-ctl text-ink-2 hover:bg-ice hover:text-ink relative inline-flex size-11 shrink-0 cursor-pointer items-center justify-center transition-colors duration-200 motion-reduce:transition-none'
     >
       <Moon
         aria-hidden='true'

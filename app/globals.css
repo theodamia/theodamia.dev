@@ -116,8 +116,8 @@
 
 /*
  * Night, "Alpine night": the same tokens by moonlight. `data-theme` on <html> is the only switch (set before the
- * first paint by the script in app/layout.tsx, flipped by lib/theme.ts). `color-scheme` follows it: that is what
- * the scene's generated `light-dark()` colours read, and it darkens native scrollbars.
+ * first paint by the script in app/layout.tsx, flipped by lib/theme.ts). `color-scheme` follows it, which darkens
+ * native scrollbars and form controls.
  */
 :root {
   color-scheme: light;

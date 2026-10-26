@@ -19,14 +19,11 @@ import { timeAtProgress } from '@/utils/time-at-progress';
 
 export type Theme = 'light' | 'dark';
 
-/** The scene's colours are written with `light-dark()`; a browser without it stays in daylight. */
-const NIGHT_TEST = "CSS.supports('color','light-dark(#000,#fff)')";
-
 /**
  * Runs in <head> before the first paint, so the page never shows the wrong sky: the stored choice, or else the
  * system's. `data-theme` on <html> is the only switch; CSS derives everything else from it.
  */
-export const THEME_SCRIPT = `(function(){var d=document.documentElement;try{var t=localStorage.getItem('${THEME_STORAGE_KEY}');if(t!=='light'&&t!=='dark')t=matchMedia('${DARK_SCHEME_QUERY}').matches?'dark':'light';if(!${NIGHT_TEST})t='light';d.dataset.theme=t}catch(e){d.dataset.theme='light'}})()`;
+export const THEME_SCRIPT = `(function(){var d=document.documentElement;try{var t=localStorage.getItem('${THEME_STORAGE_KEY}');if(t!=='light'&&t!=='dark')t=matchMedia('${DARK_SCHEME_QUERY}').matches?'dark':'light';d.dataset.theme=t}catch(e){d.dataset.theme='light'}})()`;
 
 /** Marks <html> while the reveal runs; the view transition rules in globals.css are scoped to it. */
 const REVEAL_CLASS = 'theme-reveal';
@@ -51,15 +48,6 @@ export function storedTheme(): Theme | null {
   } catch {
     return null;
   }
-}
-
-/**
- * Whether this browser can show the night at all. The scene's generated colours are written as `light-dark()`
- * pairs, so without it the mountain would keep its daylight while the interface went dark: the switch hides
- * instead (see the `not-supports-` classes on the dock) and the site stays in daylight.
- */
-export function supportsNight(): boolean {
-  return typeof CSS !== 'undefined' && CSS.supports('color', 'light-dark(#000,#fff)');
 }
 
 function clearWave(root: HTMLElement) {
