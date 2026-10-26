@@ -3,30 +3,21 @@
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
+import { Map, NotebookPen, RadioTower, Tent, type LucideIcon } from 'lucide-react';
 import { DOCK_ICON_STROKE, SECTION_SCROLL_OFFSET_PX } from '@/constants';
-
-/** The dock lights the section under this share of the screen height. */
-const DOCK_PROBE_RATIO = 0.5;
-import { Map, NotebookPen, RadioTower, Tent } from 'lucide-react';
 import { TrailLink } from '@/components/trail-link';
 import { DockBubble } from '@/components/dock-bubble';
-import { IceAxeIcon } from '@/components/icons/ice-axe-icon';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { DOCK_ITEMS, dockHref, type DockItem, type DockItemId } from '@/content/dock-items';
 import { cn } from '@/utils/cn';
 
-type DockIconComponent = React.ComponentType<{
-  className?: string;
-  strokeWidth?: number;
-  'aria-hidden'?: boolean | 'true' | 'false';
-}>;
+/** The dock lights the section under this share of the screen height. */
+const DOCK_PROBE_RATIO = 0.5;
 
-/** Lucide icons, except Skills: Lucide has no ice axe, so that one is drawn to match its 24px grid and stroke. */
-const ICONS: Record<DockItemId, DockIconComponent> = {
+const ICONS: Record<DockItemId, LucideIcon> = {
   home: Tent,
   cv: Map,
   about: NotebookPen,
-  skills: IceAxeIcon,
   contact: RadioTower,
 };
 
@@ -100,10 +91,10 @@ function useActiveSection(pathname: string): string | null {
 }
 
 /**
- * The only navigation: five climbing icons floating at the bottom of both pages, then, past a hairline, the switch
+ * The only navigation: four climbing icons floating at the bottom of every page, then, past a hairline, the switch
  * between day and night. The switch is a setting, not a place, so it sits outside the `Sections` landmark. Every
  * link carries its name three ways: `aria-label` (always), a bubble on hover or keyboard focus, and spelled out
- * inside the lit item on touch screens, where nothing can hover.
+ * inside the lit item on touch screens 360px and wider, where nothing can hover.
  */
 export function Dock() {
   const pathname = usePathname();
@@ -140,15 +131,16 @@ export function Dock() {
               onClick={event => onClick(event, item)}
               className={cn(
                 'group rounded-ctl text-ink-2 relative inline-flex size-11 shrink-0 items-center justify-center gap-2 text-[15px] font-semibold whitespace-nowrap transition-colors duration-200 motion-reduce:transition-none',
-                isHome && 'bg-ice text-ink hover:bg-line touch-xs:hidden mr-1',
+                isHome && 'bg-ice text-ink hover:bg-line mr-1',
                 !isHome && !isOn && 'hover:bg-ice hover:text-ink',
                 item.id === 'contact' && 'border-accent text-accent-text ml-1 border-[1.5px]',
                 item.id === 'contact' && !isOn && 'hover:bg-accent-wash hover:text-accent-text',
-                isOn && 'bg-ink border-ink touch:w-auto touch:pr-3 touch:pl-2.5 text-on-ink'
+                isOn &&
+                  'bg-ink border-ink touch-wide:w-auto touch-wide:pr-3 touch-wide:pl-2.5 text-on-ink'
               )}
             >
               <Icon className='shrink-0' strokeWidth={DOCK_ICON_STROKE} aria-hidden='true' />
-              {isOn && <span className='touch:inline hidden'>{item.label}</span>}
+              {isOn && <span className='touch-wide:inline hidden'>{item.label}</span>}
               <DockBubble>{item.label}</DockBubble>
             </TrailLink>
           );

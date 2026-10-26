@@ -7,7 +7,7 @@
 /** Gap kept above a section when the dock scrolls to it. Matches `scroll-padding-top` in globals.css. */
 export const SECTION_SCROLL_OFFSET_PX = 28;
 
-/** Every dock icon is drawn at this weight: the hand-drawn ice axe's, which the Lucide icons match. */
+/** Every dock icon is drawn at this weight, a touch lighter than Lucide's 2, so the icons sit quietly beside text. */
 export const DOCK_ICON_STROKE = 1.75;
 
 /** From this width the cards sit beside the trail and the altimeter shows its full rail. Pairs with `--breakpoint-wide`. */

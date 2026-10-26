@@ -181,12 +181,12 @@
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 /*
- * Screens that cannot hover: the dock spells out its lit item there instead of showing bubbles. Below 400px there
- * is no room for that label, Home and the day/night switch at once, so Home steps aside (the page's own top is a
- * scroll away).
+ * Screens that cannot hover: the dock spells out its lit item there instead of showing bubbles, from 360px wide
+ * (`touch-wide`). Narrower, the name would push the day/night switch off the screen; the lit item keeps its fill and
+ * the page's own header names the page.
  */
 @custom-variant touch (@media (hover: none));
-@custom-variant touch-xs (@media (max-width: 399px) and (hover: none));
+@custom-variant touch-wide (@media (hover: none) and (min-width: 360px));
 
 /*
  * The page's own defaults: where an anchor lands (clear of the card's top corner, the same 28px as the page
