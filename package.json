@@ -28,7 +28,8 @@
     "flats": "node scripts/process-flats.mjs",
     "flats:compose": "node scripts/compose-flats.mjs",
     "seasons": "node scripts/process-seasons.mjs",
-    "about": "node scripts/process-about.mjs"
+    "about": "node scripts/process-about.mjs",
+    "icons": "node scripts/process-icons.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
