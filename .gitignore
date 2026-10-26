@@ -61,3 +61,5 @@ coverage
 
 # The paintings behind /cv stay local too; their prompts (art/cv/*.md) and processed WebPs are reviewable.
 /art/cv/raw/
+# and the ones of /about (prompts in art/about/*.md)
+/art/about/raw/
