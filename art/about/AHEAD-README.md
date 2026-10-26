@@ -373,3 +373,34 @@ Image edit of the first image. Keep every shape, outline, size and place exactly
 This is a precise lighting-weather edit, not a repaint or a new illustration. First input: edit target, exact composition and geometry. Second input: daylight lighting and painterly-style reference only; import no scenery, objects or blue sky. Preserve the silhouette and all internal details of the first input exactly in place. Illuminate existing right/up-facing planes with neutral bright white sunlight from high top right; soft cool blue shadows below-left. Remove all peach, gold and rose sunrise light, including on cloud tops and foreground snow, while keeping warm-grey natural rocks.
 Output exactly 1536 by 1024. Do not crop or rescale any feature. The sky is a flat digital chroma-key colour field, exact RGB(255,0,255), no noise or texture, no colour variance. Keep its boundary on the original mountain skyline with no pink fringe, glow, haze, sun, clouds or new marks. Preserve original brushwork, every cloud lobe, every snow ripple and foreground rock. No text or new objects. The sun exists only as illumination, never a visible disc. The sole intended difference from input 1 is daylight illumination.
 ```
+
+## The key frame
+
+The range was first painted as one of the concept board's key frames, `raw/concepts/c1-dawn-ahead.png` (2026-10-26, the built-in image tool, one try, 1536 × 1024, no post-processing), and every sunrise try above is an edit of it. Its references were the climb's style frames, the earlier /about hut painting (`raw/options/a-afternoon-day.png`, for its materials) and /cv's summer grove (for close framing). The rest of the board was not taken further.
+
+### c1-dawn-ahead.png, try 1 (selected)
+
+**Review / decision:** SELECTED. Strong panoramic read: a new, broad snowy range with rose-gold summits and cool lower slopes above a deep cloud sea; rising sun at the right. The immediate col runs off the bottom edges. The foreground is a little deeper and the sky has more wispy cloud detail than the most minimal reading of the brief, but the next-climb idea is immediate. Style is close to the site's mountain frames. No visible text, logos, people or animals.
+
+**Generated source:** `/Users/teo/.codex/generated_images/01a177d8-fe4d-7372-9b38-94185d3cb71e/exec-e3491f3b-8a86-4f01-931c-5488b7f66cee.png`
+
+**Ordered input paths:**
+
+- `/Users/teo/Apps/theodamia.dev-painted/art/scene/style/frames/style-hero-day.png`
+- `/Users/teo/Apps/theodamia.dev-painted/art/scene/style/frames/style-end-deepsea-day.png`
+- `/Users/teo/Apps/theodamia.dev-painted/art/about/raw/options/a-afternoon-day.png`
+- `/Users/teo/Apps/theodamia.dev-painted/art/cv/raw/grove-summer-day.png`
+
+**Complete prompt:**
+
+```text
+Use case: stylized-concept
+Asset type: one key frame for a portfolio /about concept board, artwork only, no website UI.
+Canvas: exactly 1536 × 1024 pixels, landscape.
+Input images are references only, not edit targets: reference 1 establishes the soft polished painterly site style; reference 2 establishes the climb's high snowy end; reference 3 establishes the approved small granite stone hut with timber and slate roof and its alpine materials (do not include its cow); reference 4 establishes close, big framing and ground continuing beyond the edges ONLY (do not reproduce its magenta). Paint an entirely new complete scene. No magenta anywhere.
+Rendering: high-end painterly digital illustration in the soft polished style of the attached style frames: large simple forms modelled with smooth gradient shading and soft-edged brushwork, delicate detail where the eye goes, quiet everywhere else. No outlines, no line art, no flat vector facets, no photorealism, no grain, no noise.
+One complete painting edge to edge (nothing cut out, no magenta). Close and big like the attached larch grove: the subject large, the ground running off the edges.
+Nothing else: no people, no animals, no text, letters, numbers, logos, borders or watermark.
+Primary request: Sunrise seen from a high snowy col: in the foreground a short stretch of rock and old snow along the bottom edge, quiet; across the whole width, beyond a deep valley filled with a sea of clouds, a NEW, bigger range of snowy peaks, the next climb, its highest summits just catching the first rose-gold sunlight while the lower slopes are still in cool blue shadow; the sun itself just breaking over the horizon at the RIGHT, the sky clear, pale gold at the horizon rising to soft blue. A wide, calm, hopeful panorama; most of the interest in the top two thirds and across the full width.
+Composition clarification: make the distant next range feel monumental and inviting, spanning the full width with several distinct summits rather than a single isolated centered mountain. Keep the immediate col a shallow quiet strip at the bottom. The sunrise disk is partly below the right horizon. No huts, gear, paths or tents in this frame. Return one finished painting.
+```
