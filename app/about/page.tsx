@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
 import { AboutFinale } from '@/components/about-finale';
-import { AboutHero } from '@/components/about-hero';
 import { PageSection } from '@/components/page-section';
+import type { CloudWind } from '@/components/scene/sky';
 import { FactItem } from '@/components/fact-item';
 import { OpinionList } from '@/components/opinion-list';
 import { SkillColumns } from '@/components/skill-columns';
+import { SummitHeader } from '@/components/summit-header';
 import { WeekBar } from '@/components/week-bar';
 import { ABOUT_PARAGRAPHS, FACTS, OPINIONS, WEEK } from '@/content/about';
+import { dockLabel } from '@/content/dock-items';
 import { pageMetadata } from '@/lib/page-metadata';
 import { SITE } from '@/content/site';
 import { SKILL_GROUPS } from '@/content/skill-groups';
@@ -18,6 +20,13 @@ export const metadata: Metadata = pageMetadata({
   path: '/about',
 });
 
+/** Fewer and higher than the climb's: they sit above the title, never behind its words. */
+const HEADER_CLOUDS: CloudWind[] = [
+  { cloud: 0, top: '4%', width: 26, at: 0.6, cross: 240, billow: 19 },
+  { cloud: 1, top: '11%', width: 17, at: 0.86, cross: 300, billow: 15 },
+  { cloud: 2, top: '2%', width: 12, at: 0.28, cross: 340, billow: 13 },
+];
+
 /**
  * The page at the top of the mountain: what's ahead. It opens on the sky at the visitor's time of day, reads on the
  * page itself (About, How I work, Skills), and ends at Contact on the next range across a sea of clouds, where the
@@ -28,7 +37,15 @@ export default function About() {
 
   return (
     <main className='bg-page relative'>
-      <AboutHero />
+      {/* no sun or moon in this sky: the sun is the page's ending */}
+      <SummitHeader
+        eyebrow={dockLabel('about')}
+        title='Behind the climb'
+        lede='Who carries the pack, how the work gets done and what is in it.'
+        clouds={HEADER_CLOUDS}
+        back={{ href: '/', label: 'Back to the climb' }}
+        className='max-wide:pb-10 pb-[clamp(56px,9vh,96px)]'
+      />
 
       <div className='max-wide:px-4 mx-auto w-full max-w-[1180px] px-7'>
         <PageSection id='background' name='Background' title='Building things that have to last'>

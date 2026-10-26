@@ -23,7 +23,7 @@ export function AboutFinale() {
         id='contact'
         aria-labelledby='contact-title'
         data-finale
-        className='about-finale'
+        className='summit-finale about-finale'
         style={
           {
             '--about-rise': `${(RANGE_RISE * 100).toFixed(3)}cqw`,

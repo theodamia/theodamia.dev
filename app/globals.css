@@ -327,7 +327,7 @@
 /*
  * Pictures in both themes, on the still pages (components/scene/theme-picture.tsx): a day and a night picture as CSS
  * backgrounds, only the theme on screen displayed, so only its picture downloads. A theme already on screen once
- * stays underneath the other (`data-year-seen` on <html>, components/scene/year-ready.tsx): switching day and night
+ * stays underneath the other (`data-theme-seen` on <html>, components/theme-seen.tsx, on every page): switching day and night
  * then shows the old theme's paintings until the new one's arrive, never a hole; its files are downloaded already.
  * A theme nobody has seen is never displayed, so never downloaded.
  */
@@ -349,8 +349,8 @@
   z-index: 1;
 }
 
-:root[data-year-seen~='day'] .theme-art[data-art='day'],
-:root[data-year-seen~='night'] .theme-art[data-art='night'] {
+:root[data-theme-seen~='day'] .theme-art[data-art='day'],
+:root[data-theme-seen~='night'] .theme-art[data-art='night'] {
   display: block;
 }
 
@@ -1573,17 +1573,32 @@
   background: linear-gradient(to bottom, var(--color-page), var(--color-dawn-top));
 }
 
-.about-finale {
-  --about-foot: 4vh;
+/*
+ * A page's last screen at the summit (/about's and /ai's endings, and the 404): one screen, the card near the top, a
+ * band of open sky, and a scene along the bottom edge. The scene spans the width, so its heights are `cqw` of the
+ * finale. Phones: the card alone, clear of the dock.
+ */
+.summit-finale {
   position: relative;
   isolation: isolate;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   padding-top: clamp(56px, 8vh, 96px);
-  view-timeline-name: --about-finale;
-  /* the range spans the width, so its heights are `cqw` of the finale */
   container-type: inline-size;
+}
+
+@media (max-width: 899.98px) {
+  .summit-finale {
+    min-height: 0;
+    padding-top: 8px;
+    padding-bottom: 120px;
+  }
+}
+
+.about-finale {
+  --about-foot: 4vh;
+  view-timeline-name: --about-finale;
 }
 
 .about-band {
@@ -1840,19 +1855,11 @@
   }
 }
 
-/* phones: the card alone, clear of the dock */
-@media (max-width: 899.98px) {
-  .about-finale {
-    min-height: 0;
-    padding-top: 8px;
-    padding-bottom: 120px;
-  }
-}
-
 /*
  * /ai (app/ai/page.tsx, scene/ai.ts): the summit's sky at the top, as on /about, with the giant at its foot looking
- * at a range that turns from a wireframe draft into paint; and the page ends as /about does, the card near the top
- * of one screen, open sky, and the giant at a fork along the bottom edge. Wide screens only.
+ * at a range that turns from a wireframe draft into paint; and the page ends as /about does (`.summit-finale`), the
+ * card near the top of one screen, open sky, and the giant at a fork along the bottom edge, the scene the 404 shares
+ * (`.fork-*`). Wide screens only.
  */
 
 /* flush with the screen's right edge; never wider than the room right of the title (the title ends near 45vw + 50px
@@ -1863,47 +1870,28 @@
   aspect-ratio: var(--scene-aspect);
 }
 
-.ai-finale {
-  position: relative;
-  isolation: isolate;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  padding-top: clamp(56px, 8vh, 96px);
-  /* the scene spans the width, so its height is `cqw` of the finale */
-  container-type: inline-size;
-}
-
-/* the finale's sky comes in from the page above it and runs to the bottom edge, where the meadow stands */
-.ai-finale-sky::after {
+/* the fork's sky (components/scene/fork-scene.tsx) comes in from the page above it and runs to the bottom edge, where
+   the meadow stands */
+.fork-sky::after {
   inset: 0 0 auto;
   height: 22%;
   background: linear-gradient(to bottom, var(--color-page), transparent);
 }
 
-.ai-band {
+.fork-band {
   flex: 1 0 12vh;
 }
 
 /* room for the scene's lower half: the card, on the left, may stand over its far range, never over the giant */
-.ai-foot {
+.fork-foot {
   flex: none;
   height: calc(55cqw / var(--scene-aspect));
 }
 
-.ai-fork {
+.fork-scene {
   inset: auto 0 0;
   width: 100%;
   aspect-ratio: var(--scene-aspect);
-}
-
-/* phones: the card alone, clear of the dock */
-@media (max-width: 899.98px) {
-  .ai-finale {
-    min-height: 0;
-    padding-top: 8px;
-    padding-bottom: 120px;
-  }
 }
 
 /*
