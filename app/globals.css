@@ -1878,14 +1878,15 @@
   background: linear-gradient(to bottom, var(--color-page), transparent);
 }
 
+/* the open sky above and below the content, shared alike, so the content stands centred in it, never cut off */
 .fork-band {
-  flex: 1 0 12vh;
+  flex: 1 0 0;
 }
 
-/* room for the scene's lower half: the card, on the left, may stand over its far range, never over the giant */
+/* room for the scene below its far range: the content, on the left, may stand over that range, never over the giant */
 .fork-foot {
   flex: none;
-  height: calc(55cqw / var(--scene-aspect));
+  height: calc(45cqw / var(--scene-aspect));
 }
 
 .fork-scene {
