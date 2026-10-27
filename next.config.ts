@@ -1,9 +1,7 @@
 import type { NextConfig } from 'next';
 
-const nextConfig: NextConfig = {
-  /* client navigations run inside a view transition: moving between pages goes up or down the mountain
-     (components/trail-link.tsx, the <ViewTransition> in app/layout.tsx) */
-  experimental: { viewTransition: true },
-};
+/* No flags: React 19.3 made <ViewTransition> and addTransitionType stable, so the move between the pages
+   (components/trail-link.tsx, the <ViewTransition> in app/layout.tsx) needs no experimental switch any more. */
+const nextConfig: NextConfig = {};
 
 export default nextConfig;

@@ -23,12 +23,6 @@ export function trailDirection(from: string, to: string): TrailDirection {
   return 'trail-across';
 }
 
-/**
- * React's stable build (the one the tests run on) has no `addTransitionType`; the build Next bundles for the app,
- * with `experimental.viewTransition`, does. Without it the move simply cross-fades.
- */
-const nameTransition = addTransitionType as ((type: string) => void) | undefined;
-
 type TrailLinkProps = Omit<React.ComponentProps<typeof Link>, 'href'> & { href: string };
 
 /**
@@ -58,7 +52,7 @@ export function TrailLink({ href, onClick, ...props }: TrailLinkProps) {
         event.preventDefault();
 
         startTransition(() => {
-          nameTransition?.(trailDirection(pathname, to.pathname));
+          addTransitionType(trailDirection(pathname, to.pathname));
           router.push(`${to.pathname}${to.search}${to.hash}`);
         });
       }}
