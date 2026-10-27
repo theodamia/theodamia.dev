@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: `${SITE.name} | ${SITE.title}`,
   description:
-    'The Ascent: ten years of software engineering, from the interface to the database, drawn as one long climb. Senior Software Engineer in Thessaloniki, now at DeepSea.ai, previously Frontend Lead at Geekbot.',
+    'The Ascent: ten years of software engineering, from the interface to the database, drawn as one long climb. Senior Software Engineer in Greece, now at DeepSea.ai, previously Frontend Lead at Geekbot.',
   generator: 'theodamia.dev',
   keywords: [
     'Senior Software Engineer',

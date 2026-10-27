@@ -4,7 +4,7 @@ export const SITE = {
   url: 'https://theodamia.dev',
   name: 'Theodore Damianidis',
   title: 'Senior Software Engineer',
-  location: 'Thessaloniki, Greece',
+  location: 'Greece',
   email: 'theodamia@gmail.com',
   linkedin: {
     url: 'https://www.linkedin.com/in/theodore-damianidis-19369714a/',
