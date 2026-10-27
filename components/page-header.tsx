@@ -23,8 +23,8 @@ type PageHeaderProps = {
 };
 
 /**
- * The top of /cv and of /about: the same block in the same type on both, so moving between them changes the words
- * and nothing else. The title is set at the page size; the hero's bigger type belongs to the climb alone, which is
+ * The top of every reading page (/cv, /about, /ai, the 404): the same block in the same type, so moving between them
+ * changes the words and nothing else. The title is set at the page size; the hero's bigger type belongs to the climb alone, which is
  * where the site makes its first impression. The page around it sets the width and what stands behind it.
  */
 export function PageHeader({

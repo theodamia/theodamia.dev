@@ -48,7 +48,7 @@ export type SkillGroup = {
 
 /**
  * Skills: a category name, then its skills, strongest first. No ratings, no per-job filter. Curated, not complete:
- * every pill is one worth ten minutes in an interview, so the basics every frontend engineer has are left out.
+ * every skill is one worth ten minutes in an interview, so the basics every engineer has are left out.
  */
 export const SKILL_GROUPS: SkillGroup[] = [
   {
