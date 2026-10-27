@@ -1,6 +1,6 @@
 /** The About section, in the order it reads: where I come from, the lead years, and what I am doing now. */
 export const ABOUT_PARAGRAPHS: string[] = [
-  'Software engineer, ten years in, mostly at startups, with frontend as my foundation. I work across the stack: React and TypeScript up front, Node.js, GraphQL and databases behind. I take a feature from the schema to the screen.',
+  'Software engineer, ten years in, mostly at startups. I work across the stack: React and TypeScript up front, Node.js, GraphQL and databases behind. I take a feature from the schema to the screen.',
   "I work closely with Product, Design and UX, from the first sketch to release. At Geekbot, used by teams at GitHub, Shopify and GitLab, I led the frontend team for four years: I built its design system, set the team's coding and review standards, brought Claude Code into the daily work with the rules and review contexts that make it useful and mentored the engineers who joined.",
   'Now I am hands-on again at DeepSea.ai, where I set the frontend architecture: a Turborepo monorepo, a design system, the AI workflows we build with and the guides the frontend guild works from, with releases going out all the while. I ask what we are solving before how and I write code that stays easy to change.',
 ];
