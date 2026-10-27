@@ -26,7 +26,7 @@ export const AI_PRACTICES: AiPoint[] = [
   },
   {
     name: 'Rules the tools read',
-    text: 'Standards written once, as Markdown templates for frontend in general and for React, so every engineer’s assistant works to the same conventions. Kept current as the team changes, with the conflicts between them settled.',
+    text: 'Standards written once, as a Markdown template for each concern: security, implementation, project structure, maintainability, the language, testing, scalability and performance. Every engineer’s assistant works to the same conventions, kept current as the team changes, the conflicts between them settled.',
   },
   {
     name: 'Safe by rule',
@@ -65,7 +65,7 @@ export const AI_PLACES: LogItem[] = [
     summary:
       'I wrote the Claude Code standards the guild’s three engineers work by. Releases got faster and migrations easier.',
     points: [
-      'Templated rules files for the guild and its frontend chapter: one general, one for React',
+      'Templated rules files for the guild and its frontend chapter, one per concern: security, structure, testing, performance and more',
       'In a month: Turborepo set up and a legacy app moved into a new app shell on current React, Vite and Tailwind',
       'Tests, lint and formatting on every change; QA agents check each release on their own',
       'Skills the team runs for repeated work and AI review on every pull request',
