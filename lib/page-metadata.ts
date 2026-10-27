@@ -6,6 +6,8 @@ type PageMeta = {
   description: string;
   /** Path from the root, for the canonical link and `og:url`. */
   path: string;
+  /** The page's own share card, where it has one (`app/<page>/opengraph-image.tsx`); else the site's. */
+  card?: string;
 };
 
 /**
@@ -16,7 +18,12 @@ type PageMeta = {
  * page below the root is built here instead of by hand, and none of them can be shared as the home page or as a
  * bare text card again.
  */
-export function pageMetadata({ title, description, path }: PageMeta): Metadata {
+export function pageMetadata({
+  title,
+  description,
+  path,
+  card = '/opengraph-image',
+}: PageMeta): Metadata {
   return {
     title,
     description,
@@ -28,7 +35,7 @@ export function pageMetadata({ title, description, path }: PageMeta): Metadata {
       url: path,
       siteName: SITE.name,
       locale: 'en_US',
-      images: ['/opengraph-image'],
+      images: [card],
     },
   };
 }

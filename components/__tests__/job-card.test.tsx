@@ -22,7 +22,7 @@ describe('JobCard', () => {
   it('shows what I did in its own labelled panel, with nothing behind a button', () => {
     renderCard();
 
-    const panel = screen.getByRole('region', { name: 'What I did' });
+    const panel = screen.getByRole('region', { name: `What I did as ${job.role}` });
     job.highlights.forEach(point => expect(panel).toHaveTextContent(point));
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
     expect(screen.queryByText('Picked up here')).not.toBeInTheDocument();

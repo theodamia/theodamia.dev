@@ -84,6 +84,7 @@ export default function Cv() {
           {/* on paper the header already carries all three channels: this card would only repeat them, with two
               buttons nobody can press and a location the facts row has said */}
           <SectionCard
+            id='contact'
             eyebrow='Contact'
             title='Putting a team together?'
             className='mx-0 mt-[72px] max-w-none print:hidden'

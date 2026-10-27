@@ -9,7 +9,7 @@ Personal portfolio website for Theodore Damianidis - Senior Software Engineer. "
 - **UI Library**: [React 19](https://react.dev/)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) with `class-variance-authority`
 - **Scene**: painted flats (WebP) moved by a small camera in plain TypeScript and CSS transforms — no WebGL, no canvas, no animation library
-- **Icons**: [Lucide](https://lucide.dev/) for the dock (plus one hand-drawn ice axe) and for skills without a logo, [Simple Icons](https://simpleicons.org/) for brand logos in Skills and the links
+- **Icons**: [Lucide](https://lucide.dev/) for the dock and for skills without a logo, [Simple Icons](https://simpleicons.org/) for brand logos in Skills and the links
 - **Type**: Bricolage Grotesque and Instrument Sans via `next/font`
 - **Analytics**: [Vercel Analytics](https://vercel.com/analytics)
 - **Code Quality**: ESLint (Next + React Hooks + full jsx-a11y + type-aware TypeScript rules) and Prettier
@@ -19,9 +19,9 @@ Personal portfolio website for Theodore Damianidis - Senior Software Engineer. "
 - 🏔️ The CV as a climb: the camera walks into a painted mountain, one camp and one card per job, a summit that is never reached
 - 📓 `/cv`: every role on one page, newest first, with the year turning in the valley behind it; it prints as a CV
 - 🌅 `/about`: about, how I work, skills and contact, ending on the next range at sunrise
-- 🤖 `/ai`: how I set AI up for frontend teams, and how this site was made with it
+- 🤖 `/ai`: how I set AI up for software teams, and how this site was made with it
 - 🌙 Day and night: every painting has a moonlit twin, and the night spreads from the switch as a soft circle
-- 🧭 An altimeter with clickable year marks and a floating icon dock that works across all three pages
+- 🧭 An altimeter with clickable year marks and a floating icon dock that works on every page
 - ⚡ Scroll frames that only write transforms, so the climb stays smooth
 - 📱 Responsive down to 320px, with touch-specific dock behaviour
 - ♿ Semantic HTML, keyboard-reachable everything, reduced-motion support

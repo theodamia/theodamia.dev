@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { FieldLog } from '@/components/field-log';
-import { JOBS, TRAILHEAD } from '@/content/jobs';
+import { dateLine, JOBS, TRAILHEAD } from '@/content/jobs';
 import { SUMMIT_LINE } from '@/content/site';
 import { YEAR_STATES, yearTimeline } from '@/scene/seasons';
 
@@ -29,13 +29,14 @@ describe('FieldLog', () => {
     expect(entries()).toHaveLength(JOBS.length);
   });
 
-  it('dates every entry like a log, with no entry numbers', () => {
+  it('dates every entry like a log, with no entry numbers, and no count of months for the present', () => {
     render(<FieldLog />);
 
     newestFirst.forEach(job => {
       const article = screen.getByRole('article', { name: job.role });
-      expect(within(article).getByText(`${job.period} · ${job.duration}`)).toBeInTheDocument();
+      expect(within(article).getByText(dateLine(job))).toBeInTheDocument();
     });
+    expect(JOBS.at(-1)?.duration).toBeUndefined();
     expect(screen.queryByText(/Entry \d/)).not.toBeInTheDocument();
   });
 

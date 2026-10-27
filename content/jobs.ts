@@ -6,7 +6,11 @@ export type Job = {
   company: string;
   role: string;
   period: string;
-  duration: string;
+  /**
+   * How long, as a CV prints it. None for the present role: the page is built once and served for months, so a
+   * count of months typed here would be wrong by the next one.
+   */
+  duration?: string;
   /** Tenure in years. It sizes the leg that leaves this camp: the longer you stayed, the longer the walk. */
   years: number;
   /** One or two sentences at the top of the card: what the job was, in plain words. */
@@ -65,7 +69,7 @@ export const JOBS: Job[] = [
     years: 3.4,
     url: 'https://geekbot.com/',
     summary:
-      'Four years on Geekbot’s web app in React and GraphQL, as the whole of its frontend team, shipping a release every few days.',
+      'Three and a half years on Geekbot’s web app in React and GraphQL, as the whole of its frontend team, shipping a release every few days.',
     highlights: [
       'Built the standup builder, the insights graphs, billing and A/B testing',
       'Kept the GraphQL gateway and went into PHP to finish a feature off',
@@ -78,7 +82,7 @@ export const JOBS: Job[] = [
     company: 'Geekbot',
     role: 'Frontend Lead',
     period: 'Mar 2022 – 2026',
-    duration: '3 years+',
+    duration: '4 years',
     years: 4,
     url: 'https://geekbot.com/',
     summary:
@@ -95,7 +99,6 @@ export const JOBS: Job[] = [
     company: 'DeepSea.ai',
     role: 'Senior Frontend Software Engineer',
     period: 'Mar 2026 – present',
-    duration: '7 months',
     years: 0.6,
     url: 'https://www.deepsea.ai/',
     summary:
@@ -107,3 +110,19 @@ export const JOBS: Job[] = [
     ],
   },
 ];
+
+/** A job's date line, as the log and the cards print it: "Sep 2018 – Feb 2022 · 3 years 5 months". */
+export function dateLine(job: Job): string {
+  return job.duration ? `${job.period} · ${job.duration}` : job.period;
+}
+
+/**
+ * A job by the year it started, for pages that tell part of it again (/ai): its dates and links come from here,
+ * never typed twice. A start year that is not a job is a mistake in the content, so it throws.
+ */
+export function jobFrom(start: number): Job {
+  const job = JOBS.find(entry => entry.start === start);
+  if (!job) throw new Error(`No job starts in ${start}`);
+
+  return job;
+}

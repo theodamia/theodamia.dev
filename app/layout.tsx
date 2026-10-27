@@ -5,6 +5,7 @@ import { Bricolage_Grotesque, Instrument_Sans } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Dock } from '@/components/dock';
+import { ThemeSeen } from '@/components/theme-seen';
 import { SITE } from '@/content/site';
 import { THEME_SCRIPT } from '@/lib/theme';
 import { DAYPART_SCRIPT } from '@/scene/about';
@@ -31,24 +32,24 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: `${SITE.name} | ${SITE.title}`,
   description:
-    'The Ascent: ten years of software engineering, built on frontend fundamentals, drawn as one long climb. Senior Frontend Software Engineer at DeepSea.ai, previously Frontend Lead at Geekbot.',
+    'The Ascent: ten years of software engineering, from the interface to the database, drawn as one long climb. Senior Software Engineer in Thessaloniki, now at DeepSea.ai, previously Frontend Lead at Geekbot.',
   generator: 'theodamia.dev',
   keywords: [
     'Senior Software Engineer',
     'Software Engineer',
-    'Frontend Engineer',
-    'Frontend Software Engineer',
+    'Full-stack Engineer',
     'React',
     'TypeScript',
-    'Tailwind CSS',
+    'Node.js',
     'GraphQL',
-    'Web Development',
+    'AI enablement',
+    'Claude Code',
   ],
   authors: [{ name: SITE.name }],
   alternates: { canonical: '/' },
   /*
    * Next does not merge `openGraph` field by field: a route that sets its own replaces this whole object. So each
-   * page states its own title and description, or it would be shared as the home page (see /cv and /about).
+   * page states its own through `pageMetadata()` (lib/page-metadata.ts), or it would be shared as the home page.
    */
   openGraph: {
     title: `${SITE.name} | ${SITE.title}`,
@@ -108,6 +109,7 @@ export default function RootLayout({
         <ViewTransition name='dock' default='none' update='dock-still'>
           <Dock />
         </ViewTransition>
+        <ThemeSeen />
         <Analytics />
         <SpeedInsights />
       </body>

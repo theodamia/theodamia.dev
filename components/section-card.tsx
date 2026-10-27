@@ -11,12 +11,13 @@ type SectionCardProps = {
   children: React.ReactNode;
 };
 
-/** The big white reading surface every piece of general information sits on. */
+/** The big white reading surface every piece of general information sits on; with an `id`, a region named by its title. */
 export function SectionCard({ id, ref, eyebrow, title, className, children }: SectionCardProps) {
   return (
     <section
       ref={ref}
       id={id}
+      aria-labelledby={id ? `${id}-title` : undefined}
       data-surface
       className={cn(
         // w-full: an auto margin in the page's flex column would otherwise shrink the card to its content
@@ -25,7 +26,9 @@ export function SectionCard({ id, ref, eyebrow, title, className, children }: Se
       )}
     >
       <Eyebrow>{eyebrow}</Eyebrow>
-      <Heading className='mt-1.5'>{title}</Heading>
+      <Heading id={id ? `${id}-title` : undefined} className='mt-1.5'>
+        {title}
+      </Heading>
       {children}
     </section>
   );

@@ -1,19 +1,6 @@
 import { Eyebrow, Heading } from '@/components/ui/text';
+import type { LogItem } from '@/content/log';
 import { cn } from '@/utils/cn';
-
-/** One entry of a log: a date line, what it was, where, one sentence and its points. */
-export type LogItem = {
-  /** The id its heading takes, so the entry is named by it. */
-  id: string;
-  /** The date line, as it reads: "Mar 2026 – present · 7 months". */
-  when: string;
-  title: string;
-  place: string;
-  /** The place's site; the place's name links there when it has one. */
-  url?: string;
-  summary: string;
-  points: string[];
-};
 
 type LogEntryProps = {
   entry: LogItem;

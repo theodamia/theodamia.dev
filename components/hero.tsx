@@ -21,8 +21,8 @@ export function Hero() {
         {SITE.name}
       </Heading>
       <Lede>
-        Ten years of software engineering, built on frontend fundamentals. A camp for every role,
-        a&nbsp;lesson&nbsp;from&nbsp;every&nbsp;camp, and the summit still ahead.
+        Ten years of software engineering, from the interface to the database. A camp for every
+        role, a&nbsp;lesson&nbsp;from&nbsp;every&nbsp;camp, and the summit still ahead.
       </Lede>
       <SocialLinks />
       {/*

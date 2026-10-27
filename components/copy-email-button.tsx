@@ -40,7 +40,8 @@ export function CopyEmailButton({ email, className }: { email: string; className
         type='button'
         onClick={() => void copy()}
         data-contact-action
-        aria-label='Copy email address'
+        /* named for what it shows, so a voice user can say what they see: "Copy", then "Copied" */
+        aria-label={copied ? 'Copied email address' : 'Copy email address'}
         className={cn(buttonVariants({ variant: 'quiet', size: 'sm' }), className)}
       >
         <Icon size={ICON_SIZE} aria-hidden='true' />
