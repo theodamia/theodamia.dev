@@ -29,8 +29,16 @@ export const AI_PRACTICES: AiPoint[] = [
     text: 'Standards written once, as Markdown templates for frontend in general and for React, so every engineer’s assistant works to the same conventions. Kept current as the team changes, with the conflicts between them settled.',
   },
   {
+    name: 'Safe by rule',
+    text: 'The rules are strict on security: the tools read no secrets and commit nothing risky.',
+  },
+  {
     name: 'Strict tools, readable output',
     text: 'Lint and types set strict and what the AI writes held to what a person can read: comments that say why, JSDoc, plain names. Not the fewest tokens. A simple, boring codebase is the one that gets maintained.',
+  },
+  {
+    name: 'Nothing done until it passes',
+    text: 'Tests, lint and formatting must pass on every change, the AI’s included. QA agents check each release on their own.',
   },
   {
     name: 'Reviews it joins, not replaces',
@@ -55,13 +63,13 @@ export const AI_PLACES: LogItem[] = [
     place: DEEPSEA.company,
     url: DEEPSEA.url,
     summary:
-      'Rebuilding the frontend from its foundations, I wrote the Claude Code standards the guild works by.',
+      'I wrote the Claude Code standards the guild’s three engineers work by. Releases got faster and migrations easier.',
     points: [
       'Templated rules files for the guild and its frontend chapter: one general, one for React',
+      'In a month: Turborepo set up and a legacy app moved into a new app shell on current React, Vite and Tailwind',
+      'Tests, lint and formatting on every change; QA agents check each release on their own',
       'Skills the team runs for repeated work and AI review on every pull request',
-      'Designs and docs shared as artifacts, agreed before the code',
-      'Kept the standards current and settled conflicts between them as we changed',
-      'Now: automating the pipeline around artifacts, pull requests and releases',
+      'Now: exploring agents in the pipeline, from pull request to release',
     ],
   },
   {
