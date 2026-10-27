@@ -56,16 +56,28 @@ export function prepareArt(
   pick: (img: HTMLImageElement) => boolean = () => true,
   priority: 'high' | 'low' = 'high'
 ): Promise<void> {
-  const phone = usesPhoneArt({
-    width: window.innerWidth,
-    height: window.innerHeight,
-    wide: window.matchMedia(WIDE_QUERY).matches,
-  });
+  const phone = onPhoneArt();
   const images = Array.from(root.querySelectorAll<HTMLImageElement>(`img[data-art='${theme}']`));
 
   return Promise.allSettled(
     images.filter(pick).map(img => prepareImage(img, phone, priority))
   ).then(() => undefined);
+}
+
+/** Whether this visit gets the phone files: the screen it started on decides (scene/camera.ts). */
+function onPhoneArt(): boolean {
+  return usesPhoneArt({
+    width: window.innerWidth,
+    height: window.innerHeight,
+    wide: window.matchMedia(WIDE_QUERY).matches,
+  });
+}
+
+/** Whether the browser asks to spare data (Chromium's Save-Data); elsewhere it never says, so no. */
+function savingData(): boolean {
+  return Boolean(
+    (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData
+  );
 }
 
 type IdleWindow = Window & {
@@ -79,6 +91,10 @@ const IDLE_FALLBACK_MS = 1200;
 /**
  * After the first frame: the rest of the visit's theme at low priority, the other theme when the browser is idle
  * (so switching day and night finds it decoded), and the new theme first whenever it changes. Returns a cleanup.
+ *
+ * Not on a phone, nor where the browser asks to spare data: there the other theme's paintings (most of a megabyte)
+ * would be paid for on a mobile plan by a reader who may never switch. They load on the switch instead, and the old
+ * theme's paintings stand in until each is ready (see "The forward climb" in globals.css), so nothing goes blank.
  */
 export function watchArt(root: ParentNode): () => void {
   const idle = window as IdleWindow;
@@ -86,15 +102,21 @@ export function watchArt(root: ParentNode): () => void {
   void prepareArt(root, theme, undefined, 'low');
   const other: Theme = theme === 'day' ? 'night' : 'day';
   const warm = () => void prepareArt(root, other, undefined, 'low');
-  const handle = idle.requestIdleCallback
-    ? idle.requestIdleCallback(warm)
-    : window.setTimeout(warm, IDLE_FALLBACK_MS);
+  const spare = onPhoneArt() || savingData();
+  let handle = 0;
+
+  if (!spare) {
+    handle = idle.requestIdleCallback
+      ? idle.requestIdleCallback(warm)
+      : window.setTimeout(warm, IDLE_FALLBACK_MS);
+  }
 
   const observer = new MutationObserver(() => void prepareArt(root, sceneTheme()));
   observer.observe(document.documentElement, { attributeFilter: ['data-theme'] });
 
   return () => {
     observer.disconnect();
+    if (!handle) return;
 
     if (idle.cancelIdleCallback) {
       idle.cancelIdleCallback(handle);

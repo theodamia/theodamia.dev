@@ -15,7 +15,10 @@ const LINGER_MS = 2400;
 /** Safari has no idle callback: a short timeout stands in. */
 const IDLE_FALLBACK_MS = 1500;
 
-type IdleWindow = Window & { requestIdleCallback?: (callback: () => void) => number };
+type IdleWindow = Window & {
+  requestIdleCallback?: (callback: () => void) => number;
+  cancelIdleCallback?: (handle: number) => void;
+};
 
 type AuroraProps = {
   /** Whether a point on the screen shows the sky right now, not a painting (the stage knows: `skyAt`). */
@@ -65,6 +68,7 @@ export function Aurora({ isSky }: AuroraProps) {
     const idle = window as IdleWindow;
     let frame = 0;
     let linger = 0;
+    let waiting = 0;
     let loaded = false;
 
     const load = () => {
@@ -81,13 +85,27 @@ export function Aurora({ isSky }: AuroraProps) {
       });
     };
 
+    /* the pending idle load, kept so leaving the climb before the browser is idle cancels what it would start */
+    const stopWaiting = () => {
+      if (!waiting) return;
+
+      if (idle.cancelIdleCallback) {
+        idle.cancelIdleCallback(waiting);
+      } else {
+        window.clearTimeout(waiting);
+      }
+
+      waiting = 0;
+    };
+
     const warm = () => {
-      if (readTheme() !== 'dark') return;
+      if (readTheme() !== 'dark' || loaded) return;
+      stopWaiting();
 
       if (idle.requestIdleCallback) {
-        idle.requestIdleCallback(load);
+        waiting = idle.requestIdleCallback(load);
       } else {
-        window.setTimeout(load, IDLE_FALLBACK_MS);
+        waiting = window.setTimeout(load, IDLE_FALLBACK_MS);
       }
     };
 
@@ -132,6 +150,7 @@ export function Aurora({ isSky }: AuroraProps) {
       document.documentElement.removeEventListener('pointerleave', fade);
       cancelAnimationFrame(frame);
       window.clearTimeout(linger);
+      stopWaiting();
     };
   }, []);
 
