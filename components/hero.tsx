@@ -22,7 +22,7 @@ export function Hero() {
       </Heading>
       <Lede>
         Ten years of software engineering, from the interface to the database. A camp for every
-        role, a&nbsp;lesson&nbsp;from&nbsp;every&nbsp;camp, and the summit still ahead.
+        role, a&nbsp;lesson&nbsp;from&nbsp;every&nbsp;camp and the summit still ahead.
       </Lede>
       <SocialLinks />
       {/*

@@ -30,7 +30,7 @@ export const AI_PRACTICES: AiPoint[] = [
   },
   {
     name: 'Strict tools, readable output',
-    text: 'Lint and types set strict, and what the AI writes held to what a person can read: comments that say why, JSDoc, plain names. Not the fewest tokens. A simple, boring codebase is the one that gets maintained.',
+    text: 'Lint and types set strict and what the AI writes held to what a person can read: comments that say why, JSDoc, plain names. Not the fewest tokens. A simple, boring codebase is the one that gets maintained.',
   },
   {
     name: 'Reviews it joins, not replaces',
@@ -58,7 +58,7 @@ export const AI_PLACES: LogItem[] = [
       'Rebuilding the frontend from its foundations, I wrote the Claude Code standards the guild works by.',
     points: [
       'Templated rules files for the guild and its frontend chapter: one general, one for React',
-      'Skills the team runs for repeated work, and AI review on every pull request',
+      'Skills the team runs for repeated work and AI review on every pull request',
       'Designs and docs shared as artifacts, agreed before the code',
       'Kept the standards current and settled conflicts between them as we changed',
       'Now: automating the pipeline around artifacts, pull requests and releases',
@@ -71,7 +71,7 @@ export const AI_PLACES: LogItem[] = [
     place: GEEKBOT_LEAD.company,
     url: GEEKBOT_LEAD.url,
     summary:
-      'A team of three that took up each tool as it became worth it, and changed how it worked around them.',
+      'A team of three that took up each tool as it became worth it and changed how it worked around them.',
     points: [
       'Automated code review on every pull request',
       'Docs drafted with AI, checked by the people who own them',
@@ -87,7 +87,7 @@ export const AI_PLACES: LogItem[] = [
     summary: 'I set the direction and made every decision; the tools drafted.',
     points: [
       'The code written with Claude Code, under a rules file that grew with every decision',
-      'Strict lint and types, and JSDoc that says why: code written for people to read',
+      'Strict lint and types and JSDoc that says why: code written for people to read',
       'Every design mocked as an artifact and agreed before any code was written',
       'Every painting made by an image model from a written brief, processed by scripts and checked at full size, by day and by night',
       'Every prompt and try kept beside the art, so any painting can be made again',
@@ -97,7 +97,7 @@ export const AI_PLACES: LogItem[] = [
 
 /** What stays with people. The title's stance, made concrete. */
 export const AI_LIMITS: AiPoint[] = [
-  { name: 'What we build, and why', text: 'The tools are good at how.' },
+  { name: 'What we build and why', text: 'The tools are good at how.' },
   { name: 'The review', text: 'AI reads every change first; a person approves it.' },
   {
     name: 'How it feels to use',
