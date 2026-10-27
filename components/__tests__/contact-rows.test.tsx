@@ -36,7 +36,7 @@ describe('ContactRows', () => {
     await user.click(screen.getByRole('button', { name: 'Copy email address' }));
 
     expect(await navigator.clipboard.readText()).toBe(SITE.email);
-    expect(screen.getByRole('button', { name: 'Copy email address' })).toHaveTextContent('Copied');
+    expect(screen.getByRole('button', { name: 'Copied email address' })).toBeInTheDocument();
     expect(screen.getByRole('status')).toHaveTextContent('Email address copied');
   });
 });
