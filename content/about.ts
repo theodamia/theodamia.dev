@@ -11,7 +11,7 @@ export type Fact = { label: string; value: string };
 /** Ordered by what a reader wants first: the job now, then where, then how long, then the rest. */
 export const FACTS: Fact[] = [
   { label: 'Currently', value: 'Senior Frontend Software Engineer at DeepSea.ai' },
-  { label: 'Based in', value: 'Thessaloniki, Greece. Remote for most of the last ten years.' },
+  { label: 'Based in', value: 'Greece. Remote for most of the last ten years.' },
   { label: 'Experience', value: '10 years, 5 roles, 4 teams' },
   { label: 'Languages', value: 'Greek (native), English (fluent)' },
   { label: 'Education', value: 'BSc Computer Science, TEI of Central Macedonia' },

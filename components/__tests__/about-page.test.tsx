@@ -75,7 +75,7 @@ describe('/about', () => {
     render(<About />);
     const finale = screen.getByRole('region', { name: 'Putting a team together?' });
 
-    fireEvent.click(within(finale).getByText('Thessaloniki', { exact: false }));
+    fireEvent.click(within(finale).getByText('Remote', { exact: false }));
     expect(finale).not.toHaveAttribute('data-contact');
 
     fireEvent.click(within(finale).getByRole('link', { name: 'Email me' }));

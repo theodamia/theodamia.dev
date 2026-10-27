@@ -5,9 +5,6 @@ import { SITE } from '@/content/site';
 /** The last job in `content/jobs.ts` is the present one, the same way the altimeter reads it. */
 const CURRENT = JOBS[JOBS.length - 1];
 
-/** `Thessaloniki, Greece` → the two halves schema.org asks for separately. */
-const [CITY, COUNTRY] = SITE.location.split(', ');
-
 /** `BSc Computer Science, TEI of Central Macedonia` → the school is what follows the degree. */
 const SCHOOL = EDUCATION?.value.split(', ').at(-1);
 
@@ -33,7 +30,8 @@ export function personSchema() {
     url: SITE.url,
     jobTitle: SITE.title,
     email: `mailto:${SITE.email}`,
-    address: { '@type': 'PostalAddress', addressLocality: CITY, addressCountry: COUNTRY },
+    /* the country only: the site names no city */
+    address: { '@type': 'PostalAddress', addressCountry: SITE.location },
     worksFor: { '@type': 'Organization', name: CURRENT.company, url: CURRENT.url },
     ...(SCHOOL ? { alumniOf: { '@type': 'CollegeOrUniversity', name: SCHOOL } } : {}),
     knowsLanguage: LANGUAGES,

@@ -22,15 +22,11 @@ describe('personSchema', () => {
   });
 
   /*
-   * The three below are read out of sentences written for people, so a reword could quietly empty them. Each is
+   * The two below are read out of sentences written for people, so a reword could quietly empty them. Each is
    * asserted for shape rather than for its exact words, which would only pin the copy in a second place.
    */
-  it('splits the location into the two halves schema.org asks for', () => {
-    expect(schema.address.addressLocality).toBeTruthy();
-    expect(schema.address.addressCountry).toBeTruthy();
-    expect(`${schema.address.addressLocality}, ${schema.address.addressCountry}`).toBe(
-      SITE.location
-    );
+  it('gives the country as the address, and no city, as the site names none', () => {
+    expect(schema.address).toEqual({ '@type': 'PostalAddress', addressCountry: SITE.location });
   });
 
   it('keeps the languages and drops how well they are spoken', () => {
