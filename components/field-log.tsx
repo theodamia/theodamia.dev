@@ -1,5 +1,6 @@
-import { LogEntry, type LogItem } from '@/components/log-entry';
-import { JOBS, TRAILHEAD, type Job } from '@/content/jobs';
+import { LogEntry } from '@/components/log-entry';
+import { dateLine, JOBS, TRAILHEAD, type Job } from '@/content/jobs';
+import type { LogItem } from '@/content/log';
 import { SUMMIT_LINE } from '@/content/site';
 import { YEAR_STATES, yearTimeline } from '@/scene/seasons';
 import { cn } from '@/utils/cn';
@@ -11,7 +12,7 @@ const NOW = JOBS.length - 1;
 /** A job as the log reads it: "Mar 2026 – present · 7 months", the role, the company. */
 const entryOf = (job: Job): LogItem => ({
   id: `entry-${job.start}`,
-  when: `${job.period} · ${job.duration}`,
+  when: dateLine(job),
   title: job.role,
   place: job.company,
   url: job.url,

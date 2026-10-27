@@ -1,5 +1,5 @@
 import { Eyebrow, Heading } from '@/components/ui/text';
-import type { Job } from '@/content/jobs';
+import { dateLine, type Job } from '@/content/jobs';
 import { cn } from '@/utils/cn';
 
 type JobCardProps = {
@@ -16,8 +16,6 @@ type JobCardProps = {
  * sizes its stops by tenure and the list does not.
  */
 export function JobCard({ job, index, className }: JobCardProps) {
-  const pointsId = `job-${job.start}-did`;
-
   return (
     <article
       data-card
@@ -48,16 +46,16 @@ export function JobCard({ job, index, className }: JobCardProps) {
         <Heading as='h2' size='card' className='mt-3'>
           {job.role}
         </Heading>
-        <p className='text-ink-3 mt-1 text-[15.5px] font-medium'>
-          {job.period} · {job.duration}
-        </p>
+        <p className='text-ink-3 mt-1 text-[15.5px] font-medium'>{dateLine(job)}</p>
         <p className='text-ink-2 mt-3 text-[16.5px] leading-[1.55] text-pretty'>{job.summary}</p>
       </div>
 
-      <section aria-labelledby={pointsId} className='border-line bg-tint border-t px-6 pt-3.5 pb-4'>
-        <h3 id={pointsId} className='text-ink-3 text-[14px] leading-[1.4] font-semibold'>
-          What I did
-        </h3>
+      {/* every card has this panel, so its region is named for the role: five "What I did" would be one name */}
+      <section
+        aria-label={`What I did as ${job.role}`}
+        className='border-line bg-tint border-t px-6 pt-3.5 pb-4'
+      >
+        <h3 className='text-ink-3 text-[14px] leading-[1.4] font-semibold'>What I did</h3>
         <ul className='mt-2 flex flex-col gap-1.5'>
           {job.highlights.map(point => (
             <li

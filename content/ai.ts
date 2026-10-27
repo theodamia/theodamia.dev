@@ -1,4 +1,9 @@
-import type { LogItem } from '@/components/log-entry';
+import { jobFrom } from '@/content/jobs';
+import type { LogItem } from '@/content/log';
+
+/** The jobs /ai tells again, by the year each started: their dates, names and links are read from content/jobs.ts. */
+const DEEPSEA = jobFrom(2026);
+const GEEKBOT_LEAD = jobFrom(2022);
 
 /** A practice or a limit: a short name, then one or two plain sentences. */
 export type AiPoint = { name: string; text: string };
@@ -45,10 +50,10 @@ export const AI_PRACTICES: AiPoint[] = [
 export const AI_PLACES: LogItem[] = [
   {
     id: 'ai-deepsea',
-    when: 'Mar 2026 – present',
+    when: DEEPSEA.period,
     title: 'AI enablement for the frontend guild',
-    place: 'DeepSea.ai',
-    url: 'https://www.deepsea.ai/',
+    place: DEEPSEA.company,
+    url: DEEPSEA.url,
     summary:
       'Rebuilding the frontend from its foundations, I wrote the Claude Code standards the guild works by.',
     points: [
@@ -61,10 +66,10 @@ export const AI_PLACES: LogItem[] = [
   },
   {
     id: 'ai-geekbot',
-    when: 'Mar 2022 – 2026 · as Frontend Lead',
+    when: `${GEEKBOT_LEAD.period} · as ${GEEKBOT_LEAD.role}`,
     title: 'Early adopters, from the first ChatGPT to Claude Code',
-    place: 'Geekbot',
-    url: 'https://geekbot.com/',
+    place: GEEKBOT_LEAD.company,
+    url: GEEKBOT_LEAD.url,
     summary:
       'A team of three that took up each tool as it became worth it, and changed how it worked around them.',
     points: [
