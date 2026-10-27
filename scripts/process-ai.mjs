@@ -31,6 +31,7 @@ import {
   writeHashed,
   writeJson,
 } from './paintings.mjs';
+import { hexTokenRgb } from './scene-token-rgb.mjs';
 
 /* a closed output pipe (`| head`) must not stop the run half way, before the manifest is written */
 process.stdout.on('error', () => {});
@@ -51,10 +52,11 @@ const TRIM_ALPHA = 0.02;
 /**
  * The header's wireframe: where it is (the left of the painting, clear of the pennant on the right), what a line
  * pixel looks like once keyed (red standing well above both green and blue), and the site's accent it takes, by
- * day and by night (`--color-accent`, and the night's muted orange the painter was asked for).
+ * day and by night: `--color-accent` by day, read from globals.css so the painting follows the palette; by night
+ * the muted orange the painter was asked for, which is no token (the interface's night accent is lighter, for text).
  */
 const WIRE = { RIGHT: 0.6, RED_FROM: 50, RED_FULL: 110, LINE_RED: 224 };
-const ACCENT = { day: [207, 67, 24], night: [194, 86, 46] };
+const ACCENT = { day: hexTokenRgb('accent'), night: [194, 86, 46] };
 /** The header's left end dissolves over this share of its width. */
 const HEADER_FADE = 0.16;
 const ENCODE = { quality: 84, alphaQuality: 90, effort: 6, smartSubsample: true };

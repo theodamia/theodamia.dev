@@ -24,3 +24,11 @@ export function sceneTokenRgb(name, night = false) {
     )
   );
 }
+
+/** A colour token written as hex (`--color-accent: #cf4318`), as RGB: the interface's tokens are hex, not OKLCH. */
+export function hexTokenRgb(name) {
+  const value = css.match(new RegExp(`--color-${name}: #([0-9a-fA-F]{6});`))?.[1];
+  if (!value) throw new Error(`No hex token --color-${name} in app/globals.css`);
+
+  return [0, 2, 4].map(i => parseInt(value.slice(i, i + 2), 16));
+}
