@@ -13,7 +13,7 @@ const FORK_CLOUDS: CloudWind[] = [
  * A last screen at the summit with the giant at a fork in the trail along its bottom edge, waiting, not choosing
  * (scene/ai.ts). /ai ends on it, the Contact card above being the reader's move; the 404 stands on it, the reader
  * having lost the trail and the ways on being the links. The sky comes in from the page above; the content stands
- * near the top and on the left, clear of the giant in the scene's right third, though it may stand over the far
+ * centred in the open sky above the scene, on the left, clear of the giant in the scene's right third, though it may stand over the far
  * range; the scene spans the width (`cqw`). On phones it is just the content.
  */
 export function ForkScene({ children }: { children: React.ReactNode }) {
@@ -31,6 +31,7 @@ export function ForkScene({ children }: { children: React.ReactNode }) {
         />
       </div>
       <div className='max-wide:px-4 relative mx-auto flex w-full max-w-[1180px] flex-1 flex-col px-7'>
+        <div aria-hidden='true' className='fork-band max-wide:hidden' />
         {children}
         <div aria-hidden='true' className='fork-band max-wide:hidden' />
         <div aria-hidden='true' className='fork-foot max-wide:hidden' />
