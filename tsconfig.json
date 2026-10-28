@@ -31,5 +31,9 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  /* Next 16.4.3's dev type generator imports AppRouteHandlerRoutes and NextRequest whenever the app has
+     metadata routes (the share cards, robots, sitemap) but writes no check that uses them, so
+     noUnusedLocals fails `tsc` and `next build` once `next dev` has run. The pages are still checked:
+     `next build` generates .next/types/validator.ts correctly. Drop this when Next fixes typegen.js. */
+  "exclude": ["node_modules", ".next/dev/types/validator.ts"]
 }
