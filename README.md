@@ -66,7 +66,7 @@ theodamia.dev/
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 26 (the version Vercel builds with, set in `package.json`)
 - [pnpm](https://pnpm.io/)
 
 ### Installation
