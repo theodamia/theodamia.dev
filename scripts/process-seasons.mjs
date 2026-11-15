@@ -17,8 +17,8 @@
  *   4. moves the ground's tone onto GROUND_TONE (measured on the meadow, the grove's ground moved by as much), so
  *      the ground sits in step with the climb's meadow and /ai's whatever the painter's light did;
  *   5. keeps of the grove's ground only a soft skirt around its trunks, undergrowth and post, so the repeated
- *      meadow shows everywhere else, and the meadow becomes a seamless tile: its end is cross-faded into its start and the tile
- *      is that much narrower;
+ *      meadow shows everywhere else, and makes the meadow a seamless tile: its end is cross-faded into its start
+ *      and the tile is that much narrower;
  *   6. fills the colour hidden under transparent pixels from the nearest paint and has WebP keep it: WebP stores
  *      colour at half resolution, and whatever hides there bleeds into thin twigs as green and purple fringes;
  *   7. names every file by a hash of its bytes (so public/seasons can be cached forever) and writes
@@ -71,10 +71,12 @@ const CANVAS = { W, H };
 const TREE = { x0: 80, y1: 1160 };
 /**
  * The grove keeps its own foot (the undergrowth, the tufts around each trunk, the flaring roots) and of its ground
- * only a soft, uneven skirt around what stands: below the meadow's top edge, its ground stays within SKIRT[0] pixels
- * of anything standing above that edge (by LIFT pixels, so the grass line itself does not count) and is gone by
- * SKIRT[1]. Everywhere else the repeated meadow shows, so the wood never sits on a block of its own ground (fading
- * it by rows left a rectangle with a hard left edge). Its left edge also dissolves over EDGE_FADE, short of the post.
+ * only a soft, uneven skirt around what stands. What stands is whatever the grove paints at least LIFT pixels above
+ * the meadow's top edge (so the grass line itself does not count); below that edge the grove's ground stays within
+ * SKIRT[0] pixels of it and is gone by SKIRT[1], and the repeated meadow shows everywhere else. Fading the ground by
+ * rows instead left the wood on a rectangle of its own ground with a hard left edge; cutting it away left the trunks
+ * looking pasted on (art/cv/CV-README.md). The left edge also dissolves over EDGE_FADE of the width, short of the
+ * post.
  */
 const SKIRT = [16, 120];
 const LIFT = 12;
@@ -151,8 +153,8 @@ const SPREAD_LIMIT = [0.8, 1.25];
 const GROUND_SAMPLE = 0.82;
 const SOLID = 0.99;
 /**
- * In the grove the tone eases in over these rows: below the undergrowth (moving its shrubs as the grass moves turned
- * their moonlit tips lilac) and complete where the grove's skirt of ground thins into the meadow (SKIRT), so
+ * In the grove the tone eases in over these rows: from below the undergrowth (moving the shrubs as the grass moves
+ * turned their moonlit tips lilac) to complete before the grove's skirt of ground thins into the meadow (SKIRT), so
  * where the two blend they are one colour.
  */
 const TONE_RAMP = [1185, 1245];
@@ -382,13 +384,16 @@ function toneGround(rgb, alpha, from, to, grove) {
   }
 }
 
+/** A chamfer distance's steps: 3 for a side, 4 for a diagonal (about 3√2), so a third of the sum is in pixels. */
+const CHAMFER = { SIDE: 3, DIAGONAL: 4 };
+
 /**
- * Each pixel's distance, in pixels, from the nearest pixel in `from`: a two-pass chamfer (3-4) distance, close
- * enough to Euclidean for a soft falloff.
+ * Each pixel's distance, in pixels, from the nearest pixel set in `from`: a two-pass chamfer distance, within a few
+ * percent of the true one, which is plenty for a soft falloff and needs no square roots over 1.5 million pixels.
  */
 function distanceFrom(from) {
-  const far = W + H;
-  const d = Float32Array.from(from, f => (f ? 0 : far * 3));
+  const unreached = (W + H) * CHAMFER.SIDE;
+  const d = Float32Array.from(from, set => (set ? 0 : unreached));
 
   const step = (i, j, cost) => {
     d[i] = Math.min(d[i], d[j] + cost);
@@ -399,18 +404,18 @@ function distanceFrom(from) {
       const i = y * W + x;
 
       if (x > 0) {
-        step(i, i - 1, 3);
+        step(i, i - 1, CHAMFER.SIDE);
       }
 
       if (y > 0) {
-        step(i, i - W, 3);
+        step(i, i - W, CHAMFER.SIDE);
 
         if (x > 0) {
-          step(i, i - W - 1, 4);
+          step(i, i - W - 1, CHAMFER.DIAGONAL);
         }
 
         if (x < W - 1) {
-          step(i, i - W + 1, 4);
+          step(i, i - W + 1, CHAMFER.DIAGONAL);
         }
       }
     }
@@ -421,29 +426,29 @@ function distanceFrom(from) {
       const i = y * W + x;
 
       if (x < W - 1) {
-        step(i, i + 1, 3);
+        step(i, i + 1, CHAMFER.SIDE);
       }
 
       if (y < H - 1) {
-        step(i, i + W, 3);
+        step(i, i + W, CHAMFER.SIDE);
 
         if (x < W - 1) {
-          step(i, i + W + 1, 4);
+          step(i, i + W + 1, CHAMFER.DIAGONAL);
         }
 
         if (x > 0) {
-          step(i, i + W - 1, 4);
+          step(i, i + W - 1, CHAMFER.DIAGONAL);
         }
       }
     }
   }
 
-  return d.map(v => v / 3);
+  return d.map(v => v / CHAMFER.SIDE);
 }
 
 /**
- * The grove's ground becomes a skirt around what stands on it (SKIRT), below the row `meadowTop` where the meadow's
- * grass begins, and its left edge dissolves.
+ * The grove's ground becomes a skirt around what stands on it (SKIRT) below `meadowTop`, the row where the meadow's
+ * grass begins (so the meadow must be processed first), and its left edge dissolves.
  */
 function fadeGrove(alpha, meadowTop) {
   const line = Math.round(meadowTop) - LIFT;
@@ -561,14 +566,15 @@ for (const season of SEASONS) {
       notes.push(`${theme}: ${wood} tinted, ${sky} on the skyline`);
     }
 
-    if (!grove && season === 'summer') {
-      ground = groundShare(day.alpha);
-    }
-
     if (grove) {
       fadeGrove(day.alpha, meadowTop);
     } else {
-      meadowTop = H * (1 - groundShare(day.alpha));
+      const share = groundShare(day.alpha);
+      meadowTop = H * (1 - share);
+
+      if (season === 'summer') {
+        ground = share;
+      }
     }
 
     console.log(`${kind}-${season}: ${notes.join('; ')}`);
