@@ -2,6 +2,30 @@
 
 How the paintings behind /cv were made: the grove and the meadow of every season (the brief is `SEASONS-README.md`), and the kit of painted weather. The raw files are in `raw/`, which stays local. The grove's look came from an earlier single-larch design (`raw/larch-<season>-<theme>.png`), which the inputs below still name.
 
+## The wood, repainted (2026-11-15)
+
+The first grove and meadow looked pixelated on the page: 1536 × 1024 paintings with the wood in their right half, shown a screen tall, so the trees were stretched about 1.8 times on a retina screen, and their hairline spiky needles keyed into jagged edges. The owner asked for the original style of the reference behind the whole site, Legends of Runeterra card art (`art/scene/style/inputs/style-reference.png`).
+
+Repainted by Codex with its built-in image tool, which paints at most 1536 pixels on a side (asked for 3072 × 2048, it returned 1536 × 1024), so the extra detail comes from framing instead:
+
+- `grove-<season>-<theme>.png`: **1024 × 1536 portrait, the wood alone** (a crop of the old grove from x = 853, so every tree stands where it stood on screen): the post at 2–6% across, the young larch at 15%, the close pair at 55% and 66%, the big larch at the right edge. The trees get 1.5 times the pixels; the open meadow to their left is the repeated meadow's.
+- `meadow-<season>-<theme>.png`: 1024 × 1536, the same meadow alone, its top edge at the wood's left edge (24% of the height from the bottom).
+- Rendering: soft polished Runeterra splash painting, foliage as soft clustered masses with lit tops and cool undersides, every twig a few pixels thick so the silhouette keys cleanly.
+
+Order and tries (briefs kept in `raw/v3-tries/`, with the test paintings):
+
+1. A first test of the whole 1536 × 1024 grove in the new style (`v3-tries/grove-summer-day.png`): softer, but still 1536 wide and the trees fir-like.
+2. The wood alone, portrait (`v3-tries/wood-summer-day-sparse.png`): crisp and larch-like. The owner asked for fuller crowns "like the original one": an edit with the old grove as the fullness reference (`v3-tries/wood-summer-day-fuller-v1.png`), approved.
+3. Its meadow cooled toward the climb's village meadow (`flats/raw/village-day.png`); the old /cv meadow was brighter and more saturated than the climb's. Then the summer meadow tile as an edit of it.
+4. Spring, autumn and winter as edits of the summer wood (the old `grove-<season>-day.png` as the season's look only), each meadow an edit of the summer meadow with its new wood as reference. Trunks, post and meadow line land within a few pixels across the four.
+5. Each night an edit of its day (the old night as the colour reference, `style-hero-night.png` as the climb's night). The painter drifts the silhouette a little; processing gives every night its day's outline.
+
+The first set is kept in `raw/retired-2026-11-15-spiky/`.
+
+Processing changed with it: the canvas is 1024 × 1536 (the weather kit keeps its own 1536 × 1024), the wood box and the tile's band are scaled, the meadow line is measured on the meadow alone, and the grove's ground dissolves into the repeated meadow over 13% of its width (short of the young larch; the post keeps only the narrow edge fade), or the two meadows' small difference in light shows as a seam. The groves are about 290–360 KB each (were 220–250 KB).
+
+**The ground's tone, corrected in processing.** Cooling the summer meadow toward the village (step 3) went too far: measured in CIELAB, the summer ground fell from L 56 / b 39 (the first set, in step with the climb and /ai) to L 52 / b 28, a cool blue-green beside the climb's sunlit yellow-green. Rather than repaint again (an edit moves the trees too), `pnpm seasons` now moves each season's ground onto the first set's numbers (`GROUND_TONE`: the mean of L, a and b moves all the way, the spread at most 0.8–1.25 times, or a night's narrow blue is stretched until its crests go yellow). The grove's ground moves by the meadow's amount, eased in from just above the meadow line, so the trees keep their paint.
+
 ## Grove and meadow (the seasons behind the page)
 
 Created 2026-10-25. The owner found one larch on its knoll "too singular, out of place" and asked for a meadow across the whole bottom of the screen with trees on the right. The landscape behind /cv is now two paintings per season and time, composited in code:

@@ -1365,12 +1365,12 @@
 
 /*
  * On narrower wide screens the grove would bring its young larch in behind the list, a ghost tree under the text.
- * It slides right instead, enough to keep that larch's trunk (62.5% across a grove 1.5 screens tall wide, so
- * 56.25vh from its right edge) 120px clear of the column, past where its crown and the veil's soft edge would reach.
+ * It slides right instead, enough to keep that larch's trunk (15% across a grove two thirds of a screen tall wide,
+ * so 56.5vh from its right edge) 120px clear of the column, past where its crown and the veil's soft edge would reach.
  * The wood loses a little more off the screen's edge; from about 1280px wide nothing moves.
  */
 .year-backdrop .year-grove {
-  right: min(0px, calc(100vw - var(--log-right) - 120px - 56.25vh));
+  right: min(0px, calc(100vw - var(--log-right) - 120px - 56.5vh));
 }
 
 /*

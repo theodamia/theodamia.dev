@@ -1,5 +1,7 @@
 # The paintings behind /cv: the brief
 
+> Superseded on 2026-11-15: the wood was repainted portrait (1024 × 1536, the wood alone) in the Runeterra style. That brief is in `raw/v3-tries/` and the record in `CV-README.md` ("The wood, repainted"). This first brief is kept as it was sent.
+
 The brief Codex painted the grove and meadow from (2026-10-25), kept as it was sent. The record of tries, and what processing does to the result, is in `CV-README.md` ("Grove and meadow").
 
 You are making **artwork only**. Do not change any code, config or package, and do not commit. Write only:
