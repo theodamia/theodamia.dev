@@ -16,8 +16,8 @@
  *      fringes a painter leaves beside magenta, and pink grass tips on the skyline take the grass inside them;
  *   4. moves the ground's tone onto GROUND_TONE (measured on the meadow, the grove's ground moved by as much), so
  *      the ground sits in step with the climb's meadow and /ai's whatever the painter's light did;
- *   5. fades the grove's ground into the repeated meadow below the wood's foot and at its left edge, and the
- *      meadow becomes a seamless tile: its end is cross-faded into its start and the tile
+ *   5. keeps of the grove's ground only a soft skirt around its trunks, undergrowth and post, so the repeated
+ *      meadow shows everywhere else, and the meadow becomes a seamless tile: its end is cross-faded into its start and the tile
  *      is that much narrower;
  *   6. fills the colour hidden under transparent pixels from the nearest paint and has WebP keep it: WebP stores
  *      colour at half resolution, and whatever hides there bleeds into thin twigs as green and purple fringes;
@@ -70,13 +70,14 @@ const CANVAS = { W, H };
 /** Where the wood stands in the grove: right of `x0`, above `y1` (the meadow's top edge is just below). */
 const TREE = { x0: 80, y1: 1160 };
 /**
- * The grove's ground fades into the repeated meadow beneath it, so the wood keeps its own foot (its undergrowth,
- * the grass grown up around each trunk, the flaring roots) and the screen still has one meadow: from FADE[0] to
- * FADE[1] (below the lowest trunk base and the undergrowth), and at its left edge over EDGE_FADE of its width. Both
- * are painted in the same tufted grass, so the fade shows no seam; the edge fade stays short of the post. (Cutting the ground away and keeping only the
- * trunks left them looking pasted on a flat edge; see art/cv/CV-README.md.)
+ * The grove keeps its own foot (the undergrowth, the tufts around each trunk, the flaring roots) and of its ground
+ * only a soft, uneven skirt around what stands: below the meadow's top edge, its ground stays within SKIRT[0] pixels
+ * of anything standing above that edge (by LIFT pixels, so the grass line itself does not count) and is gone by
+ * SKIRT[1]. Everywhere else the repeated meadow shows, so the wood never sits on a block of its own ground (fading
+ * it by rows left a rectangle with a hard left edge). Its left edge also dissolves over EDGE_FADE, short of the post.
  */
-const FADE = [1250, 1340];
+const SKIRT = [16, 120];
+const LIFT = 12;
 const EDGE_FADE = 0.018;
 /** The meadow tile's cross-fade: its last BAND columns are blended into its first, and the tile loses them. */
 const BAND = 128;
@@ -151,8 +152,8 @@ const GROUND_SAMPLE = 0.82;
 const SOLID = 0.99;
 /**
  * In the grove the tone eases in over these rows: below the undergrowth (moving its shrubs as the grass moves turned
- * their moonlit tips lilac) and complete before the grove's ground starts fading into the meadow (FADE), so where
- * the two blend they are one colour.
+ * their moonlit tips lilac) and complete where the grove's skirt of ground thins into the meadow (SKIRT), so
+ * where the two blend they are one colour.
  */
 const TONE_RAMP = [1185, 1245];
 const ENCODE = { quality: 80, alphaQuality: 85, effort: 6, smartSubsample: true, exact: true };
@@ -381,15 +382,80 @@ function toneGround(rgb, alpha, from, to, grove) {
   }
 }
 
-/** The grove's ground fades into the repeated meadow below the wood's foot and at its left edge. */
-function fadeGrove(alpha) {
+/**
+ * Each pixel's distance, in pixels, from the nearest pixel in `from`: a two-pass chamfer (3-4) distance, close
+ * enough to Euclidean for a soft falloff.
+ */
+function distanceFrom(from) {
+  const far = W + H;
+  const d = Float32Array.from(from, f => (f ? 0 : far * 3));
+
+  const step = (i, j, cost) => {
+    d[i] = Math.min(d[i], d[j] + cost);
+  };
+
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      const i = y * W + x;
+
+      if (x > 0) {
+        step(i, i - 1, 3);
+      }
+
+      if (y > 0) {
+        step(i, i - W, 3);
+
+        if (x > 0) {
+          step(i, i - W - 1, 4);
+        }
+
+        if (x < W - 1) {
+          step(i, i - W + 1, 4);
+        }
+      }
+    }
+  }
+
+  for (let y = H - 1; y >= 0; y--) {
+    for (let x = W - 1; x >= 0; x--) {
+      const i = y * W + x;
+
+      if (x < W - 1) {
+        step(i, i + 1, 3);
+      }
+
+      if (y < H - 1) {
+        step(i, i + W, 3);
+
+        if (x < W - 1) {
+          step(i, i + W + 1, 4);
+        }
+
+        if (x > 0) {
+          step(i, i + W - 1, 4);
+        }
+      }
+    }
+  }
+
+  return d.map(v => v / 3);
+}
+
+/**
+ * The grove's ground becomes a skirt around what stands on it (SKIRT), below the row `meadowTop` where the meadow's
+ * grass begins, and its left edge dissolves.
+ */
+function fadeGrove(alpha, meadowTop) {
+  const line = Math.round(meadowTop) - LIFT;
+  const standing = Uint8Array.from(alpha, (a, i) => (a > 0.5 && i < line * W ? 1 : 0));
+  const distance = distanceFrom(standing);
   const edge = W * EDGE_FADE;
 
   for (let y = 0; y < H; y++) {
-    const below = 1 - smooth((y - FADE[0]) / (FADE[1] - FADE[0]));
-
     for (let x = 0; x < W; x++) {
-      alpha[y * W + x] *= below * (x < edge ? smooth(x / edge) : 1);
+      const i = y * W + x;
+      const skirt = y < line ? 1 : 1 - smooth((distance[i] - SKIRT[0]) / (SKIRT[1] - SKIRT[0]));
+      alpha[i] *= skirt * (x < edge ? smooth(x / edge) : 1);
     }
   }
 }
@@ -470,6 +536,8 @@ for (const season of SEASONS) {
   art[season] = { day: {}, night: {} };
   /* the ground's tone is measured on the meadow alone, and the grove's ground is moved by the same amount */
   const tone = {};
+  /* the row where the season's meadow begins, for the grove's skirt */
+  let meadowTop = 0;
 
   for (const kind of ['meadow', 'grove']) {
     const grove = kind === 'grove';
@@ -498,7 +566,9 @@ for (const season of SEASONS) {
     }
 
     if (grove) {
-      fadeGrove(day.alpha);
+      fadeGrove(day.alpha, meadowTop);
+    } else {
+      meadowTop = H * (1 - groundShare(day.alpha));
     }
 
     console.log(`${kind}-${season}: ${notes.join('; ')}`);
