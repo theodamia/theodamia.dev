@@ -1,46 +1,46 @@
 {
-  "ground": 0.242,
+  "ground": 0.243,
   "tile": 896,
   "canvas": [1024, 1536],
   "art": {
     "winter": {
       "day": {
-        "meadow": "meadow-winter-day.736246db.webp",
-        "grove": "grove-winter-day.e50ccfb3.webp"
+        "meadow": "meadow-winter-day.5c6b1e2a.webp",
+        "grove": "grove-winter-day.359aeedb.webp"
       },
       "night": {
-        "meadow": "meadow-winter-night.9a2eb0cb.webp",
-        "grove": "grove-winter-night.17631d84.webp"
+        "meadow": "meadow-winter-night.37861542.webp",
+        "grove": "grove-winter-night.bedd1fa7.webp"
       }
     },
     "spring": {
       "day": {
-        "meadow": "meadow-spring-day.b7379623.webp",
-        "grove": "grove-spring-day.65bb61ba.webp"
+        "meadow": "meadow-spring-day.8e9c69b0.webp",
+        "grove": "grove-spring-day.b3e04f95.webp"
       },
       "night": {
-        "meadow": "meadow-spring-night.63a4a0da.webp",
-        "grove": "grove-spring-night.14048b41.webp"
+        "meadow": "meadow-spring-night.b03b6b45.webp",
+        "grove": "grove-spring-night.6ace0067.webp"
       }
     },
     "summer": {
       "day": {
-        "meadow": "meadow-summer-day.4fda5d31.webp",
-        "grove": "grove-summer-day.8f65ff7f.webp"
+        "meadow": "meadow-summer-day.5fcab501.webp",
+        "grove": "grove-summer-day.347d1c66.webp"
       },
       "night": {
-        "meadow": "meadow-summer-night.6c2083a9.webp",
-        "grove": "grove-summer-night.a995ea2f.webp"
+        "meadow": "meadow-summer-night.26a61715.webp",
+        "grove": "grove-summer-night.f0f0d475.webp"
       }
     },
     "autumn": {
       "day": {
-        "meadow": "meadow-autumn-day.c62f8dc1.webp",
-        "grove": "grove-autumn-day.19345b31.webp"
+        "meadow": "meadow-autumn-day.1b2cfa45.webp",
+        "grove": "grove-autumn-day.dddc42c4.webp"
       },
       "night": {
-        "meadow": "meadow-autumn-night.c5c19394.webp",
-        "grove": "grove-autumn-night.6b377a3a.webp"
+        "meadow": "meadow-autumn-night.05114bb9.webp",
+        "grove": "grove-autumn-night.4a022e41.webp"
       }
     }
   },

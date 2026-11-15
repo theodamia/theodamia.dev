@@ -16,9 +16,9 @@
  *      fringes a painter leaves beside magenta, and pink grass tips on the skyline take the grass inside them;
  *   4. moves the ground's tone onto GROUND_TONE (measured on the meadow, the grove's ground moved by as much), so
  *      the ground sits in step with the climb's meadow and /ai's whatever the painter's light did;
- *   5. dissolves the grove's left edge into nothing, its ground the widest, so it melts into the repeated meadow
- *      beneath it, and makes the meadow a seamless tile: its end is cross-faded into its start and the tile is
- *      that much narrower;
+ *   5. hands the ground to the meadow: below the ground line the grove keeps only its trunks and the post, their
+ *      feet dissolving into the meadow's grass, and the meadow becomes a seamless tile: its end is cross-faded into its start and the tile
+ *      is that much narrower;
  *   6. fills the colour hidden under transparent pixels from the nearest paint and has WebP keep it: WebP stores
  *      colour at half resolution, and whatever hides there bleeds into thin twigs as green and purple fringes;
  *   7. names every file by a hash of its bytes (so public/seasons can be cached forever) and writes
@@ -70,14 +70,18 @@ const CANVAS = { W, H };
 /** Where the wood stands in the grove: right of `x0`, above `y1` (the meadow's top edge is just below). */
 const TREE = { x0: 80, y1: 1160 };
 /**
- * The grove's left edge dissolves into the repeated meadow beneath it: its ground over GROUND_FADE of its width
- * (short of the young larch's trunk), so the two meadows' small difference in light never shows as a seam, and
- * above the ground only over EDGE_FADE (short of the post).
+ * The ground is the repeated meadow's, so one painting's grass runs under the whole screen and two can never meet
+ * in a seam (patches of the grove's own grass at the trees' feet were tried, and showed as darker slabs). Below
+ * GROUND[0] the grove keeps, by GROUND[1], only what stands: the trunks and the post, read on row STANDING just
+ * above the ground, where only they are solid (runs of at least STANDING_WIDTH), widened by FEET[0] and gone by
+ * FEET[1] pixels to either side. Their feet dissolve between FOOT[0] and FOOT[1] (the lowest base), into the
+ * meadow's grass, which reads as grass grown up in front of them.
  */
-const GROUND_FADE = 0.13;
-const EDGE_FADE = 0.018;
-/** The fence post at the grove's left edge, down to its foot in the grass: only the edge's fade reaches it. */
-const POST = { x1: 76, y1: 1228 };
+const STANDING = 1120;
+const STANDING_WIDTH = 8;
+const FEET = [0, 6];
+const GROUND = [1110, 1135];
+const FOOT = [1160, 1200];
 /** The meadow tile's cross-fade: its last BAND columns are blended into its first, and the tile loses them. */
 const BAND = 128;
 /** Islands of paint smaller than this, loose in the magenta, are specks. */
@@ -86,9 +90,9 @@ const SPECK = 48;
 const SKYLINE = 10;
 /**
  * The ground's tone, in CIELAB as [mean, spread] of L, a and b, per season and time: measured on the first set of
- * /cv meadows (2026-10-25), which sat in step with the climb's meadow and /ai's. The repainted set (2026-11-15) is
- * sharper but was cooled too far in the painting (summer's b fell from 39 to 28: blue-green, not sunlit), so the
- * ground is moved onto these numbers here instead of repainting it again, which would move the trees too. To measure
+ * /cv meadows (2026-10-25), which sat in step with the climb's meadow and /ai's. A painter's edit drifts the light
+ * (one repaint cooled summer's b from 39 to 28: blue-green, not sunlit), so whatever the painting, the ground is
+ * held to these numbers here; a repaint to fix colour alone would also move what stands on it. To measure
  * them again, run groundTone() on the first set's keyed meadows, kept in art/cv/raw/retired-2026-11-15-spiky/.
  */
 const GROUND_TONE = {
@@ -377,19 +381,55 @@ function toneGround(rgb, alpha, from, to, grove) {
   }
 }
 
-/** The grove's left edge dissolves to nothing, its ground the widest, so it melts into the repeated meadow. */
+/** How far each column is from something standing (a trunk or the post), measured on row STANDING. */
+function distanceToStanding(alpha) {
+  const standing = new Uint8Array(W);
+  let run = 0;
+
+  for (let x = 0; x <= W; x++) {
+    const solid = x < W && alpha[STANDING * W + x] > 0.5;
+
+    if (solid) {
+      run++;
+      continue;
+    }
+
+    if (run >= STANDING_WIDTH) {
+      standing.fill(1, x - run, x);
+    }
+
+    run = 0;
+  }
+
+  const distance = new Float32Array(W).fill(Infinity);
+  let last = -Infinity;
+
+  for (let x = 0; x < W; x++) {
+    last = standing[x] ? x : last;
+    distance[x] = x - last;
+  }
+
+  last = Infinity;
+
+  for (let x = W - 1; x >= 0; x--) {
+    last = standing[x] ? x : last;
+    distance[x] = Math.min(distance[x], last - x);
+  }
+
+  return distance;
+}
+
+/** The grove gives its ground to the repeated meadow, keeping only what stands on it, its feet in the grass. */
 function fadeGrove(alpha) {
-  const edge = W * EDGE_FADE;
+  const distance = distanceToStanding(alpha);
+  const feet = Float32Array.from(distance, d => 1 - smooth((d - FEET[0]) / (FEET[1] - FEET[0])));
 
-  for (let y = 0; y < H; y++) {
-    const ground = y >= TREE.y1 ? W * GROUND_FADE : 0;
-    const widest = Math.max(ground, edge);
+  for (let y = GROUND[0]; y < H; y++) {
+    const into = smooth((y - GROUND[0]) / (GROUND[1] - GROUND[0]));
+    const above = 1 - smooth((y - FOOT[0]) / (FOOT[1] - FOOT[0]));
 
-    for (let x = 0; x < widest; x++) {
-      const post = x < POST.x1 && y < POST.y1;
-      const reach = ground && !post ? ground : edge;
-      if (x >= reach) continue;
-      alpha[y * W + x] *= smooth(x / reach);
+    for (let x = 0; x < W; x++) {
+      alpha[y * W + x] *= (1 - into + into * feet[x]) * above;
     }
   }
 }
