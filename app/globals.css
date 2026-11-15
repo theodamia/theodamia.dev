@@ -1274,24 +1274,27 @@
 }
 
 /*
- * The turn of the year. Each state fades in on its hairline's view timeline, from half-way down the screen to a fifth
- * of the way down, and the state under it fades out once it is covered, so nothing below ever shows through.
- * One opacity on a whole layer, run by the browser's own scrolling.
+ * The turn of the year. Each state fades in on its hairline's view timeline, from when the hairline is just under half
+ * way up the screen to when it is near the top: over 40% of a screen of reading, eased at both ends, so a flick of
+ * the wheel turns the season rather than swapping it (over 30%, linear, it flashed). No longer than that, or with
+ * entries about 40% of a screen apart a turn would still be finishing when the next began, and three seasons mix. The
+ * state under it goes only once it is fully covered, so nothing behind ever shows through and its weather does not
+ * vanish under a half-faded season. One opacity on a whole layer, run by the browser's own scrolling.
  */
 .year-fade {
   animation-duration: auto;
-  animation-timing-function: linear;
+  animation-timing-function: ease-in-out;
   animation-fill-mode: both;
 }
 
 .year-fade[data-fade='in'] {
   animation-name: year-in;
-  animation-range: cover 50vh cover 80vh;
+  animation-range: cover 45vh cover 85vh;
 }
 
 .year-fade[data-fade='out'] {
   animation-name: year-out;
-  animation-range: cover 78vh cover 80vh;
+  animation-range: cover 85vh cover 86vh;
 }
 
 @keyframes year-in {
