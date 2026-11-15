@@ -6,41 +6,41 @@
     "winter": {
       "day": {
         "meadow": "meadow-winter-day.5c6b1e2a.webp",
-        "grove": "grove-winter-day.359aeedb.webp"
+        "grove": "grove-winter-day.58aefd4b.webp"
       },
       "night": {
         "meadow": "meadow-winter-night.37861542.webp",
-        "grove": "grove-winter-night.bedd1fa7.webp"
+        "grove": "grove-winter-night.0500f162.webp"
       }
     },
     "spring": {
       "day": {
         "meadow": "meadow-spring-day.8e9c69b0.webp",
-        "grove": "grove-spring-day.b3e04f95.webp"
+        "grove": "grove-spring-day.2701b270.webp"
       },
       "night": {
         "meadow": "meadow-spring-night.b03b6b45.webp",
-        "grove": "grove-spring-night.6ace0067.webp"
+        "grove": "grove-spring-night.1fd19392.webp"
       }
     },
     "summer": {
       "day": {
         "meadow": "meadow-summer-day.5fcab501.webp",
-        "grove": "grove-summer-day.347d1c66.webp"
+        "grove": "grove-summer-day.e6c01c01.webp"
       },
       "night": {
         "meadow": "meadow-summer-night.26a61715.webp",
-        "grove": "grove-summer-night.f0f0d475.webp"
+        "grove": "grove-summer-night.478e6e03.webp"
       }
     },
     "autumn": {
       "day": {
         "meadow": "meadow-autumn-day.1b2cfa45.webp",
-        "grove": "grove-autumn-day.dddc42c4.webp"
+        "grove": "grove-autumn-day.20ef0c70.webp"
       },
       "night": {
         "meadow": "meadow-autumn-night.05114bb9.webp",
-        "grove": "grove-autumn-night.4a022e41.webp"
+        "grove": "grove-autumn-night.dd048db4.webp"
       }
     }
   },

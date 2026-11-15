@@ -16,8 +16,8 @@
  *      fringes a painter leaves beside magenta, and pink grass tips on the skyline take the grass inside them;
  *   4. moves the ground's tone onto GROUND_TONE (measured on the meadow, the grove's ground moved by as much), so
  *      the ground sits in step with the climb's meadow and /ai's whatever the painter's light did;
- *   5. hands the ground to the meadow: below the ground line the grove keeps only its trunks and the post, their
- *      feet dissolving into the meadow's grass, and the meadow becomes a seamless tile: its end is cross-faded into its start and the tile
+ *   5. fades the grove's ground into the repeated meadow below the wood's foot and at its left edge, and the
+ *      meadow becomes a seamless tile: its end is cross-faded into its start and the tile
  *      is that much narrower;
  *   6. fills the colour hidden under transparent pixels from the nearest paint and has WebP keep it: WebP stores
  *      colour at half resolution, and whatever hides there bleeds into thin twigs as green and purple fringes;
@@ -70,18 +70,14 @@ const CANVAS = { W, H };
 /** Where the wood stands in the grove: right of `x0`, above `y1` (the meadow's top edge is just below). */
 const TREE = { x0: 80, y1: 1160 };
 /**
- * The ground is the repeated meadow's, so one painting's grass runs under the whole screen and two can never meet
- * in a seam (patches of the grove's own grass at the trees' feet were tried, and showed as darker slabs). Below
- * GROUND[0] the grove keeps, by GROUND[1], only what stands: the trunks and the post, read on row STANDING just
- * above the ground, where only they are solid (runs of at least STANDING_WIDTH), widened by FEET[0] and gone by
- * FEET[1] pixels to either side. Their feet dissolve between FOOT[0] and FOOT[1] (the lowest base), into the
- * meadow's grass, which reads as grass grown up in front of them.
+ * The grove's ground fades into the repeated meadow beneath it, so the wood keeps its own foot (its undergrowth,
+ * the grass grown up around each trunk, the flaring roots) and the screen still has one meadow: from FADE[0] to
+ * FADE[1] (below the lowest trunk base and the undergrowth), and at its left edge over EDGE_FADE of its width. Both
+ * are painted in the same tufted grass, so the fade shows no seam; the edge fade stays short of the post. (Cutting the ground away and keeping only the
+ * trunks left them looking pasted on a flat edge; see art/cv/CV-README.md.)
  */
-const STANDING = 1120;
-const STANDING_WIDTH = 8;
-const FEET = [0, 6];
-const GROUND = [1110, 1135];
-const FOOT = [1160, 1200];
+const FADE = [1250, 1340];
+const EDGE_FADE = 0.018;
 /** The meadow tile's cross-fade: its last BAND columns are blended into its first, and the tile loses them. */
 const BAND = 128;
 /** Islands of paint smaller than this, loose in the magenta, are specks. */
@@ -153,8 +149,12 @@ const SPREAD_LIMIT = [0.8, 1.25];
 /** Where the ground is measured: the bottom of the meadow tile, below any grass tip, on solid paint only. */
 const GROUND_SAMPLE = 0.82;
 const SOLID = 0.99;
-/** In the grove the tone eases in over these rows, from just above the meadow line, so no line crosses a trunk. */
-const TONE_RAMP = [TREE.y1 - 60, TREE.y1 + 20];
+/**
+ * In the grove the tone eases in over these rows: below the undergrowth (moving its shrubs as the grass moves turned
+ * their moonlit tips lilac) and complete before the grove's ground starts fading into the meadow (FADE), so where
+ * the two blend they are one colour.
+ */
+const TONE_RAMP = [1185, 1245];
 const ENCODE = { quality: 80, alphaQuality: 85, effort: 6, smartSubsample: true, exact: true };
 
 /**
@@ -381,55 +381,15 @@ function toneGround(rgb, alpha, from, to, grove) {
   }
 }
 
-/** How far each column is from something standing (a trunk or the post), measured on row STANDING. */
-function distanceToStanding(alpha) {
-  const standing = new Uint8Array(W);
-  let run = 0;
-
-  for (let x = 0; x <= W; x++) {
-    const solid = x < W && alpha[STANDING * W + x] > 0.5;
-
-    if (solid) {
-      run++;
-      continue;
-    }
-
-    if (run >= STANDING_WIDTH) {
-      standing.fill(1, x - run, x);
-    }
-
-    run = 0;
-  }
-
-  const distance = new Float32Array(W).fill(Infinity);
-  let last = -Infinity;
-
-  for (let x = 0; x < W; x++) {
-    last = standing[x] ? x : last;
-    distance[x] = x - last;
-  }
-
-  last = Infinity;
-
-  for (let x = W - 1; x >= 0; x--) {
-    last = standing[x] ? x : last;
-    distance[x] = Math.min(distance[x], last - x);
-  }
-
-  return distance;
-}
-
-/** The grove gives its ground to the repeated meadow, keeping only what stands on it, its feet in the grass. */
+/** The grove's ground fades into the repeated meadow below the wood's foot and at its left edge. */
 function fadeGrove(alpha) {
-  const distance = distanceToStanding(alpha);
-  const feet = Float32Array.from(distance, d => 1 - smooth((d - FEET[0]) / (FEET[1] - FEET[0])));
+  const edge = W * EDGE_FADE;
 
-  for (let y = GROUND[0]; y < H; y++) {
-    const into = smooth((y - GROUND[0]) / (GROUND[1] - GROUND[0]));
-    const above = 1 - smooth((y - FOOT[0]) / (FOOT[1] - FOOT[0]));
+  for (let y = 0; y < H; y++) {
+    const below = 1 - smooth((y - FADE[0]) / (FADE[1] - FADE[0]));
 
     for (let x = 0; x < W; x++) {
-      alpha[y * W + x] *= (1 - into + into * feet[x]) * above;
+      alpha[y * W + x] *= below * (x < edge ? smooth(x / edge) : 1);
     }
   }
 }
