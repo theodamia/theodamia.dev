@@ -1,1 +1,5 @@
 pnpm exec lint-staged
+# Secrets in the staged changes stop the commit. Skipped where gitleaks isn't installed.
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks git --pre-commit --staged --redact --no-banner
+fi
