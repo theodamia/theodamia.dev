@@ -1,0 +1,12 @@
+# Git passes the pushed refs on stdin; keep them for the review after `check` runs.
+refs=$(cat)
+
+pnpm check
+
+# hugi review of the pushed commits: blocks on a confirmed HIGH finding.
+# Skip it once with `HUGI_REVIEW=off git push`. Skipped where the hugi plugin isn't installed.
+hr="${HUGI_REVIEW_BIN:-$HOME/Apps/hugi-skills/scripts/hugi-review}"
+[ -x "$hr" ] || hr=$(ls -d "$HOME"/.claude/plugins/cache/hugi-skills/hugi/*/scripts/hugi-review 2>/dev/null | tail -1)
+if [ -n "$hr" ] && [ -x "$hr" ]; then
+  printf '%s\n' "$refs" | "$hr" push
+fi

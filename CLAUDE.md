@@ -45,7 +45,8 @@ Teo's own rules come from the `hugi` plugin (`/hugi:<skill>`); Claude also loads
 - **Scene**: whole paintings (WebP), moved with CSS transforms and opacity. No WebGL, no canvas, no chart or animation library. `scene/` is the climb as numbers (the camera, the paintings' manifest); `components/scene/ascent-stage.tsx` renders and moves it. The paintings are made by an image model from the prompts under `art/` and processed by the scripts under `scripts/`
 - **Testing**: Vitest + React Testing Library + jsdom
 - **Linting**: `eslint-config-next` (Next, React, React Hooks v7 with the compiler rules) plus the full `jsx-a11y` recommended set as errors and `typescript-eslint`'s type-aware rules on TS/TSX, which is what catches a promise nobody awaits. `eslint.config.mjs` adds rules to the plugins Next already registers, never the plugins' own flat configs
-- **Pre-commit**: Husky runs lint-staged (ESLint fix + Prettier on TS/TSX/JS/JSX, Prettier on JSON/MD/CSS). It does not match `.mjs`, so a changed script is checked only by `pnpm check` (or `npx eslint scripts/`)
+- **Pre-commit**: Husky runs lint-staged (ESLint fix + Prettier on TS/TSX/JS/JSX, Prettier on JSON/MD/CSS), then gitleaks on the staged changes, so a secret stops the commit (skipped where gitleaks isn't installed). lint-staged does not match `.mjs`, so a changed script is checked only by `pnpm check` (or `npx eslint scripts/`)
+- **Pre-push**: Husky runs `pnpm check`, then the hugi review of the pushed commits (`~/Apps/hugi-skills/scripts/hugi-review push`: hugi reviewer agents graded against the skills, blocking only on a confirmed HIGH finding). Skip the review once with `HUGI_REVIEW=off git push`
 
 ### The scene boundary
 
