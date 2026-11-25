@@ -36,6 +36,7 @@ Teo's own rules come from the `hugi` plugin (`/hugi:<skill>`); Claude also loads
 - **Applies here:** `hugi:stack` (Next 16 on Vercel), `hugi:security` (a static site: no forms, no login, no third-party scripts), `hugi:testing`, `hugi:marketing` (titles, share cards, JSON-LD), and `hugi:design` and `hugi:motion` only where this file is silent: the Alpine look, the paintings and the frame rule below are this site's own. Not `hugi:commerce`, `hugi:product` or `hugi:rust`.
 - **Decided here:** the CSP is a header from `next.config.ts` with `'unsafe-inline'` scripts, because nonces would make every page dynamic (Observatory B+). Tests are Vitest and Testing Library on jsdom; `hugi:testing`'s Playwright and screenshot checks aren't set up here.
 - **Around a deploy:** before it, run `hugi:security`'s `scan_bundle.py` on `.next/static public`, then on `.next/server/app --allow-maps`; after it, its `check_headers.py` on https://theodamia.dev/.
+- **security.txt:** `public/.well-known/security.txt` (RFC 9116) gives the contact for reporting a security issue. Its `Expires` line is 2027-11-25: move it a year on before then, or the file counts as stale.
 
 ## Architecture
 
