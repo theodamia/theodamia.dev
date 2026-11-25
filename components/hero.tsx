@@ -2,7 +2,7 @@ import { TrailLink } from '@/components/trail-link';
 import { SocialLinks } from '@/components/social-links';
 import { quietLinkVariants } from '@/components/ui/button';
 import { Eyebrow, Heading, Lede } from '@/components/ui/text';
-import { SITE } from '@/content/site';
+import { ROLE_AND_PLACE, SITE } from '@/content/site';
 
 /**
  * The top of the climb page: who this is, what the page is, and the three ways to reach me.
@@ -14,9 +14,7 @@ import { SITE } from '@/content/site';
 export function Hero() {
   return (
     <section className='hero-wash max-wide:pt-[84px] text-shadow-halo min-h-screen pt-[92px]'>
-      <Eyebrow className='text-[17px]'>
-        {SITE.title} · {SITE.location}
-      </Eyebrow>
+      <Eyebrow className='text-[17px]'>{ROLE_AND_PLACE}</Eyebrow>
       <Heading as='h1' size='hero' className='mt-3 max-w-[640px]'>
         {SITE.name}
       </Heading>

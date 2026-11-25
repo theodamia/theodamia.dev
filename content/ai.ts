@@ -74,7 +74,7 @@ export const AI_PLACES: LogItem[] = [
   },
   {
     id: 'ai-geekbot',
-    when: `${GEEKBOT_LEAD.period} · as ${GEEKBOT_LEAD.role}`,
+    when: `${GEEKBOT_LEAD.period}, as ${GEEKBOT_LEAD.role}`,
     title: 'Early adopters, from the first ChatGPT to Claude Code',
     place: GEEKBOT_LEAD.company,
     url: GEEKBOT_LEAD.url,

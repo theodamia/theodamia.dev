@@ -2,7 +2,7 @@ import { OG_SIZE, shareCard } from '@/lib/og/card';
 import { AI_PAGE } from '@/content/ai';
 import { SITE } from '@/content/site';
 
-export const alt = `${AI_PAGE.title} · ${SITE.name}`;
+export const alt = `“${AI_PAGE.title}”, ${SITE.name} on working with AI`;
 export const size = OG_SIZE;
 export const contentType = 'image/png';
 
@@ -13,7 +13,7 @@ export const contentType = 'image/png';
 export default function Image() {
   return shareCard({
     background: 'card-ai.jpg',
-    eyebrow: `${SITE.name} · ${AI_PAGE.eyebrow}`,
+    eyebrow: `${SITE.name} on working with AI`,
     title: AI_PAGE.title,
     line: 'AI enablement for software teams.',
     measure: 560,

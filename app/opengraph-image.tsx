@@ -1,7 +1,7 @@
 import { OG_SIZE, shareCard } from '@/lib/og/card';
-import { SITE } from '@/content/site';
+import { ROLE_AND_PLACE, SITE } from '@/content/site';
 
-export const alt = `${SITE.name} · ${SITE.title}`;
+export const alt = `${SITE.name}, ${ROLE_AND_PLACE}`;
 export const size = OG_SIZE;
 export const contentType = 'image/png';
 
@@ -13,7 +13,7 @@ export const contentType = 'image/png';
 export default function Image() {
   return shareCard({
     background: 'card-site.jpg',
-    eyebrow: `${SITE.title} · ${SITE.location}`,
+    eyebrow: ROLE_AND_PLACE,
     title: SITE.name,
     line: 'Ten years of software engineering, drawn as one long climb.',
     measure: 1000,

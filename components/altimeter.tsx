@@ -143,7 +143,7 @@ export function Altimeter({
                 )}
               >
                 {now && <span aria-hidden='true' className='bg-accent size-[7px] rounded-full' />}
-                {now ? `Now · ${stop.year}` : stop.year}
+                {now ? `${stop.year} – now` : stop.year}
               </span>
               <span
                 className={cn(

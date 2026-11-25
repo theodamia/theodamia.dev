@@ -81,7 +81,7 @@ export function FieldLog() {
           <span className={cn(NODE, 'border-line bg-page top-[33px] size-[9px] border')} />
         </span>
         <p className='border-line text-ink-3 border-t pt-7 text-[15px] leading-[1.4] font-medium'>
-          {TRAILHEAD.year} · where the trail starts
+          {TRAILHEAD.year}, where the journey starts
         </p>
       </div>
     </div>

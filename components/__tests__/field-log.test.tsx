@@ -47,12 +47,12 @@ describe('FieldLog', () => {
     expect(screen.getByRole('article', { name: newestFirst[0].role })).toHaveTextContent('present');
   });
 
-  it('opens the rail with the entry not written yet, and closes it where the trail starts', () => {
+  it('opens the rail with the entry not written yet, and closes it where the journey starts', () => {
     render(<FieldLog />);
 
     const list = screen.getByRole('list', { name: 'Experience, newest first' });
     const top = screen.getByText(SUMMIT_LINE, { exact: false });
-    const foot = screen.getByText(`${TRAILHEAD.year} · where the trail starts`);
+    const foot = screen.getByText(`${TRAILHEAD.year}, where the journey starts`);
     expect(top).toHaveTextContent(SUMMIT_LINE);
     expect(list).not.toContainElement(top);
     expect(list).not.toContainElement(foot);

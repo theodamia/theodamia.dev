@@ -18,7 +18,7 @@ const PROFILES = [
 ];
 
 /** Where and when: the quiet line under the channels. */
-const WHEREABOUTS = [SITE.location, 'Remote', 'UTC+2/+3'];
+const WHEREABOUTS = `Working remotely from ${SITE.location} (UTC+2/+3)`;
 
 /**
  * Email first, the one channel that needs no account: a full-width row with the address and its two actions,
@@ -87,7 +87,7 @@ export function ContactRows({ className }: { className?: string }) {
           </li>
         ))}
       </ul>
-      <p className='text-ink-3 mt-4 text-[15px]'>{WHEREABOUTS.join(' · ')}</p>
+      <p className='text-ink-3 mt-4 text-[15px]'>{WHEREABOUTS}</p>
     </div>
   );
 }

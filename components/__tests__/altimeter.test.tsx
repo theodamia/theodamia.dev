@@ -68,7 +68,7 @@ describe('Altimeter', () => {
     const { rail } = renderAltimeter(0);
 
     const now = within(rail).getByRole('button', { name: /^Now:/ });
-    expect(now).toHaveTextContent(`Now · ${JOBS[JOBS.length - 1].start}`);
+    expect(now).toHaveTextContent(`${JOBS[JOBS.length - 1].start} – now`);
     expect(screen.getAllByRole('button', { name: /^Now/ })).toHaveLength(1);
     expect(screen.getByText(SUMMIT_MARK)).toBeInTheDocument();
   });
