@@ -49,14 +49,11 @@ export function ClosingCard() {
           </TrailLink>
         </div>
         {/* whoever walked the whole climb can still have the short version, or simply stay for the view;
-            a row on wide screens, stacked on phones, where the dot between them would dangle */}
-        <div className='max-wide:flex-col mt-5 flex items-center justify-center gap-x-3 gap-y-2.5'>
+            a row on wide screens, stacked on phones; the space between them is the only divider */}
+        <div className='max-wide:flex-col mt-5 flex items-center justify-center gap-x-7 gap-y-2.5'>
           <TrailLink href='/cv' className={QUIET_LINK}>
             Every role, on one page
           </TrailLink>
-          <span aria-hidden='true' className='text-ink-3 max-wide:hidden'>
-            ·
-          </span>
           <button ref={aside} type='button' className={QUIET_LINK} onClick={() => fold(true)}>
             Take in the view
           </button>

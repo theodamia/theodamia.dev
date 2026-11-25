@@ -56,16 +56,18 @@ export default function Cv() {
           >
             <SocialLinks className='mt-0 print:hidden' />
             {/* those tiles are three unreadable logos on paper, and contact belongs on sheet one: spell them out */}
-            <p className='text-ink-2 hidden text-[13.5px] leading-[1.7] print:block'>
-              {[SITE.email, bareUrl(SITE.linkedin.url), bareUrl(SITE.github.url)].join(' · ')}
-            </p>
+            <ul className='text-ink-2 hidden flex-wrap gap-x-6 text-[13.5px] leading-[1.7] print:flex'>
+              {[SITE.email, bareUrl(SITE.linkedin.url), bareUrl(SITE.github.url)].map(channel => (
+                <li key={channel}>{channel}</li>
+              ))}
+            </ul>
           </PageHeader>
 
           {/* the years say the order on paper, and the climb is not somewhere a sheet of paper can go */}
           <p className='text-ink-3 mt-7 mb-9 text-[15px] print:hidden'>
-            Newest first ·{' '}
+            Newest first, or{' '}
             <TrailLink href='/' className={QUIET_LINK}>
-              Walk the same ten years as a climb
+              walk the same ten years as a climb
             </TrailLink>
           </p>
 

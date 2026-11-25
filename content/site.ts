@@ -13,6 +13,9 @@ export const SITE = {
   github: { url: 'https://github.com/theodamia', handle: 'theodamia' },
 } as const;
 
+/** The hero's eyebrow and the share card's: the role and where it is done, as one phrase. */
+export const ROLE_AND_PLACE = `${SITE.title} based in ${SITE.location}`;
+
 /**
  * Over the summit, which the climb never reaches, and at the end of the list on /cv. Not a status but a stance:
  * never finished, always getting better, not giving up. It looks forward on purpose — what is left to climb, rather

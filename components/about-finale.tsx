@@ -33,7 +33,7 @@ export function AboutFinale() {
       >
         <AboutDawn />
         <div className='max-wide:px-4 relative mx-auto flex w-full max-w-[1180px] flex-1 flex-col px-7'>
-          <div className='rounded-section border-line bg-card shadow-card wide:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] max-wide:rounded-[22px] grid w-full max-w-[1000px] items-start gap-x-11 gap-y-7 border p-[clamp(24px,2.8vw,40px)]'>
+          <div className='rounded-section border-line bg-card shadow-card wide:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] max-wide:rounded-[22px] grid w-full items-start gap-x-11 gap-y-7 border p-[clamp(24px,2.8vw,40px)]'>
             <div>
               <Eyebrow>Contact</Eyebrow>
               <Heading
