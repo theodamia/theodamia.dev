@@ -125,7 +125,8 @@ describe('the climb stage', () => {
     expect(root).toHaveAttribute('data-posed');
     const pose = poseAt(0.6, { ...VIEW, wide: true, laneGap: null });
     const peak = pose.flats.find(item => item.id === 'peak')!;
-    expect(flat('peak').style.transform).toContain(`scale(${peak.scale.toFixed(5)})`);
+    // The stage writes 5 decimals; jsdom (like browsers) reads the number back in its shortest form, without trailing zeros.
+    expect(flat('peak').style.transform).toContain(`scale(${Number(peak.scale.toFixed(5))})`);
     expect(flat('peak').style.transform).toContain(`translate3d(${Math.round(peak.x)}px`);
   });
 
